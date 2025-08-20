@@ -138,7 +138,7 @@ def moveFiles():
     file_names=os.listdir(importdirectory)
     for file_name in file_names:
         shutil.move(os.path.join(importdirectory, file_name), exportdirectory)
-        
+
 ## S C R I P T
 DataReader()
 DBDataWriter("top",topdata)
