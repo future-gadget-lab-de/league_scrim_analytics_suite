@@ -1,5 +1,5 @@
 import requests
-import jsonify
+#import jsonify
 
 def toChampion(id: int, Championdata_url: str):
     dataOfChampions_response = requests.get(Championdata_url)
