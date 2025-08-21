@@ -20,3 +20,15 @@ def toItem(id: int, Itemdata_url: str):
     Items_dict = dataOfItems_dict['data']
 
     return Items_dict[str(id)]['name']
+
+
+def toPerk(id: int, Perkdata_url: str):
+    dataOfPerks_reponse = requests.get(Perkdata_url)
+    dataOfPerks_dict = dataOfPerks_reponse.json()
+    
+    perk_dict = {item["id"]: item["key"] for item in dataOfPerks_dict} #Precision (8000), Domination (8100),  Sorcery (8200), Inspiration (8300), Resolve (8400
+    rune_dict = {rune["id"]: rune["key"] for item in dataOfPerks_dict for slot in item["slots"] for rune in slot["runes"]}
+
+    if id in [8000, 8100, 8300 ,8200, 8400]:
+        return perk_dict[id]
+    return rune_dict[id]
