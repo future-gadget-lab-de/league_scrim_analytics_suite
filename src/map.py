@@ -1,5 +1,5 @@
 import requests
-#import jsonify
+#import jsonifyS
 
 def toChampion(id: int, Championdata_url: str):
     dataOfChampions_response = requests.get(Championdata_url)
@@ -32,3 +32,13 @@ def toPerk(id: int, Perkdata_url: str):
     if id in [8000, 8100, 8300 ,8200, 8400]:
         return perk_dict[id]
     return rune_dict[id]
+
+def toSummoner(id: int, Summoner_url: str):
+    dataOfSummoners_response = requests.get(Summoner_url)
+    dataOfSummoners_dict = dataOfSummoners_response.json()
+
+    Summoners_dict = dataOfSummoners_dict['data']
+
+    for sname in Summoners_dict:
+        if Summoners_dict[sname]['key'] == str(id):
+            return Summoners_dict[sname]['name']
