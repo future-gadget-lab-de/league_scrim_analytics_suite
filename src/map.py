@@ -1,44 +1,77 @@
 import requests
-#import jsonifyS
 
-def toChampion(id: int, Championdata_url: str):
-    dataOfChampions_response = requests.get(Championdata_url)
-    dataOfChampions_dict = dataOfChampions_response.json()
+def mapLink(patch: str, dataRequested: str):
+    """
+    Generates an API Link for ddragon, by giving the type of data requested
 
-    Champions_dict = dataOfChampions_dict['data']
+    ----------
+    Parameters
+    ----------
+        patch (str):         The LoL patch number, the data will be based on.
+        dataRequested (str): Determines the dataBase, which the function will go through.
+                             Currently supported: "summoner", "perk", "champion", "item"
+    ----------
+    Return
+    ----------
+        link (str):          The link according to the wanted type of data
+    ----------
+    """
+    link = 'https://ddragon.leagueoflegends.com/cdn/' + patch + '/data/en_US/'
 
-    for cname in Champions_dict:
-        if Champions_dict[cname]['key'] == str(id):
-            return cname
+    # dataRequested -> suffix
+    suffixes = {
+        'perk':     'runesReforged.json',
+        'item':     'item.json',
+        'champion': 'champion.json',
+        'summoner': 'summoner.json'
+    }
 
-    return ""
+    link += suffixes[dataRequested]
 
-def toItem(id: int, Itemdata_url: str):
-    dataOfItems_response = requests.get(Itemdata_url)
-    dataOfItems_dict = dataOfItems_response.json()
+    return link
 
-    Items_dict = dataOfItems_dict['data']
+# (id, dataRequested) --> explicit_name of given id
+def mapId(id: int, patch: str, dataRequested: str):
+    """
+    Maps the given id, to the corresponding name ingame.
 
-    return Items_dict[str(id)]['name']
+    ----------
+    Parameters
+    ----------
+        id (int):            An integer, which identifies a specific name.
+        patch (str):         The LoL patch number, the data will be based on.
+        dataRequested (str): Determines the dataBase, which the function will go through.
+                             Currently supported: "summoner", "perk", "champion", "item"
+    ----------
+    Return
+    ----------
+        name (str):          The name, which corresponds to the id
+    ----------
+    """
+    data_url = mapLink(patch, dataRequested)
+    data_response = requests.get(data_url)
+    data_dict = data_response.json()
 
+    if dataRequested in ['champion', 'summoner']:
+        data_dict = data_dict['data']
 
-def toPerk(id: int, Perkdata_url: str):
-    dataOfPerks_reponse = requests.get(Perkdata_url)
-    dataOfPerks_dict = dataOfPerks_reponse.json()
-    
-    perk_dict = {item["id"]: item["key"] for item in dataOfPerks_dict} #Precision (8000), Domination (8100),  Sorcery (8200), Inspiration (8300), Resolve (8400
-    rune_dict = {rune["id"]: rune["key"] for item in dataOfPerks_dict for slot in item["slots"] for rune in slot["runes"]}
+        for name in data_dict:
+            if data_dict[name]['key'] == str(id):
+                return data_dict[name]['name']
 
-    if id in [8000, 8100, 8300 ,8200, 8400]:
-        return perk_dict[id]
-    return rune_dict[id]
+    if dataRequested == 'item':
+        Items_dict = data_dict['data']
 
-def toSummoner(id: int, Summoner_url: str):
-    dataOfSummoners_response = requests.get(Summoner_url)
-    dataOfSummoners_dict = dataOfSummoners_response.json()
+        return Items_dict[str(id)]['name']
 
-    Summoners_dict = dataOfSummoners_dict['data']
+    if dataRequested == 'perk':
+        #Precision (8000), Domination (8100),  Sorcery (8200), Inspiration (8300), Resolve (8400)
+        perk_dict = {item["id"]: item["key"] for item in data_dict} 
+        rune_dict = {rune["id"]: rune["key"] for item in data_dict \
+                                            for slot in item["slots"] \
+                                            for rune in slot["runes"]}
 
-    for sname in Summoners_dict:
-        if Summoners_dict[sname]['key'] == str(id):
-            return Summoners_dict[sname]['name']
+        if id in [8000, 8100, 8300 ,8200, 8400]:
+            return perk_dict[id]
+        return rune_dict[id]
+
