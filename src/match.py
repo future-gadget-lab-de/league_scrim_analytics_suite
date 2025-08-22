@@ -5,14 +5,15 @@ from datetime import datetime, timedelta
 from src.map import mapId
 
 def loadPlayerIdentities(data):
-    for i in range (0,9):
+    identity_dict = {}
+    for i in range (0,10):
         pIdenData   = data['participantIdentities'][i] 
         pId         = pIdenData['participantId']
         pName       = pIdenData['player']['gameName']
         identity_dict[pId] = pName
     return identity_dict
 
-    
+
 def loadMetadata(data):
     """GameID""" 
     gameid=data['gameId']
@@ -42,9 +43,9 @@ def loadMatchData():
             playerdata = loadPlayerData(data)
 
 def loadPlayerData(data):
-    identity_dict = {}
-    playerIdentities = getPlayerIdentities
-    #print(identity_dict)
+    playerIdentities = loadPlayerIdentities(data)
+    print(playerIdentities)
+
     playerdata=""
     return playerdata
 
