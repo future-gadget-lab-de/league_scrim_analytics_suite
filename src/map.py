@@ -1,34 +1,5 @@
 import requests
-
-def mapLink(patch: str, dataRequested: str):
-    """
-    Generates an API Link for ddragon, by giving the type of data requested
-
-    ----------
-    Parameters
-    ----------
-        patch (str):         The LoL patch number, the data will be based on.
-        dataRequested (str): Determines the dataBase, which the function will go through.
-                             Currently supported: "summoner", "perk", "champion", "item"
-    ----------
-    Return
-    ----------
-        link (str):          The link according to the wanted type of data
-    ----------
-    """
-    link = 'https://ddragon.leagueoflegends.com/cdn/' + patch + '/data/en_US/'
-
-    # dataRequested -> suffix
-    suffixes = {
-        'perk':     'runesReforged.json',
-        'item':     'item.json',
-        'champion': 'champion.json',
-        'summoner': 'summoner.json'
-    }
-
-    link += suffixes[dataRequested]
-
-    return link
+from src.data import loadDatabase
 
 # (id, dataRequested) --> explicit_name of given id
 def mapId(id: int, patch: str, dataRequested: str):
@@ -40,7 +11,7 @@ def mapId(id: int, patch: str, dataRequested: str):
     ----------
         id (int):            An integer, which identifies a specific name.
         patch (str):         The LoL patch number, the data will be based on.
-        dataRequested (str): Determines the dataBase, which the function will go through.
+        dataRequested (str): Determines the dataBase, which the function will downstream.
                              Currently supported: "summoner", "perk", "champion", "item"
     ----------
     Return
@@ -48,9 +19,7 @@ def mapId(id: int, patch: str, dataRequested: str):
         name (str):          The name, which corresponds to the id
     ----------
     """
-    data_url = mapLink(patch, dataRequested)
-    data_response = requests.get(data_url)
-    data_dict = data_response.json()
+    data_dict = loadDatabase(patch, dataRequested)
 
     if dataRequested in ['champion', 'summoner']:
         data_dict = data_dict['data']
