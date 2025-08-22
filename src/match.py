@@ -2,6 +2,7 @@ from src.utils import findMatchFile
 import json
 import os
 from datetime import datetime, timedelta
+from src.map import mapId
 
 
 def loadMetadata(data):
@@ -20,8 +21,6 @@ def loadMetadata(data):
 
     return gameid,patch,date,time
 
-
-
 def loadMatchData():
     data_file = findMatchFile()
 
@@ -31,6 +30,18 @@ def loadMatchData():
             data=json.loads(raw)
             
             metadata = loadMetadata(data)
-            print(metadata)
+            #print(metadata)
+            playerdata = loadPlayerData(data)
+
+def loadPlayerData(data):
+    identity_dict = {}
+    for i in range (0,9):
+        pIdenData   = data['participantIdentities'][i] 
+        pId         = pIdenData['participantId']
+        pName       = pIdenData['player']['gameName']
+        identity_dict[pId] = pName
+    #print(identity_dict)
+    playerdata=""
+    return playerdata
 
             
