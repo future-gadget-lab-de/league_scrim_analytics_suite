@@ -46,6 +46,13 @@ def loadPlayerData(data):
     playerIdentities = loadPlayerIdentities(data)
     print(playerIdentities)
 
+    for i in range (0,10):
+        pData   = data['participants'][i]
+        pID     = pData['participantId']
+        champ   = mapId(pData['championId'],'15.16.1', "champion")
+        summ1   = mapId(pData['spell1Id'],'15.16.1', "summoner")
+        summ2   = mapId(pData['spell2Id'],'15.16.1', "summoner")
+        
     playerdata=""
     return playerdata
 
