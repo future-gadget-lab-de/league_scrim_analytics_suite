@@ -30,7 +30,8 @@ def mapId(id: int, patch: str, dataRequested: str):
 
     if dataRequested == 'item':
         Items_dict = data_dict['data']
-
+        if id == 0:
+            return "No Item"
         return Items_dict[str(id)]['name']
 
     if dataRequested == 'perk':
