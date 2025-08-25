@@ -77,8 +77,18 @@ def loadPlayerData(data):
         player_name (str):      Ingame Name of the Player
         team (str):             Enemy / US
         champ (str):            Champion Played
-        summ1 (str):            Summoner Spell in Slot 1
-        summ2 (str):            Summoner Spell in Slot 2
+        summ1-2 (str):          Summoner Spell in Slot 1/2
+        item1-6 (str):          Item in Slot 1-6#
+        cwards_placed(int):     Amount of Controlwards placed
+        wards_placed(int):      Amount of green / blue wards placed
+        wards_destroyed(int):   Amount of wards cleared
+        creep_score(int):       Ingame metric
+        own_jng_kill(int):      Number of own-side jungle mobs cleared
+        ene_jng_kill(int):      Number of enemy-side jungle mobs cleared
+        kills(int):             Ingame metric
+        deaths(int):            Ingame metric
+        assists(int):           Ingame metric
+        damage_dealt(int):      Damage dealt to champions
     ----------
     """
     playerIdentities = loadPlayerIdentities(data)
