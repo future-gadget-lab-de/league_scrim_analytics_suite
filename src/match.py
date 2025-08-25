@@ -5,6 +5,19 @@ from datetime import datetime, timedelta
 from src.map import mapId
 
 def loadPlayerIdentities(data):
+    """
+    Generates a dictionary of the players present in the Match and mapping their participant ID to their 
+        ingame Name
+    ----------
+    Parameters
+    ----------
+        data (json):            The datafile for a given Match
+    ----------
+    Return
+    ----------
+        idendity_dict (dict):   Dictionary of the participant ID mapping to the player name
+    ----------
+    """
     identity_dict = {}
     for i in range (0,10):
         pIdenData   = data['participantIdentities'][i] 
@@ -15,20 +28,29 @@ def loadPlayerIdentities(data):
 
 
 def loadMetadata(data):
-    """GameID""" 
+    """
+    Extracts the GameID, Patchversion, duration and date of a given Match 
+    ----------
+    Parameters
+    ----------
+        data (json):            The datafile for a given Match
+    ----------
+    Return
+    ----------
+        idendity_dict (dict):   Dictionary of the participant ID mapping to the player name
+        gameid (int):           Number that respresents a unique identifier to the Match
+        duration (str):         Duration of the match in the format: hh:mm:ss
+        date (str):             Date of the Match played in the format: yyyy-mm-dd
+    ----------
+    """
     gameid=data['gameId']
-
-    """ Match Duration"""
-    time=str(timedelta(seconds=int(data['gameDuration'])))
-
-    """ Patch Version """
+    duration=str(timedelta(seconds=int(data['gameDuration'])))
     patch=".".join(str(data['gameVersion']).split(".")[:2])
-    
-    """ Match date """
+
     trimmedstamp=int(str(data['gameCreation'])[:-3])
     date=datetime.fromtimestamp(trimmedstamp).strftime("%Y-%m-%d")
 
-    return gameid,patch,date,time
+    return gameid,patch,date,duration
 
 def loadMatchData():
     data_file = findMatchFile()
@@ -43,6 +65,22 @@ def loadMatchData():
             playerdata = loadPlayerData(data)
 
 def loadPlayerData(data):
+    """
+    Extracts Playerdata from a given match 
+    ----------
+    Parameters
+    ----------
+        data (json):            The datafile for a given Match
+    ----------
+    Return
+    ----------
+        player_name (str):      Ingame Name of the Player
+        team (str):             Enemy / US
+        champ (str):            Champion Played
+        summ1 (str):            Summoner Spell in Slot 1
+        summ2 (str):            Summoner Spell in Slot 2
+    ----------
+    """
     playerIdentities = loadPlayerIdentities(data)
     print(playerIdentities)
 
