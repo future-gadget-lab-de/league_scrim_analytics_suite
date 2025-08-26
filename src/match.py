@@ -92,7 +92,7 @@ def loadPlayerData(data):
     ----------
     """
     playerIdentities = loadPlayerIdentities(data)
-    print(playerIdentities)
+    
 
     for i in range (0,10):
         # Create helper Variables 
@@ -108,10 +108,13 @@ def loadPlayerData(data):
         for i in range (0,7):
             itemnr="item"+str(i)
             item_dict[i] = mapId(pStats[itemnr],'15.16.1','item')
-        print(item_dict)
-
+        
         # Extract Rune Data
-
+        rune_dict = {}
+        for i in range (0,6):
+            runenr = "perk"+str(i)
+            rune_dict[i] = mapId(pStats[runenr], '15.16.1', 'perk')
+        
     playerdata=""
     return playerdata
 
