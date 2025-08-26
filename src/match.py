@@ -74,25 +74,11 @@ def loadPlayerData(data):
     ----------
     Return
     ----------
-        player_name (str):      Ingame Name of the Player
-        team (str):             Enemy / US
-        champ (str):            Champion Played
-        summ1-2 (str):          Summoner Spell in Slot 1/2
-        item1-6 (str):          Item in Slot 1-6#
-        cwards_placed(int):     Amount of Controlwards placed
-        wards_placed(int):      Amount of green / blue wards placed
-        wards_destroyed(int):   Amount of wards cleared
-        creep_score(int):       Ingame metric
-        own_jng_kill(int):      Number of own-side jungle mobs cleared
-        ene_jng_kill(int):      Number of enemy-side jungle mobs cleared
-        kills(int):             Ingame metric
-        deaths(int):            Ingame metric
-        assists(int):           Ingame metric
-        damage_dealt(int):      Damage dealt to champions
+        pData_dict(dict):       Dictionary that maps Number 0-9 to the Player and their data.
     ----------
     """
-    playerIdentities = loadPlayerIdentities(data)
-    
+    playerIdentities    = loadPlayerIdentities(data)
+    pData_dict          = {}
 
     for i in range (0,10):
         # Create helper Variables 
@@ -103,19 +89,43 @@ def loadPlayerData(data):
         champ   = mapId(pData['championId'],'15.16.1', "champion")
         summ1   = mapId(pData['spell1Id'],'15.16.1', "summoner")
         summ2   = mapId(pData['spell2Id'],'15.16.1', "summoner")
+        if pData['teamId'] == 100:
+            team = "Blueside"
+        else:
+            team = "Redside"
         # Extract Itemdata  
         item_dict = {}
-        for i in range (0,7):
-            itemnr="item"+str(i)
-            item_dict[i] = mapId(pStats[itemnr],'15.16.1','item')
+        for n in range (0,7):
+            itemnr="item"+str(n)
+            item_dict[n] = mapId(pStats[itemnr],'15.16.1','item')
         
         # Extract Rune Data
         rune_dict = {}
-        for i in range (0,6):
-            runenr = "perk"+str(i)
-            rune_dict[i] = mapId(pStats[runenr], '15.16.1', 'perk')
+        for m in range (0,6):
+            runenr = "perk"+str(m)
+            rune_dict[m] = mapId(pStats[runenr], '15.16.1', 'perk')
         
-    playerdata=""
-    return playerdata
+        # Extract general Data
+        cwards_bought   =   pStats['visionWardsBoughtInGame']
+        wards_placed    =   pStats['wardsPlaced']
+        wards_destroyed =   pStats['wardsKilled']
+        vision_score    =   pStats['visionScore']
+        minions_killed  =   pStats['totalMinionsKilled']
+        own_jng_kill    =   pStats['neutralMinionsKilledTeamJungle']
+        ene_jng_kill    =   pStats['neutralMinionsKilledEnemyJungle']
+        kills           =   pStats['kills']
+        deaths          =   pStats['deaths']
+        assists         =   pStats['assists']
+        damage_dealt    =   pStats['totalDamageDealtToChampions']
+        gold_earned     =   pStats['goldEarned']
+        turret_dmg      =   pStats['damageDealtToTurrets']
+
+        player_data     = [playerIdentities[pID],champ, summ1, summ2, item_dict.values(), rune_dict.values(), \
+                        cwards_bought, wards_placed, wards_destroyed, vision_score, minions_killed, \
+                        own_jng_kill, ene_jng_kill, kills, deaths, assists, damage_dealt, gold_earned, turret_dmg, team]
+
+        pData_dict[i] = player_data
+        
+    return pData_dict
 
             
