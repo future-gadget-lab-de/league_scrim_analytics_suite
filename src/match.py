@@ -95,22 +95,22 @@ def loadPlayerData(data):
     print(playerIdentities)
 
     for i in range (0,10):
-        """ Create helper Variables """
+        # Create helper Variables 
         pData   = data['participants'][i]
         pID     = pData['participantId']
         pStats  = pData['stats']
-        """ Extract Data from first level """
+        # Extract Data from first level 
         champ   = mapId(pData['championId'],'15.16.1', "champion")
         summ1   = mapId(pData['spell1Id'],'15.16.1', "summoner")
         summ2   = mapId(pData['spell2Id'],'15.16.1', "summoner")
-        """ Extract Itemdata  """
+        # Extract Itemdata  
         item_dict = {}
         for i in range (0,7):
             itemnr="item"+str(i)
             item_dict[i] = mapId(pStats[itemnr],'15.16.1','item')
         print(item_dict)
 
-        """ Extract Rune Data"""
+        # Extract Rune Data
 
     playerdata=""
     return playerdata
