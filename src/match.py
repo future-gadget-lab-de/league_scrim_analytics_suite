@@ -1,8 +1,9 @@
 from src.utils import findMatchFile
+from src.utils import playerTeamCheck
+from src.map import mapId
+from datetime import datetime, timedelta
 import json
 import os
-from datetime import datetime, timedelta
-from src.map import mapId
 
 def loadPlayerIdentities(data):
     """
@@ -15,15 +16,17 @@ def loadPlayerIdentities(data):
     ----------
     Return
     ----------
-        idendity_dict (dict):   Dictionary of the participant ID mapping to the player name
+        idendity_dict (dict):   Dictionary of the participant ID mapping to the player name and player-unique-identifieder
     ----------
     """
     identity_dict = {}
     for i in range (0,10):
-        pIdenData   = data['participantIdentities'][i] 
-        pId         = pIdenData['participantId']
-        pName       = pIdenData['player']['gameName']
-        identity_dict[pId] = pName
+        pIdenData           = data['participantIdentities'][i] 
+        pId                 = pIdenData['participantId']
+        pName               = pIdenData['player']['gameName']
+        pUuid               =  pIdenData['player']['puuid']
+        identity_dict[pId]  = (pName,pUuid)
+        
     return identity_dict
 
 
@@ -90,9 +93,10 @@ def loadPlayerData(data):
         summ1   = mapId(pData['spell1Id'],'15.16.1', "summoner")
         summ2   = mapId(pData['spell2Id'],'15.16.1', "summoner")
         if pData['teamId'] == 100:
-            team = "Blueside"
+            side = "Blueside"
         else:
-            team = "Redside"
+            side = "Redside"
+        team = playerTeamCheck(playerIdentities[pID][1])
         # Extract Itemdata  
         item_dict = {}
         for n in range (0,7):
@@ -122,10 +126,10 @@ def loadPlayerData(data):
 
         player_data     = [playerIdentities[pID],champ, summ1, summ2, item_dict.values(), rune_dict.values(), \
                         cwards_bought, wards_placed, wards_destroyed, vision_score, minions_killed, \
-                        own_jng_kill, ene_jng_kill, kills, deaths, assists, damage_dealt, gold_earned, turret_dmg, team]
+                        own_jng_kill, ene_jng_kill, kills, deaths, assists, damage_dealt, gold_earned, turret_dmg, side, team]
 
         pData_dict[i] = player_data
-        
+    print (pData_dict[5])
     return pData_dict
 
             
