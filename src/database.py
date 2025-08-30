@@ -21,7 +21,7 @@ try: #TODO: Load from Config
     VALUES 
     (7493705947, '15.16', '2025-08-13', '0:33:35')"""
     cursor.execute(query)
-    connection.commit()S
+    connection.commit()
     cursor.close()
 
 except mariadb.Error as e:
