@@ -57,15 +57,15 @@ def loadMetadata(data):
 
 def loadMatchData():
     data_file = findMatchFile()
-
+    print("INFO: Loading the File: " + str(data_file))
     if os.path.isfile(data_file):
         with open(data_file) as f:
             raw = f.read()
             data=json.loads(raw)
-            
             metadata    = loadMetadata(data)
             playerdata  = loadPlayerData(data)
-            blueTeamData, redTeamData    = loadTeamData(data)
+            blueteamdata, redteamdata    = loadTeamData(data)
+            return metadata, playerdata, blueteamdata, redteamdata, data_file
 
 def loadTeamData(data):
     """
