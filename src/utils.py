@@ -1,5 +1,6 @@
 import os
-from src.globals import teamname, roster
+from src.globals import teamname, roster, patch
+from src.map import mapId
 
 def findMatchFile():
     """
@@ -28,3 +29,12 @@ def playerTeamCheck(pUuid):
     else:
         team = "Enemyteam"
     return team
+
+
+def genBanArr(bans):
+    banarr  = []
+    for i in range (0,5):
+        cId     = bans[i]['championId']
+        cName   = mapId(cId, patch, 'champion')
+        banarr.append(cName)
+    return banarr

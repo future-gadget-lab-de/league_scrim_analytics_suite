@@ -5,3 +5,4 @@ roster = ['b5574b0e-0047-53f8-8c92-e91a53ad630c', '008dbe81-2932-5d47-b25f-8d607
     #TODO: Remove karsten
     #TODO: Build this as a dictionary to support multi-roster.
         #--> How to support players swapping teams ?
+patch = "15.16.1"

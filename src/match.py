@@ -1,6 +1,6 @@
-from src.utils import findMatchFile
-from src.utils import playerTeamCheck
+from src.utils import findMatchFile, genBanArr, playerTeamCheck
 from src.map import mapId
+from src.globals import patch
 from datetime import datetime, timedelta
 import json
 import os
@@ -63,9 +63,57 @@ def loadMatchData():
             raw = f.read()
             data=json.loads(raw)
             
-            metadata = loadMetadata(data)
-            #print(metadata)
-            playerdata = loadPlayerData(data)
+            metadata    = loadMetadata(data)
+            playerdata  = loadPlayerData(data)
+            blueTeamData, redTeamData    = loadTeamData(data)
+
+def loadTeamData(data):
+    """
+    Extracts Playerdata from a given match 
+    ----------
+    Parameters
+    ----------
+        data (json):            The datafile for a given Match
+    ----------
+    Return
+    ----------
+        bData(arr):       Array for blue team data
+        rData(arr):       Array for red team data
+    ----------
+    """
+    # Create helper variable
+    tlData   = data['teams'] 
+    # Get Bans
+    bData = []
+    rData = []
+    for i in range (0,2):
+        tData  = tlData[i]
+        tmpbans = tData['bans']
+        bans    = genBanArr(tmpbans)
+        barons  = tData['baronKills']
+        dragons = tData['dragonKills']
+        teamId  = tData['teamId']
+        herald  = tData['riftHeraldKills']
+        grubs   = tData['hordeKills']
+        firstbl = tData['firstBlood']
+        firstdr = tData['firstDargon'] # Yes riot actually fucked this up...
+        firstto = tData['firstTower']
+        firstbr = tData['firstBaron']
+        if tData['win'] == "Win":
+            win = True
+        else:
+            win = False
+            
+        temparr = [bans, barons, dragons, teamId, herald, grubs, firstbl, firstdr, firstto, firstbr, win]
+        
+        if i == 0:
+            bData   = temparr
+        elif i == 1: 
+            rData   = temparr
+    return bData, rData
+
+
+
 
 def loadPlayerData(data):
     """
@@ -89,9 +137,9 @@ def loadPlayerData(data):
         pID     = pData['participantId']
         pStats  = pData['stats']
         # Extract Data from first level 
-        champ   = mapId(pData['championId'],'15.16.1', "champion")
-        summ1   = mapId(pData['spell1Id'],'15.16.1', "summoner")
-        summ2   = mapId(pData['spell2Id'],'15.16.1', "summoner")
+        champ   = mapId(pData['championId'],patch, "champion")
+        summ1   = mapId(pData['spell1Id'],patch, "summoner")
+        summ2   = mapId(pData['spell2Id'],patch, "summoner")
         if pData['teamId'] == 100:
             side = "Blueside"
         else:
@@ -101,13 +149,13 @@ def loadPlayerData(data):
         item_dict = {}
         for n in range (0,7):
             itemnr="item"+str(n)
-            item_dict[n] = mapId(pStats[itemnr],'15.16.1','item')
+            item_dict[n] = mapId(pStats[itemnr],patch,'item')
         
         # Extract Rune Data
         rune_dict = {}
         for m in range (0,6):
             runenr = "perk"+str(m)
-            rune_dict[m] = mapId(pStats[runenr], '15.16.1', 'perk')
+            rune_dict[m] = mapId(pStats[runenr], patch, 'perk')
         
         # Extract general Data
         cwards_bought   =   pStats['visionWardsBoughtInGame']
@@ -129,7 +177,6 @@ def loadPlayerData(data):
                         own_jng_kill, ene_jng_kill, kills, deaths, assists, damage_dealt, gold_earned, turret_dmg, side, team]
 
         pData_dict[i] = player_data
-    print (pData_dict[5])
     return pData_dict
 
             
