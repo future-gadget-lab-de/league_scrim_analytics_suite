@@ -46,6 +46,7 @@ def loadMetadata(data):
         date (str):             Date of the Match played in the format: yyyy-mm-dd
     ----------
     """
+
     gameid=data['gameId']
     duration=str(timedelta(seconds=int(data['gameDuration'])))
     patch=".".join(str(data['gameVersion']).split(".")[:2])
@@ -81,6 +82,7 @@ def loadTeamData(data):
         rData(arr):       Array for red team data
     ----------
     """
+
     # Create helper variable
     tlData   = data['teams'] 
     # Get Bans
@@ -128,6 +130,7 @@ def loadPlayerData(data):
         pData_dict(dict):       Dictionary that maps Number 0-9 to the Player and their data.
     ----------
     """
+    
     playerIdentities    = loadPlayerIdentities(data)
     pData_dict          = {}
 
