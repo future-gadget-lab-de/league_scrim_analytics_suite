@@ -10,8 +10,8 @@ def getMatchCount():
     ----------
         matchcount (int):          amount of matchfiles
     ----------
-
     """
+
     DIR = 'gamefiles/matchdata'
     count = len([name for name in os.listdir(DIR) if os.path.isfile(os.path.join(DIR, name))])
     return count
@@ -25,6 +25,7 @@ def findMatchFile():
         matchfile (str):          relative path for the matchfile
     ----------
     """
+    
     filename = os.listdir("gamefiles/matchdata")[0]
     matchfile = "gamefiles/matchdata/"+filename
     return matchfile
@@ -42,6 +43,7 @@ def playerTeamCheck(pUuid):
         team (str):          Known teamname or "enemyteam" as placeholder- Currently only supports ${Team_Name}
     ----------
     """
+
     if pUuid in roster:
         team = teamname
     else:
@@ -62,9 +64,12 @@ def genBanArr(bans):
         banarr (arr):          Array of Champion bans in the order they were banned by the Team
     ----------
     """
+
     banarr  = []
+
     for i in range (0,5):
         cId     = bans[i]['championId']
         cName   = mapId(cId, patch, 'champion')
         banarr.append(cName)
+
     return banarr
