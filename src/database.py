@@ -1,29 +1,32 @@
 import mariadb
 import sys
 
-try: #TODO: Load from Config
-    # connection parameters
-    conn_params = {
-        'user' : "",
-        'password' : "",
-        'host' : "",
-        'port' : 3306,
-        'database' : ""
-    }
+def insertMetadata(gameid, patch, date, duration,conn_params):
+    try:
+        # establish a connection
+        connection = mariadb.connect(**conn_params)
+        cursor = connection.cursor()
+        # query
+        basequery       = "INSERT INTO metadata (gameid, patch, date, duration) VALUES"
+        values          = gameid, patch, date, duration
+        value_string    = "(" + str(values) + ")"
+        query = basequery + value_string
+        print(query)
+        exit()
+        cursor.execute(query)
+        connection.commit()
+        cursor.close()
 
-    # establish a connection
-    connection = mariadb.connect(**conn_params)
-    cursor = connection.cursor()
-    
-    # query
+    except mariadb.Error as e:
+        print(f"Error connecting to MariaDB Platform: {e}")
+        sys.exit(1)
 
-    query = """INSERT INTO metadata (gameid, patch, date, duration) 
-    VALUES 
-    (7493705947, '15.16', '2025-08-13', '0:33:35')"""
-    cursor.execute(query)
-    connection.commit()
-    cursor.close()
-
-except mariadb.Error as e:
-    print(f"Error connecting to MariaDB Platform: {e}")
-    sys.exit(1)
+def executeQuery(query, cursor, connection):
+    try:
+        cursor.execute(query)
+        connection.commit()
+        #TODO: Log query here.
+        cursor.close()
+    except mariadb.Error as e:
+        print(f"Error connecting to MariaDB Platform: {e}")
+        sys.exit(1)

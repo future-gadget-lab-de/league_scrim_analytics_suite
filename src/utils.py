@@ -50,8 +50,8 @@ def playerTeamCheck(pUuid):
         team = "Enemyteam"
     return team
 
-
 def genBanArr(bans):
+
     """
     Takes the ban dictionary exported from the match data and makes it into an array of championnames
     ----------
@@ -73,3 +73,14 @@ def genBanArr(bans):
         banarr.append(cName)
 
     return banarr
+
+def readDatabaseConfig():
+    config_dict = {}
+    with open("config/database.conf") as file:
+        lines = [line.rstrip() for line in file]        # remove \n
+        for line in lines:
+            line        = line.replace(" ", "")         # remove whitespace
+            splitline   = line.split("=")               # split into key-value
+            config_dict[splitline[0]] = splitline[1]    # build dict 
+    return(config_dict)
+      
