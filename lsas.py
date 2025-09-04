@@ -8,7 +8,7 @@ import os, os.path
 matchcount  = getMatchCount()
 
 db_conf = readDatabaseConfig()
-insertMetadata(7493705947, '15.16', '2025-08-13', '0:33:35',db_conf)
+insertMetadata(7493735947, '15.16', '2025-08-13', '0:33:35',db_conf)
 
 #metadata, playerdata, blueteamdata, redteamdata, data_file = loadMatchData()
 
