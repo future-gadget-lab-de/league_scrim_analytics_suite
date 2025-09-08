@@ -1,6 +1,6 @@
 from src.match import loadMatchData
 from src.utils import getMatchCount, readDatabaseConfig
-from src.database import insertMetadata
+from src.database import insertMetadata, insertTeamdata
 import os, os.path
 
 
@@ -8,7 +8,14 @@ import os, os.path
 matchcount  = getMatchCount()
 
 db_conf = readDatabaseConfig()
-insertMetadata(7493735947, '15.16', '2025-08-13', '0:33:35',db_conf)
+metadata, playerdata, blueteamdata, redteamdata, data_file = loadMatchData()
+gameid = metadata[0]
+#insertMetadata(metadata,        db_conf,    gameid)
+insertTeamdata(blueteamdata,    db_conf,    gameid)
+insertTeamdata(redteamdata,     db_conf,    gameid)
+#for i in range (0,10):
+#    insertTeamdata(playerdata[i], db_conf)
+
 
 #metadata, playerdata, blueteamdata, redteamdata, data_file = loadMatchData()
 

@@ -8,26 +8,24 @@ def buildConnection(conn_params):
     cursor = connection.cursor()
     return connection, cursor
 
-def insertMetadata(gameid, patch, date, duration,conn_params):
+def insertMetadata(data ,conn_params, gameid):
     # establish a connection
     connection, cursor  = buildConnection(conn_params)
-    # Build querey
-    basequery           = "INSERT INTO metadata () VALUES"
-    values              = gameid, patch, date, duration
-    value_string        = str(values)
-    query               = basequery + " " + value_string
+    # Build query
+    query = buildQuery(data, "metadata", gameid)
+    print(query) 
+    exit()
     # Execute query
     executeQuery(query, cursor, connection)
 
-def insertTeamdata(conn_params):
+def insertTeamdata(data, conn_params, gameid):
     # establish a connection
     connection, cursor  = buildConnection(conn_params)
-    basequery           = "INSERT INTO metadata (gameid, patch, date, duration) VALUES"
-    values              = 
-    value_string        = str(values)
-    query               = basequery + " " + value_string
+    # Build query
+    query = buildQuery(data, "teamdata", gameid)
+    print(query) 
     # Execute Query
-    executeQuery(query, cursor, connection)
+    # executeQuery(query, cursor, connection)
 
 def executeQuery(query, cursor, connection):
     try:
@@ -39,8 +37,19 @@ def executeQuery(query, cursor, connection):
         print(f"Error connecting to MariaDB Platform: {e}")
         sys.exit(1)
 
-
-
-def buildQuery(method, data):
-    #TODO: Build query here.
-    return true
+def buildQuery(data, table: str, gameid):
+    prefix = "INSERT INTO "
+    match table:
+        case "metadata":
+            columns = "(gameid, patch, date duration)"
+            values  = data[0], data[1], data[2], data[3]
+        case "teamdata":
+            columns = "(gameid, teamid, ban1, ban2, ban3, ban4, ban5, \
+barons, dragons, herald, grubs, firstbl, firstdr, firstto, firstbr, win)"
+            bans    = ','.join(data[0])
+            values  = gameid, data[3], bans, data[1], data[2], data[4], data[5], data[6], data[7], data[8], data[9], data[10]
+        case "playerdata":
+            return false
+    query   = prefix + table + columns + " VALUES " + str(values) 
+    return query
+    

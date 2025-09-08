@@ -107,7 +107,7 @@ def loadTeamData(data):
             win = False
             
         temparr = [bans, barons, dragons, teamId, herald, grubs, firstbl, firstdr, firstto, firstbr, win]
-
+        
         if i == 0:
             bData   = temparr
         elif i == 1: 
