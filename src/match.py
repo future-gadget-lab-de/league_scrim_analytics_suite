@@ -61,11 +61,11 @@ def loadMatchData():
     print("INFO: Loading the File: " + str(data_file))
     if os.path.isfile(data_file):
         with open(data_file) as f:
-            raw = f.read()
-            data=json.loads(raw)
-            metadata    = loadMetadata(data)
-            playerdata  = loadPlayerData(data)
-            blueteamdata, redteamdata    = loadTeamData(data)
+            raw                             = f.read()
+            data                            = json.loads(raw)
+            metadata                        = loadMetadata(data)
+            playerdata                      = loadPlayerData(data)
+            blueteamdata, redteamdata       = loadTeamData(data)
             return metadata, playerdata, blueteamdata, redteamdata, data_file
 
 def loadTeamData(data):
@@ -84,12 +84,12 @@ def loadTeamData(data):
     """
 
     # Create helper variable
-    tlData   = data['teams'] 
+    tlData      = data['teams'] 
     # Get Bans
-    bData = []
-    rData = []
+    bData       = []
+    rData       = []
     for i in range (0,2):
-        tData  = tlData[i]
+        tData   = tlData[i]
         tmpbans = tData['bans']
         bans    = genBanArr(tmpbans)
         barons  = tData['baronKills']
@@ -107,7 +107,7 @@ def loadTeamData(data):
             win = False
             
         temparr = [bans, barons, dragons, teamId, herald, grubs, firstbl, firstdr, firstto, firstbr, win]
-        
+
         if i == 0:
             bData   = temparr
         elif i == 1: 
