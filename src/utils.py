@@ -1,4 +1,5 @@
 import os
+import pathlib
 from src.globals import teamname, roster, patch
 from src.map import mapId
 
@@ -25,8 +26,14 @@ def findMatchFile():
         matchfile (str):          relative path for the matchfile
     ----------
     """
-    
-    filename = os.listdir("gamefiles/matchdata")[0]
+    filelist = []
+    with os.scandir('gamefiles/matchdata/') as ents:
+        for e in ents:
+            if e.is_dir():
+                continue
+            else:
+                filelist.append(e.name)
+    filename=filelist[0]
     matchfile = "gamefiles/matchdata/"+filename
     return matchfile
 
@@ -84,3 +91,9 @@ def readDatabaseConfig():
             config_dict[splitline[0]] = splitline[1]    # build dict 
     return(config_dict)
       
+
+def moveFileDone(file, gameid):
+    new_file_string = "gamefiles/matchdata/done/" + str(gameid)
+    if not os.path.isdir("gamefiles/matchdata/done/"):
+        pathlib.Path("gamefiles/matchdata/done/").mkdir(parents=True, exist_ok=True)
+    os.rename(file, new_file_string)

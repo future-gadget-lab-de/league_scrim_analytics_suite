@@ -114,9 +114,6 @@ def loadTeamData(data):
             rData   = temparr
     return bData, rData
 
-
-
-
 def loadPlayerData(data):
     """
     Extracts Playerdata from a given match 
@@ -139,15 +136,13 @@ def loadPlayerData(data):
         pData   = data['participants'][i]
         pID     = pData['participantId']
         pStats  = pData['stats']
+
         # Extract Data from first level 
         champ   = mapId(pData['championId'],patch, "champion")
         summ1   = mapId(pData['spell1Id'],patch, "summoner")
         summ2   = mapId(pData['spell2Id'],patch, "summoner")
-        if pData['teamId'] == 100:
-            side = "Blueside"
-        else:
-            side = "Redside"
-        team = playerTeamCheck(playerIdentities[pID][1])
+        teamid  = pData['teamId']
+        team    = playerTeamCheck(playerIdentities[pID][1])
         # Extract Itemdata  
         item_dict = {}
         for n in range (0,7):
@@ -174,12 +169,13 @@ def loadPlayerData(data):
         damage_dealt    =   pStats['totalDamageDealtToChampions']
         gold_earned     =   pStats['goldEarned']
         turret_dmg      =   pStats['damageDealtToTurrets']
+       
 
         player_data     = [playerIdentities[pID],champ, summ1, summ2, item_dict.values(), rune_dict.values(), \
                         cwards_bought, wards_placed, wards_destroyed, vision_score, minions_killed, \
-                        own_jng_kill, ene_jng_kill, kills, deaths, assists, damage_dealt, gold_earned, turret_dmg, side, team]
-
+                        own_jng_kill, ene_jng_kill, kills, deaths, assists, damage_dealt, gold_earned, turret_dmg, teamid, team]
         pData_dict[i] = player_data
+    
     return pData_dict
 
             
