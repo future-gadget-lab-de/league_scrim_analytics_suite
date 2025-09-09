@@ -40,10 +40,10 @@ def loadMetadata(data):
     ----------
     Return
     ----------
-        idendity_dict (dict):   Dictionary of the participant ID mapping to the player name
         gameid (int):           Number that respresents a unique identifier to the Match
-        duration (str):         Duration of the match in the format: hh:mm:ss
+        patch (str):            The LoL patch number
         date (str):             Date of the Match played in the format: yyyy-mm-dd
+        duration (str):         Duration of the match in the format: hh:mm:ss
     ----------
     """
 
@@ -57,6 +57,19 @@ def loadMetadata(data):
     return gameid,patch,date,duration
 
 def loadMatchData():
+    """
+    Wrapper method for the full data extraction of the first file found.
+    ----------
+    Parameters
+    ----------
+        data (json):            The datafile for a given Match
+    ----------
+    Return
+    ----------
+        bData(arr):       Array for blue team data
+        rData(arr):       Array for red team data
+    ----------
+    """
     data_file = findMatchFile()
     print("INFO: Loading the File: " + str(data_file))
     if os.path.isfile(data_file):

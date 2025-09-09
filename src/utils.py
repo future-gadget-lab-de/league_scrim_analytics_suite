@@ -26,6 +26,7 @@ def findMatchFile():
         matchfile (str):          relative path for the matchfile
     ----------
     """
+    
     filelist = []
     with os.scandir('gamefiles/matchdata/') as ents:
         for e in ents:
