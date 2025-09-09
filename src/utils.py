@@ -82,6 +82,15 @@ def genBanArr(bans):
     return banarr
 
 def readDatabaseConfig():
+    """
+    Reads the Database config file and builds a dictionary for use in mariadb connection
+    ----------
+    Return
+    ----------
+        config_dict (dict):         Database parameters as a dictionary.
+    ----------
+    """
+
     config_dict = {}
     with open("config/database.conf") as file:
         lines = [line.rstrip() for line in file]        # remove \n
@@ -93,6 +102,16 @@ def readDatabaseConfig():
       
 
 def moveFileDone(file, gameid):
+    """
+    Moves the given file into the directory for imported files & renames it to its gameid for storing.
+    ----------
+    Parameters
+    ----------
+        file (str):             Filename with relativ path
+        gameid (int):           Number that respresents a unique identifier to the Match
+    -------
+    """
+
     new_file_string = "gamefiles/matchdata/done/" + str(gameid)
     if not os.path.isdir("gamefiles/matchdata/done/"):
         pathlib.Path("gamefiles/matchdata/done/").mkdir(parents=True, exist_ok=True)

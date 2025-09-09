@@ -35,7 +35,6 @@ def mapLink(patch: str, dataRequested: str):
 def loadDatabase(patch: str, dataRequested: str):
     """
     Saves and loads the databases determined by dataRequested.
-
     ----------
     Parameters
     ----------
