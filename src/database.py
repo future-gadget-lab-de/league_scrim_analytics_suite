@@ -3,29 +3,81 @@ import sys
 
 
 def buildConnection(conn_params):
+     """
+    Uses connection parameters to build a connection and a cursor(interface with server) to a database host
+    ----------
+    Parameters
+    ----------
+        conn_params (dict):            Dicitonary containing connection data, read from /conf/database.conf
+    ----------
+    Return
+    ----------
+        conn    (connection):       Handles the connection to a MariaDB or MySQL database server. It encapsulates a database session.
+        cur     (cursor):           Executes SQL statements and procedures, and manages fetching results.
+    ----------
+    """
+
     conn_params['port'] = int(conn_params['port']) 
-    connection = mariadb.connect(**conn_params)
-    cursor = connection.cursor()
-    return connection, cursor
+    conn = mariadb.connect(**conn_params)
+    cur = connection.cursor()
+    return conn, cur
 
 def insertData(data, conn_params, gameid, table: str):
+    """
+    Inserts data into a database & table based on the given parameters, main method to wrap the building and executing of query & conneciton
+    ----------
+    Parameters
+    ----------
+        data (array):               Array that contains all data to be inserted into the table
+        conn_params (dict):         Dicitonary containing connection data, read from /conf/database.conf
+        gameid (int):               Primary or part of the composite key for the Database tables
+        table (str):                Name of the table, used for selecting the pattern to insert.
+    ----------
+    """
+
     # establish a connection
-    connection, cursor  = buildConnection(conn_params)
+    conn, cur  = buildConnection(conn_params)
     # Build query
     query = buildQuery(data, table, gameid)
-    executeQuery(query, cursor, connection)
+    executeQuery(query, cur, conn)
     
-def executeQuery(query, cursor, connection):
+def executeQuery(query, cur, conn):
+    """
+    Executes a given query on the host defined by the connection using the cursor. Throws error on failure and exits the programm.
+    ----------
+    Parameters
+    ----------
+        query (str):                The query to be executed in string form.
+        conn    (connection):       Handles the connection to a MariaDB or MySQL database server. It encapsulates a database session.
+        cur     (cursor):           Executes SQL statements and procedures, and manages fetching results.
+    ----------
+    """
+
     try:
-        cursor.execute(query)
-        connection.commit()
+        cur.execute(query)
+        conn.commit()
         #TODO: Log query here.
-        cursor.close()
+        cur.close()
     except mariadb.Error as e:
         print(f"Error connecting to MariaDB Platform: {e}")
         sys.exit(1)
 
 def buildQuery(data, table: str, gameid):
+     """
+    Builds a query for later use from the data, key and tablename
+    ----------
+    Parameters
+    ----------
+        data (array):               Array that contains all data to be inserted into the table
+        gameid (int):               Primary or part of the composite key for the Database tables
+        table (str):                Name of the table, used for selecting the pattern to insert.
+    ----------
+    Return
+    ----------
+        query (str):                The generated query.
+    ----------
+    """
+    
     prefix = "INSERT INTO "
 
     match table:
