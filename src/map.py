@@ -1,4 +1,3 @@
-import requests
 from src.data import loadDatabase
 
 # (id, dataRequested) --> explicit_name of given id
