@@ -19,7 +19,7 @@ def buildConnection(conn_params):
 
     conn_params['port'] = int(conn_params['port']) 
     conn = mariadb.connect(**conn_params)
-    cur = connection.cursor()
+    cur = conn.cursor()
     return conn, cur
 
 def insertData(data, conn_params, gameid, table: str):
@@ -38,8 +38,14 @@ def insertData(data, conn_params, gameid, table: str):
     # establish a connection
     conn, cur  = buildConnection(conn_params)
     # Build query
-    query = buildQuery(data, table, gameid)
+    #table = ["metadata","teamdata","playerdata"]
+    #tableColums = []
+    #for i in range(3):
+    #    if not isTableCreated(table[i],cur, conn):
+    #        createTable(table[i],tableColums[i],cur,conn)
+    query = buildInsertionQuery(data, table, gameid)
     executeQuery(query, cur, conn)
+    cur.close()
     
 def executeQuery(query, cur, conn):
     """
@@ -57,12 +63,42 @@ def executeQuery(query, cur, conn):
         cur.execute(query)
         conn.commit()
         #TODO: Log query here.
-        cur.close()
     except mariadb.Error as e:
+        cur.close()
         print(f"Error connecting to MariaDB Platform: {e}")
         sys.exit(1)
 
-def buildQuery(data, table: str, gameid):
+def createTable(table: str, columns: dict, cur, conn):
+    try:
+        Query = "CREATE TABLE " + table + " (" 
+        for key, value in columns.items():
+            Query += key + " " + value + ","
+        Query[-1] = ")"
+        Query += ";"
+        cur.execute(Query)
+        conn.commit()
+    except mariadb.Error as e:
+        cur.close()
+        print(f"Error connecting to MariaDB Platform: {e}")
+        sys.exit(1)
+
+def isTableCreated(table: str, cur, conn):
+    try: 
+        cur.execute("SHOW TABLES LIKE \""+table+"\";")
+        conn.commit()
+        isTable = cur.fetchone()
+
+        if isTable is None:
+            return False
+
+        return True
+
+    except mariadb.Error as e:
+        cur.close()
+        print(f"Error connecting to MariaDB Platform: {e}")
+        sys.exit(1)
+
+def buildInsertionQuery(data, table: str, gameid):
     """
     Builds a query for later use from the data, key and tablename
     ----------
@@ -104,7 +140,8 @@ def buildQuery(data, table: str, gameid):
             runes   = str(tuple(data[5])).strip("()")
             values  = gameid, pid, data[19], data[1], data[2], data[3], items, runes, data[6], data[7], data[8], data[9], data[10],\
                         data[11], data[12], data[13], data[14], data[15], data[16], data[17], data[18], data[20]
-    query   = prefix + table + columns + " VALUES " + str(values).replace("\"", "")
+    query   = prefix + table + " " + columns + " VALUES " + str(values).replace("\"", "") + ";"
+    print(query)
     return query
     
 
