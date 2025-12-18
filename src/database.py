@@ -3,7 +3,7 @@ import sys
 
 
 def buildConnection(conn_params):
-     """
+    """
     Uses connection parameters to build a connection and a cursor(interface with server) to a database host
     ----------
     Parameters
