@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: sql572.your-server.de
--- Generation Time: Dec 18, 2025 at 09:12 PM
+-- Generation Time: Dec 18, 2025 at 09:34 PM
 -- Server version: 10.11.14-MariaDB-0+deb12u2
 -- PHP Version: 8.5.0
 
@@ -96,6 +96,7 @@ CREATE TABLE `teamdata` (
   `grubs` int(11) NOT NULL,
   `firstbl` tinyint(1) NOT NULL,
   `firstto` tinyint(1) NOT NULL,
+  `firstdr` tinyint(1) NOT NULL,
   `firstbr` tinyint(1) NOT NULL,
   `win` tinyint(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

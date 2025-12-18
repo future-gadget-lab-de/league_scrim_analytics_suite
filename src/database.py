@@ -124,8 +124,7 @@ def buildInsertionQuery(data, table: str, gameid):
         case "teamdata":
             columns =   ("(gameid, teamid, ban1, ban2, ban3, ban4, ban5, barons,"
                         "dragons, herald, grubs, firstbl, firstdr, firstto, firstbr, win)")
-            bans    = ','.join(data[0])
-            values  = gameid, data[3], bans, data[1], data[2], data[4], data[5], data[6], data[7], data[8], data[9], data[10]
+            values  = gameid, data[3], data[0][0], data[0][1], data[0][2], data[0][3], data[0][4], data[1], data[2], data[4], data[5], data[6], data[7], data[8], data[9], data[10]
 
         case "playerdata":
             columns =   ("(gameid, playerid, teamid, champ, summ1, summ2, item1, item2, item3, item4,"
@@ -133,7 +132,7 @@ def buildInsertionQuery(data, table: str, gameid):
                         "wards_placed, wards_destroyed, vision_score, minions_killed, own_jng_kill,"
                         "ene_jng_kill, kills, deaths, assists, damage_dealt, gold_earned, turret_dmg, team)")
 
-            pid     = data[0][1]
+            pid     = data[0][0]
             # Converts the values of a Dictionary into Tuples, then into a string 
             #   and finally strips the brackets away
             items   = str(tuple(data[4])).strip("()").replace("\"", "") # For some reason items adds a \ before " if we don't filter them out now...

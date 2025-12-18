@@ -26,13 +26,13 @@ def mapId(id: int, patch: str, dataRequested: str):
 
         for name in data_dict:
             if data_dict[name]['key'] == str(id):
-                return data_dict[name]['name']
+                return data_dict[name]['name'].replace("'","")
 
     if dataRequested == 'item':
         Items_dict = data_dict['data']
         if id == 0:
             return "No Item"
-        return Items_dict[str(id)]['name']
+        return Items_dict[str(id)]['name'].replace("'","")
 
     if dataRequested == 'perk':
         #Precision (8000), Domination (8100),  Sorcery (8200), Inspiration (8300), Resolve (8400)
