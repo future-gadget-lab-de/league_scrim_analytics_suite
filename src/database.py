@@ -118,7 +118,7 @@ def buildInsertionQuery(data, table: str, gameid):
 
     match table:
         case "metadata":
-            columns = "(gameid, patch, date duration)"
+            columns = "(gameid, patch, date, duration)"
             values  = data[0], data[1], data[2], data[3]
 
         case "teamdata":
