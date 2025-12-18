@@ -63,7 +63,7 @@ def executeQuery(query, cur, conn):
         sys.exit(1)
 
 def buildQuery(data, table: str, gameid):
-     """
+    """
     Builds a query for later use from the data, key and tablename
     ----------
     Parameters
