@@ -2,7 +2,7 @@ from src.match import loadMatchData
 from src.utils import getMatchCount, readDatabaseConfig, moveFileDone
 from src.database import insertData
 import os, os.path
-S
+
 
 
 
