@@ -17,13 +17,17 @@ def getMatchCount():
     count = len([name for name in os.listdir(DIR) if os.path.isfile(os.path.join(DIR, name))])
     return count
 
-def findFile(path = 'gamefiles/matchdata/'):
+def findFile(path: str = 'gamefiles/matchdata/'):
     """
     Finds the first file in the folder given by path.
     ----------
+    Parameters
+    ----------
+        path (str):               the relative path, to a folder
+    ----------
     Return
     ----------
-        matchfile (str):          relative path for the matchfile
+        matchfile (str):          relative path for the file
     ----------
     """
     
