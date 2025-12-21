@@ -75,10 +75,14 @@ def genBanArr(bans):
 
     banarr  = []
 
-    for i in range (0,5):
-        cId     = bans[i]['championId']
-        cName   = mapId(cId, patch, 'champion')
-        banarr.append(cName)
+    try:
+        for i in range (0,5):
+            cId     = bans[i]['championId']
+            cName   = mapId(cId, patch, 'champion')
+            banarr.append(cName)
+    except:
+        print("ERROR: The bans aren't proper in the given matchfile.")
+        exit(0)
 
     return banarr
 
