@@ -90,7 +90,7 @@ def genBanArr(bans):
 
     return banarr
 
-def readDatabaseConfig():
+def loadDatabaseConfig():
     """
     Reads the Database config file and builds a dictionary for use in mariadb connection
     ----------
