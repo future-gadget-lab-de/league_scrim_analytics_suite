@@ -70,7 +70,7 @@ def loadMatchData():
         rData(arr):       Array for red team data
     ----------
     """
-    data_file = findMatchFile()
+    data_file = findFile()
     print("INFO: Loading the File: " + str(data_file))
     if os.path.isfile(data_file):
         with open(data_file) as f:

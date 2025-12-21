@@ -17,9 +17,9 @@ def getMatchCount():
     count = len([name for name in os.listdir(DIR) if os.path.isfile(os.path.join(DIR, name))])
     return count
 
-def findMatchFile():
+def findFile(path = 'gamefiles/matchdata/'):
     """
-    Finds the first file in the gamefiles/matchdata folder.
+    Finds the first file in the folder given by path.
     ----------
     Return
     ----------
@@ -28,7 +28,7 @@ def findMatchFile():
     """
     
     filelist = []
-    with os.scandir('gamefiles/matchdata/') as ents:
+    with os.scandir(path) as ents:
         for e in ents:
             if e.is_dir() or "invalid" in e.name:
                 continue
