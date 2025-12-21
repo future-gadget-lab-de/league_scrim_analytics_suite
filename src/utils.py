@@ -1,6 +1,6 @@
 import os
 import pathlib
-from src.globals import teamname, roster, patch
+from src.globals import k_teamname, k_roster, k_patch, k_matchdirectory
 from src.map import mapId
 
 def getMatchCount():
@@ -17,7 +17,7 @@ def getMatchCount():
     count = len([name for name in os.listdir(DIR) if os.path.isfile(os.path.join(DIR, name))])
     return count
 
-def findFile(path: str = 'gamefiles/matchdata/'):
+def findFile(path: str = k_matchdirectory):
     """
     Finds the first file in the folder given by path.
     ----------
@@ -39,7 +39,7 @@ def findFile(path: str = 'gamefiles/matchdata/'):
             else:
                 filelist.append(e.name)
     filename=filelist[0]
-    matchfile = "gamefiles/matchdata/"+filename
+    matchfile = path + filename
     return matchfile
 
 def playerTeamCheck(pUuid):
@@ -56,8 +56,8 @@ def playerTeamCheck(pUuid):
     ----------
     """
 
-    if pUuid in roster:
-        team = teamname
+    if pUuid in k_roster:
+        team = k_teamname
     else:
         team = "Enemyteam"
     return team
@@ -82,7 +82,7 @@ def genBanArr(bans):
     try:
         for i in range (0,5):
             cId     = bans[i]['championId']
-            cName   = mapId(cId, patch, 'champion')
+            cName   = mapId(cId, k_patch, 'champion')
             banarr.append(cName)
     except:
         print("ERROR: The bans aren't proper in the given matchfile.")
