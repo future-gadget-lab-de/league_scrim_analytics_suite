@@ -30,7 +30,7 @@ def findMatchFile():
     filelist = []
     with os.scandir('gamefiles/matchdata/') as ents:
         for e in ents:
-            if e.is_dir():
+            if e.is_dir() or "invalid" in e:
                 continue
             else:
                 filelist.append(e.name)
