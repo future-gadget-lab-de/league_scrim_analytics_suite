@@ -32,6 +32,7 @@ def databaseSetup():
 
 def runFrontend() -> None:
     app = QApplication(sys.argv)
+    # basically will "starten" execute the passed function
     window = SimpleFrontend(databaseSetup)
     window.show()
     sys.exit(app.exec())
