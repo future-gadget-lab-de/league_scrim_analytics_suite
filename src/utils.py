@@ -1,6 +1,6 @@
 import os
 import pathlib
-from src.globals import teamname, roster, patch
+from src.globals import k_teamname, k_roster, k_patch, k_matchdirectory
 from src.map import mapId
 
 def getMatchCount():
@@ -17,25 +17,29 @@ def getMatchCount():
     count = len([name for name in os.listdir(DIR) if os.path.isfile(os.path.join(DIR, name))])
     return count
 
-def findMatchFile():
+def findFile(path: str = k_matchdirectory):
     """
-    Finds the first file in the gamefiles/matchdata folder.
+    Finds the first file in the folder given by path.
+    ----------
+    Parameters
+    ----------
+        path (str):               the relative path, to a folder
     ----------
     Return
     ----------
-        matchfile (str):          relative path for the matchfile
+        matchfile (str):          relative path for the file
     ----------
     """
     
     filelist = []
-    with os.scandir('gamefiles/matchdata/') as ents:
+    with os.scandir(path) as ents:
         for e in ents:
-            if e.is_dir():
+            if e.is_dir() or "invalid" in e.name:
                 continue
             else:
                 filelist.append(e.name)
     filename=filelist[0]
-    matchfile = "gamefiles/matchdata/"+filename
+    matchfile = path + filename
     return matchfile
 
 def playerTeamCheck(pUuid):
@@ -52,8 +56,8 @@ def playerTeamCheck(pUuid):
     ----------
     """
 
-    if pUuid in roster:
-        team = teamname
+    if pUuid in k_roster:
+        team = k_teamname
     else:
         team = "Enemyteam"
     return team
@@ -75,14 +79,18 @@ def genBanArr(bans):
 
     banarr  = []
 
-    for i in range (0,5):
-        cId     = bans[i]['championId']
-        cName   = mapId(cId, patch, 'champion')
-        banarr.append(cName)
+    try:
+        for i in range (0,5):
+            cId     = bans[i]['championId']
+            cName   = mapId(cId, k_patch, 'champion')
+            banarr.append(cName)
+    except:
+        print("ERROR: The bans aren't proper in the given matchfile.")
+        exit(0)
 
     return banarr
 
-def readDatabaseConfig():
+def loadDatabaseConfig():
     """
     Reads the Database config file and builds a dictionary for use in mariadb connection
     ----------

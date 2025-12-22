@@ -1,6 +1,6 @@
-from src.utils import findMatchFile, genBanArr, playerTeamCheck
+from src.utils import findFile, genBanArr, playerTeamCheck
 from src.map import mapId
-from src.globals import patch
+from src.globals import k_patch
 from datetime import datetime, timedelta
 import json
 import os
@@ -24,7 +24,7 @@ def loadPlayerIdentities(data):
         pIdenData           = data['participantIdentities'][i] 
         pId                 = pIdenData['participantId']
         pName               = pIdenData['player']['gameName']
-        pUuid               =  pIdenData['player']['puuid']
+        pUuid               = pIdenData['player']['puuid']
         identity_dict[pId]  = (pName,pUuid)
         
     return identity_dict
@@ -70,7 +70,7 @@ def loadMatchData():
         rData(arr):       Array for red team data
     ----------
     """
-    data_file = findMatchFile()
+    data_file = findFile()
     print("INFO: Loading the File: " + str(data_file))
     if os.path.isfile(data_file):
         with open(data_file) as f:
@@ -151,22 +151,22 @@ def loadPlayerData(data):
         pStats  = pData['stats']
 
         # Extract Data from first level 
-        champ   = mapId(pData['championId'],patch, "champion")
-        summ1   = mapId(pData['spell1Id'],patch, "summoner")
-        summ2   = mapId(pData['spell2Id'],patch, "summoner")
+        champ   = mapId(pData['championId'],k_patch, "champion")
+        summ1   = mapId(pData['spell1Id'],k_patch, "summoner")
+        summ2   = mapId(pData['spell2Id'],k_patch, "summoner")
         teamid  = pData['teamId']
         team    = playerTeamCheck(playerIdentities[pID][1])
         # Extract Itemdata  
         item_dict = {}
         for n in range (0,7):
             itemnr="item"+str(n)
-            item_dict[n] = mapId(pStats[itemnr],patch,'item')
+            item_dict[n] = mapId(pStats[itemnr],k_patch,'item')
         
         # Extract Rune Data
         rune_dict = {}
         for m in range (0,6):
             runenr = "perk"+str(m)
-            rune_dict[m] = mapId(pStats[runenr], patch, 'perk')
+            rune_dict[m] = mapId(pStats[runenr], k_patch, 'perk')
         
         # Extract general Data
         cwards_bought   =   pStats['visionWardsBoughtInGame']
