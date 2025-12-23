@@ -1,5 +1,5 @@
 from src.match import loadMatchData
-from src.utils import getMatchCount, loadDatabaseConfig, moveFileDone
+from src.utils import getMatchCount, loadDatabaseConfig, moveFile
 from src.database import insertData
 from src.frontend.simplefrontend import SimpleFrontend
 from PySide6.QtWidgets import QApplication
@@ -27,7 +27,7 @@ def databaseSetup():
         print("INFO: Inserted Game: " + str(gameid))
 
         # removing successful imported files
-        moveFileDone(data_file, gameid)
+        moveFile(data_file, "gamefiles/matchdata/done/"+str(gameid))
         print("INFO: Moved Gamefile: " + str(gameid))
 
 def runFrontend() -> None:

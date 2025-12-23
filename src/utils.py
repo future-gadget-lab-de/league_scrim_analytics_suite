@@ -109,19 +109,21 @@ def loadDatabaseConfig():
             config_dict[splitline[0]] = splitline[1]    # build dict 
     return(config_dict)
       
-
-def moveFileDone(file, gameid):
+def moveFile(file, dest: str) -> None:
     """
-    Moves the given file into the directory for imported files & renames it to its gameid for storing.
+    Moves a file, to the provided destination
     ----------
     Parameters
     ----------
-        file (str):             Filename with relativ path
-        gameid (int):           Number that respresents a unique identifier to the Match
-    -------
+        file:                   the file, which is to move
+        dest (str):             the destination as a relative path (containing the new name)
+    ----------
     """
+    path_hierarchy = dest.split("/")
+    rel_path_to_folder = dest.removesuffix(path_hierarchy[-1])
+    
+    if not os.path.isdir(rel_path_to_folder):
+        pathlib.Path(rel_path_to_folder).mkdir(parents=True, exist_ok=True)
 
-    new_file_string = "gamefiles/matchdata/done/" + str(gameid)
-    if not os.path.isdir("gamefiles/matchdata/done/"):
-        pathlib.Path("gamefiles/matchdata/done/").mkdir(parents=True, exist_ok=True)
-    os.rename(file, new_file_string)
+    os.rename(file, dest)
+
