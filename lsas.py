@@ -1,34 +1,35 @@
 from src.match import loadMatchData
-from src.utils import getMatchCount, loadDatabaseConfig, moveFile
-from src.database import insertData
-from src.frontend.simplefrontend import SimpleFrontend
+from src.utils import loadDatabaseConfig, moveFile, list_relative_filepaths
+from src.database.queries import returnInsertQuery, returnMatchfileInsert
+from src.database.execution import executeQuery
+from src.database.sqltemplates.template import importSQLQueries
+from src.visuals.simplefrontend import SimpleFrontend
 from PySide6.QtWidgets import QApplication
 import os, os.path, sys
 
 def databaseSetup():
     # Check how many Matchfiles exist
-    matchcount  = getMatchCount()
     db_conf = loadDatabaseConfig()
+    delete_queries = importSQLQueries("src/database/sqltemplates/db_delete_alldata.sql")
+    create_queries = importSQLQueries("src/database/sqltemplates/db_creation_dump.sql")
 
-    for i in range (0, matchcount):
-        metadata, playerdata, blueteamdata, redteamdata, data_file = loadMatchData()
-        gameid = metadata[0]
-        
-        # insertion of metadata
-        insertData(metadata, db_conf, gameid, "metadata")
+    matchfiles = list_relative_filepaths("gamefiles/matchdata")
 
-        # insertion of teamdata
-        insertData(blueteamdata, db_conf, gameid, "teamdata")
-        insertData(redteamdata, db_conf, gameid, "teamdata")
+    print(matchfiles)
 
-        # insertion of playerdata
-        for i in range(0,10):
-            insertData(playerdata[i], db_conf, gameid, "playerdata")
-        print("INFO: Inserted Game: " + str(gameid))
+    matchfile_queries = dict()
 
-        # removing successful imported files
-        moveFile(data_file, "gamefiles/matchdata/done/"+str(gameid))
-        print("INFO: Moved Gamefile: " + str(gameid))
+    for match in matchfiles:
+        matchfile_queries[match] = returnMatchfileInsert("gamefiles/matchdata/"+match)
+    
+    QUERIES = delete_queries
+    QUERIES = matchfile_queries[matchfiles[1]]
+
+    #print(QUERIES)
+
+    for query in QUERIES:
+        print(query)
+        executeQuery(query, db_conf)
 
 def runFrontend() -> None:
     app = QApplication(sys.argv)
@@ -38,5 +39,6 @@ def runFrontend() -> None:
     sys.exit(app.exec())
 
 if __name__ == "__main__":
-    runFrontend()
+    databaseSetup()
+    #runFrontend()
 

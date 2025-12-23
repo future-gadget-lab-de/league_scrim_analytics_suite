@@ -3,21 +3,7 @@ import pathlib
 from src.globals import k_teamname, k_roster, k_patch, k_matchdirectory
 from src.map import mapId
 
-def getMatchCount():
-    """
-    Gives the Number of files found in the matchfile directory
-    ----------
-    Return
-    ----------
-        matchcount (int):          amount of matchfiles
-    ----------
-    """
-
-    DIR = 'gamefiles/matchdata'
-    count = len([name for name in os.listdir(DIR) if os.path.isfile(os.path.join(DIR, name))])
-    return count
-
-def findFile(path: str = k_matchdirectory):
+def findFile(path: str):
     """
     Finds the first file in the folder given by path.
     ----------
@@ -90,6 +76,7 @@ def genBanArr(bans):
 
     return banarr
 
+
 def loadDatabaseConfig():
     """
     Reads the Database config file and builds a dictionary for use in mariadb connection
@@ -100,15 +87,26 @@ def loadDatabaseConfig():
     ----------
     """
 
-    config_dict = {}
-    with open("config/database.conf") as file:
-        lines = [line.rstrip() for line in file]        # remove \n
-        for line in lines:
-            line        = line.replace(" ", "")         # remove whitespace
-            splitline   = line.split("=")               # split into key-value
-            config_dict[splitline[0]] = splitline[1]    # build dict 
-    return(config_dict)
-      
+    config = dict()
+    config_by_line = readFileByLine("config/database.conf")    
+    
+    for line in config_by_line:
+        setting = line.replace(" ", "").split("=")   # remove whitespace and split
+        config[setting[0]] = setting[1]    # build dict 
+    return config
+    
+def readFileByLine(relPathToFile) -> list[str]:
+    """
+    read a file as an array of string lines
+    """
+    try:    
+        with open(relPathToFile) as file:
+            lines = [line.rstrip() for line in file]  # remove \n
+            return lines
+    except:
+        print("ERROR: fileread not successful")
+        exit(1)
+
 def moveFile(file, dest: str) -> None:
     """
     Moves a file, to the provided destination
@@ -127,3 +125,33 @@ def moveFile(file, dest: str) -> None:
 
     os.rename(file, dest)
 
+
+def list_relative_filepaths(path: str) -> list[str]:
+    """
+    Collects all files in a directory tree and returns their paths relative to the given base path.
+    ----------
+    Parameters
+    ----------
+        path (str):                 The base directory to scan (relative path only).
+    ----------
+    Return
+    ----------
+        filepaths (list[str]):      List of file paths relative to the provided base directory.
+    ----------
+    """
+    if os.path.isabs(path):
+        raise ValueError("Path must be relative")
+
+    base_path = os.path.abspath(path)
+
+    if not os.path.isdir(base_path):
+        return []
+
+    filepaths: list[str] = []
+    for root, _, files in os.walk(base_path):
+        for filename in files:
+            absolute_path = os.path.join(root, filename)
+            relative_path = os.path.relpath(absolute_path, start=base_path)
+            filepaths.append(relative_path)
+
+    return filepaths
