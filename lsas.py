@@ -1,6 +1,5 @@
-from src.match import loadMatchData
 from src.utils import loadDatabaseConfig, moveFile, list_relative_filepaths
-from src.database.queries import returnInsertQuery, returnMatchfileInsert
+from src.database.queries import returnInsertQuery, returnMatchfileQuery
 from src.database.execution import executeQuery
 from src.database.sqltemplates.template import importSQLQueries
 from src.visuals.simplefrontend import SimpleFrontend
@@ -20,7 +19,7 @@ def databaseSetup():
     matchfile_queries = dict()
 
     for match in matchfiles:
-        matchfile_queries[match] = returnMatchfileInsert("gamefiles/matchdata/"+match)
+        matchfile_queries[match] = returnMatchfileQuery("gamefiles/matchdata/"+match)
     
     QUERIES = delete_queries
     QUERIES = matchfile_queries[matchfiles[1]]

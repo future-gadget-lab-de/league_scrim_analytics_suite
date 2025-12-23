@@ -19,7 +19,7 @@ def returnInsertQuery(table: str, data: dict) -> str:
 
     return query
 
-def returnMatchfileInsert(relPathtoFile)-> list[str]:
+def returnMatchfileQuery(relPathtoFile)-> list[str]:
     metadata, playerdata, blueteamdata, redteamdata, data_file = loadMatchData(relPathtoFile)
 
     queries = list()
