@@ -20,7 +20,7 @@ def buildConnection(conn_params):
     cur = conn.cursor()
     return conn, cur
 
-
+# Ich glaube hier muss eine Unterscheidung für Select und Insert queries gemacht werden.
 def executeQuery(query, conn_params):
     conn, cur  = buildConnection(conn_params)
 

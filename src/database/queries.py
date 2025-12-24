@@ -31,3 +31,14 @@ def returnMatchfileQuery(relPathtoFile)-> list[str]:
     queries.append(returnInsertQuery("teamdata",redteamdata))
 
     return queries
+
+def returnSelectQuery(table: str, columns: list ) -> str:
+    query = "SELECT" 
+
+    for col in columns:
+        query += str(col) + ","
+
+    query = query.removesuffix(",")
+    query += "FROM" + table + ";"
+    return query
+
