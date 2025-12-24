@@ -2,7 +2,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 # (id, dataRequested) --> explicit_name of given id
-def mapId(id: int, dataRequested: str):
+def mapId(id: int, dataRequested: str, patch: str | None = None):
     """
     Maps the given id, to the corresponding name ingame.
 
@@ -21,7 +21,7 @@ def mapId(id: int, dataRequested: str):
     """
     from src.scraping.data import loadDatabase
 
-    data_dict = loadDatabase(dataRequested)
+    data_dict = loadDatabase(dataRequested, patch=patch)
 
     logger.debug("Mapped the id %s to its corresponding %s equivalent.", str(id), dataRequested)
 

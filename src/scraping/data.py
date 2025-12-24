@@ -25,7 +25,7 @@ def scrapeRecentPatch() -> str:
 
     return data_dict["v"]
 
-def returnScrapeLink(dataRequested: str) -> str:
+def returnScrapeLink(dataRequested: str, patch: str | None = None) -> str:
     """
     Generates an API Link for ddragon, by giving the type of data requested
 
@@ -33,14 +33,18 @@ def returnScrapeLink(dataRequested: str) -> str:
     ----------
     dataRequested : str
         Determines the dataBase, which the function will downstream.
-        Currently supported: "summoner", "perk", "champion", "item", "patch"
+        Currently supported: "summoner", "perk", "champion", "item"
+    patch : str
+        optional argument - specifies a custom patch
 
     Returns
     -------
     link : str
         The link according to the wanted type of data
     """
-    patch = scrapeRecentPatch()
+    if patch is None:
+        patch = scrapeRecentPatch()
+
     link = 'https://ddragon.leagueoflegends.com/cdn/' + patch + '/data/en_US/'
 
     # dataRequested -> suffix
@@ -55,7 +59,7 @@ def returnScrapeLink(dataRequested: str) -> str:
 
     return link
 
-def loadDatabase(dataRequested: str) -> dict:
+def loadDatabase(dataRequested: str, patch: str | None = None) -> dict:
     """
     Saves and loads the databases determined by dataRequested.
     
@@ -63,14 +67,18 @@ def loadDatabase(dataRequested: str) -> dict:
     ----------
     dataRequested : str 
         Determines the dataBase, which the function will downstream.
-        Currently supported: "summoner", "perk", "champion", "item", "patch"
+        Currently supported: "summoner", "perk", "champion", "item",
+    patch : str
+        optional argument - specifies a patch
 
     Returns
     -------
     data_dict : dict
         The Dictionary, which has the wanted lol data
     """
-    patch = scrapeRecentPatch()
+    if patch is None:
+        patch = scrapeRecentPatch()
+        
     data_file_path = f"src/scraping/dictionaries/{dataRequested}_{patch}.json"
     logging.debug("Reload of the %s data.",dataRequested)
 
