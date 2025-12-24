@@ -1,25 +1,22 @@
 import logging
 logger = logging.getLogger(__name__)
 
-import os
-import pathlib
-import json
-import requests
-from src.globals import k_teamname, k_roster
-from src.map import mapId
+import os, pathlib, json, requests
 
-def findFile(path: str):
+def findFile(path: str) -> str:
     """
     Finds the first file in the folder given by path.
-    ----------
+   
     Parameters
     ----------
-        path (str):               the relative path, to a folder
-    ----------
-    Return
-    ----------
-        matchfile (str):          relative path for the file
-    ----------
+    path : str               
+        the relative path, to a folder
+
+    Returns
+    -------
+    matchfile : str          
+        relative path for the file
+
     """
     
     filelist = []
@@ -33,60 +30,21 @@ def findFile(path: str):
     matchfile = path + filename
     return matchfile
 
-def playerTeamCheck(pUuid):
-    """
-    Uses a Players identifier to check if he's on a known Team.
-    ----------
-    Parameters
-    ----------
-        pUuid (int):         The Players unique identifier ID
-    ----------
-    Return
-    ----------
-        team (str):          Known teamname or "enemyteam" as placeholder- Currently only supports ${Team_Name}
-    ----------
-    """
-    #TODO: WIP Querying the DB for teams so we don't use a globals file + easy support for multi-team
-    #query = queries.returnSelectQuery(teams, [TeamName, PlayerID])
-    #conn_params = loadDatabaseConfig()
-    #executeQuery(query, conn_params)
-    if pUuid in k_roster:
-        team = k_teamname
-    else:
-        team = "Random" #Enemy nicht zwangsläufig korrekt, wenn wir Daten anderer Teams betrachten.
-    return team
-
-def genBanArr(bans):
-
-    """
-    Takes the ban dictionary exported from the match data and makes it into an array of championnames
-    ----------
-    Parameters
-    ----------
-        bans (dict):         Dictionary mapping the ban order and champ ID together
-    ----------
-    Return
-    ----------
-        banarr (arr):          Array of Champion bans in the order they were banned by the Team
-    ----------
-    """
-
-    banarr  = []
-
-    try:
-        for i in range (0,5):
-            cId     = bans[i]['championId']
-            cName   = mapId(cId, 'champion')
-            banarr.append(cName)
-    except:
-        print("ERROR: The bans aren't proper in the given matchfile.")
-        exit(0)
-
-    return banarr
     
 def readFileByLine(relPathToFile) -> list[str]:
     """
     read a file as an array of string lines
+
+    Parameters
+    ----------
+    relPathToFile : str
+        the relative path to a file, which is to be read
+
+    Returns
+    -------
+    lines : list[str]
+        a list, containing each line per entry in the list    
+    
     """
     try:    
         with open(relPathToFile) as file:
@@ -99,12 +57,14 @@ def readFileByLine(relPathToFile) -> list[str]:
 def moveFile(file, dest: str) -> None:
     """
     Moves a file, to the provided destination
-    ----------
+    
     Parameters
     ----------
-        file:                   the file, which is to move
-        dest (str):             the destination as a relative path (containing the new name)
-    ----------
+    file : str                  
+        the filename, which is to move
+    dest : str             
+        the destination as a relative path (containing the new name)
+    
     """
     path_hierarchy = dest.split("/")
     rel_path_to_folder = dest.removesuffix(path_hierarchy[-1])
@@ -118,15 +78,17 @@ def moveFile(file, dest: str) -> None:
 def list_relative_filepaths(path: str) -> list[str]:
     """
     Collects all files in a directory tree and returns their paths relative to the given base path.
-    ----------
+
     Parameters
     ----------
-        path (str):                 The base directory to scan (relative path only).
-    ----------
-    Return
-    ----------
-        filepaths (list[str]):      List of file paths relative to the provided base directory.
-    ----------
+    path : str                 
+        The base directory to scan (relative path only).
+    
+    Returns
+    -------
+    filepaths : list[str]      
+        List of file paths relative to the provided base directory.
+
     """
     if os.path.isabs(path):
         raise ValueError("Path must be relative")

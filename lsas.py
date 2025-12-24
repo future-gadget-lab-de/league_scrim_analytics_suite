@@ -29,6 +29,7 @@ def databaseSetup():
         executeQuery(matchfile_queries[matchfiles[0]], conn, cur)
 
     finally: 
+        logger.info("Connection to MariaDB Server closed")
         cur.close()
 
 def runFrontend() -> None:

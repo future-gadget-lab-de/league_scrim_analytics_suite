@@ -6,18 +6,18 @@ def mapId(id: int, dataRequested: str):
     """
     Maps the given id, to the corresponding name ingame.
 
-    ----------
     Parameters
     ----------
-        id (int):            An integer, which identifies a specific name.
-        patch (str):         The LoL patch number, the data will be based on.
-        dataRequested (str): Determines the dataBase, which the function will downstream.
-                             Currently supported: "summoner", "perk", "champion", "item"
-    ----------
-    Return
-    ----------
-        name (str):          The name, which corresponds to the id
-    ----------
+    id : int
+        An integer, which identifies a specific name.
+    dataRequested : str 
+        Determines the dataBase, which the function will downstream.
+        Currently supported: "summoner", "perk", "champion", "item"
+    
+    Returns
+    -------
+    name : str
+        The name, which corresponds to the id
     """
     from src.scraping.data import loadDatabase
 

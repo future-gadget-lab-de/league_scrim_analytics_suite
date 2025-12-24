@@ -1,25 +1,64 @@
 import logging
 logger = logging.getLogger(__name__)
 
-from src.utils import findFile, genBanArr, playerTeamCheck
-from src.map import mapId
+import json, os
 from datetime import datetime, timedelta
-import json
-import os
 
-def loadMatchData(relPath = None):
+from src.core.map import mapId
+from src.core.team import playerTeamCheck
+
+from src.utils import findFile
+
+def genBanArr(bans: dict) -> list:
+
     """
-    Wrapper method for the full data extraction of the first file found.
-    ----------
+    Takes the ban dictionary exported from the match data and makes it into an array of championnames
+
     Parameters
     ----------
-        data (json):            The datafile for a given Match
+    bans : dict
+        Dictionary mapping the ban order and champ ID together
+
+    Returns
+    -------
+    banarr : list
+        Array of Champion bans in the order they were banned by the Team
+    """
+
+    banarr  = []
+
+    try:
+        for i in range (0,5):
+            cId     = bans[i]['championId']
+            cName   = mapId(cId, 'champion')
+            banarr.append(cName)
+    except:
+        print("ERROR: The bans aren't proper in the given matchfile.")
+        exit(0)
+
+    return banarr
+
+def loadMatchData(relPath: str | None = None):
+    """
+    Wrapper method for the full data extraction of the first file found.
+    
+    Parameters
     ----------
-    Return
-    ----------
-        bData(arr):       Array for blue team data
-        rData(arr):       Array for red team data
-    ----------
+    relPath : str | None
+        The datafile for a given Match
+    
+    Returns
+    -------
+    metadata : dict       
+        Dictionary which maps all features to their values
+    playerdata : dict
+        Dictionary which maps all features to their values
+    blueteamdata : dict
+        Dictionary which maps all features to their values
+    redteamdata : dict
+        Dictionary which maps all features to their values
+    data_file : str
+        the filename of the read file
     """
     data_file = findFile("gamefiles/matchdata/")
     if relPath is not None:
@@ -38,18 +77,25 @@ def loadMatchData(relPath = None):
 def loadMetadata(data) -> dict:
     """
     Extracts the GameID, Patchversion, duration and date of a given Match 
-    ----------
+    
     Parameters
     ----------
-        data (json):            The datafile for a given Match
-    ----------
-    Return
-    ----------
-        gameid (int):           Number that respresents a unique identifier to the Match
-        patch (str):            The LoL patch number
-        date (str):             Date of the Match played in the format: yyyy-mm-dd
-        duration (str):         Duration of the match in the format: hh:mm:ss
-    ----------
+    data : dict
+        The datafile for a given Match
+    
+    Returns
+    -------
+    metadata : dict
+    With the content:
+        gameid : int          
+            Number that respresents a unique identifier to the Match
+        patch : str            
+            The LoL patch number
+        date : str             
+            Date of the Match played in the format: yyyy-mm-dd
+        duration : str
+            Duration of the match in the format: hh:mm:ss
+
     """
     metadata = dict()
 
@@ -64,16 +110,19 @@ def loadMetadata(data) -> dict:
 def loadTeamData(data) -> dict:
     """
     Extracts Playerdata from a given match 
-    ----------
+
     Parameters
     ----------
-        data (json):            The datafile for a given Match
-    ----------
-    Return
-    ----------
-        bData(arr):       Array for blue team data
-        rData(arr):       Array for red team data
-    ----------
+    data : dict            
+        The datafile for a given Match
+
+    Returns
+    -------
+    teamdata_blue : dict      
+        Dict for blue team data
+    teamdata_red : dict      
+        Dict for red team data
+
     """
     teamdata = dict()
 
@@ -116,16 +165,18 @@ def loadTeamData(data) -> dict:
 def loadPlayerIdentities(data):
     """
     Generates a dictionary of the players present in the Match and mapping their participant ID to their 
-        ingame Name
-    ----------
+    ingame Name
+
     Parameters
     ----------
-        data (json):            The datafile for a given Match
-    ----------
-    Return
-    ----------
-        idendity_dict (dict):   Dictionary of the participant ID mapping to the player name and player-unique-identifieder
-    ----------
+    data : dict           
+        The datafile for a given Match
+
+    Returns
+    -------
+    idendity_dict : dict  
+        Dictionary of the participant ID mapping to the player name and player-unique-identifieder
+
     """
     identity_dict = {}
     for i in range (0,10):
@@ -141,15 +192,17 @@ def loadPlayerIdentities(data):
 def loadPlayerData(data) -> list[dict]:
     """
     Extracts Playerdata from a given match 
-    ----------
+
     Parameters
     ----------
-        data (json):            The datafile for a given Match
-    ----------
-    Return
-    ----------
-        pData_dict(dict):       Dictionary that maps Number 0-9 to the Player and their data.
-    ----------
+    data : dict          
+        The datafile for a given Match
+    
+    Returns
+    -------
+    player_dictlist : list[dict] 
+        list, that has a data_dict for each player
+
     """
     
     playerIdentities    = loadPlayerIdentities(data)

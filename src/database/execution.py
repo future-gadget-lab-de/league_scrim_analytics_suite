@@ -1,18 +1,19 @@
 import logging
 logger = logging.getLogger(__name__)
 
+import mariadb, sys
+
 from src.utils import readFileByLine
-import mariadb
-import sys
 
 def loadDatabaseConfig():
     """
     Reads the Database config file and builds a dictionary for use in mariadb connection
-    ----------
-    Return
-    ----------
-        config_dict (dict):         Database parameters as a dictionary.
-    ----------
+ 
+    Returns
+    -------
+    config_dict : dict        
+        Database parameters as a dictionary.
+    
     """
 
     config = dict()
