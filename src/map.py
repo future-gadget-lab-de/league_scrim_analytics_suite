@@ -1,7 +1,5 @@
-from src.data import loadDatabase
-
 # (id, dataRequested) --> explicit_name of given id
-def mapId(id: int, patch: str, dataRequested: str):
+def mapId(id: int, dataRequested: str):
     """
     Maps the given id, to the corresponding name ingame.
 
@@ -18,7 +16,9 @@ def mapId(id: int, patch: str, dataRequested: str):
         name (str):          The name, which corresponds to the id
     ----------
     """
-    data_dict = loadDatabase(patch, dataRequested)
+    from src.scraping.data import loadDatabase
+
+    data_dict = loadDatabase(dataRequested)
 
     if dataRequested in ['champion', 'summoner']:
         data_dict = data_dict['data']

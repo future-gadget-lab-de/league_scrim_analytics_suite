@@ -4,10 +4,11 @@ from src.database.execution import executeQuery, buildConnection
 from src.database.sqltemplates.template import importSQLQueries
 from src.visuals.simplefrontend import SimpleFrontend
 from PySide6.QtWidgets import QApplication
-import os, os.path, sys
+import os, os.path, sys, datetime
 
 def databaseSetup():
     # Check how many Matchfiles exist
+    date = datetime.datetime.today().strftime('%Y-%m-%d')
     db_conf = loadDatabaseConfig()
     delete_queries = importSQLQueries("src/database/sqltemplates/db_delete_alldata.sql")
     create_queries = importSQLQueries("src/database/sqltemplates/db_creation_dump.sql")

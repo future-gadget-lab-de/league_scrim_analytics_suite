@@ -1,6 +1,8 @@
 import os
 import pathlib
-from src.globals import k_teamname, k_roster, k_patch, k_matchdirectory
+import json
+import requests
+from src.globals import k_teamname, k_roster
 from src.map import mapId
 
 def findFile(path: str):
@@ -71,7 +73,7 @@ def genBanArr(bans):
     try:
         for i in range (0,5):
             cId     = bans[i]['championId']
-            cName   = mapId(cId, k_patch, 'champion')
+            cName   = mapId(cId, 'champion')
             banarr.append(cName)
     except:
         print("ERROR: The bans aren't proper in the given matchfile.")
@@ -158,3 +160,40 @@ def list_relative_filepaths(path: str) -> list[str]:
             filepaths.append(relative_path)
 
     return filepaths
+
+def reloadjsonfiles(relPathToJson: str, linkToJson: str) -> dict:
+    """loads (or reloads) a specified .json
+
+    this method checks, if a json is existens and returns it. if it doesnt
+    exist, it gets scraped.
+
+    Parameters
+    ----------
+    relPathToJson : str
+        relative path to the .json file, which is checked for
+    linkToJson : str
+        link to the corresponding online source
+    
+    Returns
+    -------
+    data_dict : dict
+        the json, from one of the sources above
+    """
+
+    # check if the file is already dumped
+    if os.path.isfile(relPathToJson):
+        with open(relPathToJson) as data:
+            # print("read json")
+            return json.load(data)
+    else:
+        data_url = linkToJson
+        data_response = requests.get(data_url)
+        data_dict = data_response.json()
+
+        os.makedirs(os.path.dirname(relPathToJson), exist_ok=True)
+
+        with open(relPathToJson, 'w') as data:
+            # print("dumped json")
+            json.dump(data_dict, data)
+        
+        return data_dict

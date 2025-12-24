@@ -1,5 +1,3 @@
-k_patch          = "15.24.1"
-k_matchdirectory = "gamefiles/matchdata/"
 k_teamname       = "${Team_Name}"
 #TODO: Build this as a dictionary to support multi-roster.
 #--> How to support players swapping teams ?

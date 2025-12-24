@@ -1,6 +1,5 @@
 from src.utils import findFile, genBanArr, playerTeamCheck
 from src.map import mapId
-from src.globals import k_patch
 from datetime import datetime, timedelta
 import json
 import os
@@ -160,23 +159,23 @@ def loadPlayerData(data) -> list[dict]:
         pStats  = pData['stats']
 
         # Extract Data from first level 
-        champ   = mapId(pData['championId'],k_patch, "champion")
-        summ1   = mapId(pData['spell1Id'],k_patch, "summoner")
-        summ2   = mapId(pData['spell2Id'],k_patch, "summoner")
+        champ   = mapId(pData['championId'], "champion")
+        summ1   = mapId(pData['spell1Id'], "summoner")
+        summ2   = mapId(pData['spell2Id'], "summoner")
         teamid  = pData['teamId']
         team    = playerTeamCheck(playerIdentities[pID][1])
         # Extract Itemdata  
         item_dict = {}
         for n in range (0,7):
             itemnr="item"+str(n)
-            item_dict[n] = mapId(pStats[itemnr],k_patch,'item')
+            item_dict[n] = mapId(pStats[itemnr],'item')
         
         items.append(item_dict)
         # Extract Rune Data
         rune_dict = {}
         for m in range (0,6):
             runenr = "perk"+str(m)
-            rune_dict[m] = mapId(pStats[runenr], k_patch, 'perk')
+            rune_dict[m] = mapId(pStats[runenr], 'perk')
         runes.append(rune_dict)
         # Extract general Data
         cwards_bought   =   pStats['visionWardsBoughtInGame']
