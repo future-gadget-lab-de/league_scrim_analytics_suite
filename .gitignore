@@ -1,3 +1,4 @@
 *.pyc
 src/*/*.json
 *.conf
+src/visuals/ui/generated/*

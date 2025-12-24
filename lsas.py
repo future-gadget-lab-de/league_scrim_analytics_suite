@@ -5,6 +5,7 @@ logger = logging.getLogger(__name__)
 import os, os.path, sys
 # gui stuff
 from src.visuals.simplefrontend import SimpleFrontend
+from src.visuals.windows.main_window import MainWindow
 from PySide6.QtWidgets import QApplication
 # mariadb stuff
 from src.database.queries import returnInsertQuery, returnMatchfileQuery
@@ -41,8 +42,16 @@ def runFrontend() -> None:
     window.show()
     sys.exit(app.exec())
 
+def runAdvancedFrontend() -> None:
+    app = QApplication(sys.argv)
+    # basically will "starten" execute the passed function
+    window = MainWindow()
+    window.show()
+    sys.exit(app.exec())
+
 if __name__ == "__main__":
     setup_logging(level = "INFO")
-    databaseSetup()
+    runAdvancedFrontend()
+    #databaseSetup()
     #runFrontend()
 

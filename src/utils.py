@@ -3,6 +3,51 @@ logger = logging.getLogger(__name__)
 
 import os, pathlib, json, requests
 
+def readSettingsFile(rel_path_with_name: str) -> dict:
+    """
+    Reads a passed .conf file
+
+    Parameters
+    ----------
+    rel_path_with_name : str
+        the relative path to a config file
+    
+    Returns
+    -------
+    settings : dict
+        the dictionary, containing the settings
+    
+    """
+    config = dict()
+    config_by_line = readFileByLine(rel_path_with_name)    
+    
+    for line in config_by_line:
+        setting = line.replace(" ", "").split("=")   # remove whitespace and split
+        config[setting[0]] = setting[1]    # build dict 
+    return config
+
+def writeSettingsFile(settings: dict, rel_path_with_name: str) -> None:
+    """
+    Writes the given lines to a .conf file at the provided relative path.
+
+    Parameters
+    ----------
+    lines : list[str]
+        Lines to write to the config file.
+    rel_path_with_name : str
+        Relative path including the filename (e.g. "config/lsas.conf").
+    """
+    lines = [f"{key}={value}" for key, value in settings.items()]
+    
+    base_path = os.path.abspath(os.getcwd())
+    full_path = os.path.join(base_path, rel_path_with_name)
+
+    os.makedirs(os.path.dirname(full_path), exist_ok=True)
+
+    with open(full_path, "w", encoding="utf-8") as conf_file:
+        conf_file.write("\n".join(lines))
+
+
 def findFile(path: str) -> str:
     """
     Finds the first file in the folder given by path.

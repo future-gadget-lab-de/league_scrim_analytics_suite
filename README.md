@@ -1,5 +1,13 @@
 # League Scrim Analytics Suite
 
+## Prerequisite
+
+To be functional, one must first compile the .ui files:
+
+```
+python3 -m ./src/visuals/ui/compile_ui.py
+``` 
+
 ## Roadmap
 Highest Priority (ordered)
 - [x] Test on Patch 16.24
