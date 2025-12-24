@@ -7,6 +7,7 @@ Highest Priority (ordered)
 - [ ] Setup script für DB/Folder Struct {...} für Win/Linux
 - [ ] Refactor globals/utils and read team_metadata from .conf file
     - [ ] Example .conf files (DB, team ...)
+    
 Low Prio // QOL:
 - [ ] Automate getting Patchname (Maybe Webscrape ?)
     - [ ] Automatisierte Merge-Request erstellung für Patch erneuerung (Renovate Bot)
