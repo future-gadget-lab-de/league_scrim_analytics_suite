@@ -2,17 +2,19 @@ from log_config import setup_logging
 import logging
 logger = logging.getLogger(__name__)
 
-from src.utils import moveFile, list_relative_filepaths
+import os, os.path, sys
+# gui stuff
+from src.visuals.simplefrontend import SimpleFrontend
+from PySide6.QtWidgets import QApplication
+# mariadb stuff
 from src.database.queries import returnInsertQuery, returnMatchfileQuery
 from src.database.execution import executeQuery, buildConnection
 from src.database.sqltemplates.template import importSQLQueries
-from src.visuals.simplefrontend import SimpleFrontend
-from PySide6.QtWidgets import QApplication
-import os, os.path, sys, datetime
+
+from src.utils import list_relative_filepaths
 
 def databaseSetup():
     # Check how many Matchfiles exist
-    date = datetime.datetime.today().strftime('%Y-%m-%d')
     delete_queries = importSQLQueries("src/database/sqltemplates/db_delete_alldata.sql")
     create_queries = importSQLQueries("src/database/sqltemplates/db_creation_dump.sql")
 

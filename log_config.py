@@ -7,7 +7,7 @@ def setup_logging(
     log_dir: str | None = None,
 ) -> None:
     """
-    central configuration for logging
+    central configuration for logging. \n
     hierarchie: DEBUG > INFO > WARNING > ERROR > CRITICAL
 
 
