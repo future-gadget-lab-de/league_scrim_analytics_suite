@@ -1,3 +1,6 @@
+import logging
+logger = logging.getLogger(__name__)
+
 from src.match import loadMatchData
 
 def returnInsertQuery(table: str, data: dict) -> str:
@@ -56,6 +59,8 @@ def returnMatchfileQuery(relPathtoFile: str)-> list[str]:
         queries.append(returnInsertQuery("playerdata",playerdict))
     queries.append(returnInsertQuery("teamdata",blueteamdata))
     queries.append(returnInsertQuery("teamdata",redteamdata))
+
+    logger.debug("Loading the matchfile in the location: %s", relPathtoFile)
 
     return queries
 

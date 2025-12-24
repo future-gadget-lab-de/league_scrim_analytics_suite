@@ -1,5 +1,7 @@
-from src.utils import readFileByLine
+import logging
+logger = logging.getLogger(__name__)
 
+from src.utils import readFileByLine
 
 def importSQLQueries(relPathtoFile: str) -> list[str]:
     """imports a .sql file.
@@ -36,4 +38,5 @@ def importSQLQueries(relPathtoFile: str) -> list[str]:
             queries.append(query)
             query = ""
 
+    logger.debug("loaded the file: %s", relPathtoFile)
     return queries

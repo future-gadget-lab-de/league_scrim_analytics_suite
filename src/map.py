@@ -1,3 +1,6 @@
+import logging
+logger = logging.getLogger(__name__)
+
 # (id, dataRequested) --> explicit_name of given id
 def mapId(id: int, dataRequested: str):
     """
@@ -19,6 +22,8 @@ def mapId(id: int, dataRequested: str):
     from src.scraping.data import loadDatabase
 
     data_dict = loadDatabase(dataRequested)
+
+    logger.debug("Mapped the id %s to its corresponding %s equivalent.", str(id), dataRequested)
 
     if dataRequested in ['champion', 'summoner']:
         data_dict = data_dict['data']

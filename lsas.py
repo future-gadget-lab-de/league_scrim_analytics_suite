@@ -1,4 +1,8 @@
-from src.utils import loadDatabaseConfig, moveFile, list_relative_filepaths
+from log_config import setup_logging
+import logging
+logger = logging.getLogger(__name__)
+
+from src.utils import moveFile, list_relative_filepaths
 from src.database.queries import returnInsertQuery, returnMatchfileQuery
 from src.database.execution import executeQuery, buildConnection
 from src.database.sqltemplates.template import importSQLQueries
@@ -9,7 +13,6 @@ import os, os.path, sys, datetime
 def databaseSetup():
     # Check how many Matchfiles exist
     date = datetime.datetime.today().strftime('%Y-%m-%d')
-    db_conf = loadDatabaseConfig()
     delete_queries = importSQLQueries("src/database/sqltemplates/db_delete_alldata.sql")
     create_queries = importSQLQueries("src/database/sqltemplates/db_creation_dump.sql")
 
@@ -19,7 +22,7 @@ def databaseSetup():
     for match in matchfiles:
         matchfile_queries[match] = returnMatchfileQuery("gamefiles/matchdata/"+match)
 
-    conn, cur = buildConnection(db_conf)
+    conn, cur = buildConnection()
     
     try:
         executeQuery(delete_queries, conn, cur)
@@ -36,6 +39,7 @@ def runFrontend() -> None:
     sys.exit(app.exec())
 
 if __name__ == "__main__":
+    setup_logging(level = "INFO")
     databaseSetup()
     #runFrontend()
 

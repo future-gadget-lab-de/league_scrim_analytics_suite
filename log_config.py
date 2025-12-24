@@ -1,0 +1,62 @@
+import logging
+import logging.config
+from pathlib import Path
+
+def setup_logging(
+    level: str = "INFO",
+    log_dir: str | None = None,
+) -> None:
+    """
+    central configuration for logging
+    hierarchie: DEBUG > INFO > WARNING > ERROR > CRITICAL
+
+
+    Parameters
+    ----------
+    level : str 
+        loglevel, which is wished
+    log_dir : str | None
+        directory for logfiles. off by default
+    
+    """
+    handlers: dict = {
+        "console": {
+            "class": "logging.StreamHandler",
+            "level": level,
+            "formatter": "console",
+            "stream": "ext://sys.stderr",
+        }
+    }
+
+    if log_dir is not None:
+        Path(log_dir).mkdir(parents=True, exist_ok=True)
+        handlers["file"] = {
+            "class": "logging.handlers.RotatingFileHandler",
+            "level": level,
+            "formatter": "file",
+            "filename": str(Path(log_dir) / f"lsas.log"),
+            "maxBytes": 10 * 1024 * 1024,  # 10MB
+            "backupCount": 5,
+            "encoding": "utf-8",
+        }
+
+    logging_config = {
+        "version": 1,
+        "disable_existing_loggers": False,
+        "formatters": {
+            "console": {
+                "format": "%(levelname)s %(name)s: %(message)s",
+            },
+            "file": {
+                "format": "%(asctime)s %(levelname)s %(name)s "
+                          "[%(process)d:%(threadName)s] %(message)s",
+            },
+        },
+        "handlers": handlers,
+        "root": {
+            "level": level,
+            "handlers": list(handlers.keys()),
+        },
+    }
+
+    logging.config.dictConfig(logging_config)

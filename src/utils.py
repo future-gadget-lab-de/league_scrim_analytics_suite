@@ -1,3 +1,6 @@
+import logging
+logger = logging.getLogger(__name__)
+
 import os
 import pathlib
 import json
@@ -80,25 +83,6 @@ def genBanArr(bans):
         exit(0)
 
     return banarr
-
-
-def loadDatabaseConfig():
-    """
-    Reads the Database config file and builds a dictionary for use in mariadb connection
-    ----------
-    Return
-    ----------
-        config_dict (dict):         Database parameters as a dictionary.
-    ----------
-    """
-
-    config = dict()
-    config_by_line = readFileByLine("config/database.conf")    
-    
-    for line in config_by_line:
-        setting = line.replace(" ", "").split("=")   # remove whitespace and split
-        config[setting[0]] = setting[1]    # build dict 
-    return config
     
 def readFileByLine(relPathToFile) -> list[str]:
     """
@@ -186,6 +170,7 @@ def reloadjsonfiles(relPathToJson: str, linkToJson: str) -> dict:
             # print("read json")
             return json.load(data)
     else:
+        logger.debug("Json file is not present. Downstreaming a new one.")
         data_url = linkToJson
         data_response = requests.get(data_url)
         data_dict = data_response.json()
@@ -195,5 +180,5 @@ def reloadjsonfiles(relPathToJson: str, linkToJson: str) -> dict:
         with open(relPathToJson, 'w') as data:
             # print("dumped json")
             json.dump(data_dict, data)
-        
+
         return data_dict

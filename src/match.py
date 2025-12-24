@@ -1,3 +1,6 @@
+import logging
+logger = logging.getLogger(__name__)
+
 from src.utils import findFile, genBanArr, playerTeamCheck
 from src.map import mapId
 from datetime import datetime, timedelta
@@ -21,7 +24,8 @@ def loadMatchData(relPath = None):
     data_file = findFile("gamefiles/matchdata/")
     if relPath is not None:
         data_file = relPath
-    print("INFO: Loading the File: " + str(data_file))
+
+    
     if os.path.isfile(data_file):
         with open(data_file) as f:
             raw                             = f.read()

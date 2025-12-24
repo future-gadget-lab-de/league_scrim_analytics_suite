@@ -1,3 +1,6 @@
+import logging
+logger = logging.getLogger(__name__)
+
 import datetime
 from src.utils import reloadjsonfiles
 
@@ -15,13 +18,12 @@ def scrapeRecentPatch() -> str:
 
     link = "https://ddragon.leagueoflegends.com/realms/euw.json"
     date = datetime.datetime.today().strftime('%Y-%m-%d')
-    data_file_path = f"src/dictionaries/EUW_{date}.json"
-    
+    data_file_path = f"src/scraping/dictionaries/EUW_{date}.json"
+    logger.debug("Reload of the recent Patchnumber.")
+
     data_dict = reloadjsonfiles(data_file_path, link)
 
     return data_dict["v"]
-
-
 
 def returnScrapeLink(dataRequested: str) -> str:
     """
@@ -69,7 +71,9 @@ def loadDatabase(dataRequested: str) -> dict:
         The Dictionary, which has the wanted lol data
     """
     patch = scrapeRecentPatch()
-    data_file_path = f"src/dictionaries/{dataRequested}_{patch}.json"
+    data_file_path = f"src/scraping/dictionaries/{dataRequested}_{patch}.json"
+    logging.debug("Reload of the %s data.",dataRequested)
+
     scrape_link = returnScrapeLink(dataRequested)
 
     return reloadjsonfiles(data_file_path, scrape_link)
