@@ -151,7 +151,8 @@ def loadPlayerData(data) -> list[dict]:
     
     playerIdentities    = loadPlayerIdentities(data)
     pData_dict          = {}
-
+    items = list()
+    runes = list()
     for i in range (0,10):
         # Create helper Variables 
         pData   = data['participants'][i]
@@ -170,12 +171,13 @@ def loadPlayerData(data) -> list[dict]:
             itemnr="item"+str(n)
             item_dict[n] = mapId(pStats[itemnr],k_patch,'item')
         
+        items.append(item_dict)
         # Extract Rune Data
         rune_dict = {}
         for m in range (0,6):
             runenr = "perk"+str(m)
             rune_dict[m] = mapId(pStats[runenr], k_patch, 'perk')
-        
+        runes.append(rune_dict)
         # Extract general Data
         cwards_bought   =   pStats['visionWardsBoughtInGame']
         wards_placed    =   pStats['wardsPlaced']
@@ -207,10 +209,10 @@ def loadPlayerData(data) -> list[dict]:
         player_dict["champ"] = pData_dict[i][1]
         player_dict["summ1"] = pData_dict[i][2]
         player_dict["summ2"] = pData_dict[i][3]
-        for i in range(7):
-            player_dict["item"+str(i+1)] = item_dict[i]
-        for i in range(6):
-            player_dict["rune"+str(i+1)] = rune_dict[i]
+        for j in range(7):
+            player_dict["item"+str(j+1)] = items[i][j]
+        for j in range(6):
+            player_dict["rune"+str(j+1)] = runes[i][j]
         player_dict["cwards_bought"] = pData_dict[i][6]
         player_dict["wards_placed"] = pData_dict[i][7]
         player_dict["wards_destroyed"] = pData_dict[i][8]
