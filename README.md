@@ -2,7 +2,7 @@
 
 ## Roadmap
 Highest Priority (ordered)
-- [ ] Test on Patch 16.24
+- [x] Test on Patch 16.24
 - [ ] Frontend für Datenauslese bzw. Visualisierung
 - [ ] Setup script für DB/Folder Struct {...} für Win/Linux
 - [ ] Refactor globals/utils and read team_metadata from .conf file
