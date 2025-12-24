@@ -1,6 +1,6 @@
 from src.utils import loadDatabaseConfig, moveFile, list_relative_filepaths
 from src.database.queries import returnInsertQuery, returnMatchfileQuery
-from src.database.execution import executeQuery
+from src.database.execution import executeQuery, buildConnection
 from src.database.sqltemplates.template import importSQLQueries
 from src.visuals.simplefrontend import SimpleFrontend
 from PySide6.QtWidgets import QApplication
@@ -14,21 +14,18 @@ def databaseSetup():
 
     matchfiles = list_relative_filepaths("gamefiles/matchdata")
 
-    print(matchfiles)
-
     matchfile_queries = dict()
-
     for match in matchfiles:
         matchfile_queries[match] = returnMatchfileQuery("gamefiles/matchdata/"+match)
+
+    conn, cur = buildConnection(db_conf)
     
-    QUERIES = delete_queries
-    QUERIES = matchfile_queries[matchfiles[1]]
+    try:
+        executeQuery(delete_queries, conn, cur)
+        executeQuery(matchfile_queries[matchfiles[0]], conn, cur)
 
-    #print(QUERIES)
-
-    for query in QUERIES:
-        print(query)
-        executeQuery(query, db_conf)
+    finally: 
+        cur.close()
 
 def runFrontend() -> None:
     app = QApplication(sys.argv)

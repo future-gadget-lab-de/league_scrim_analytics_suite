@@ -2,16 +2,19 @@ from src.utils import readFileByLine
 
 
 def importSQLQueries(relPathtoFile: str) -> list[str]:
-    """
-    test
+    """imports a .sql file.
 
-    imports each query of provided .sql file \n
+    imports each query of a passed .sql file as a list of strings
 
-    Args:
-        relPathtoFile (str):    relative path to the .sql file
+    Parameters
+    ----------
+    relPathtoFile : str
+        relative path to the .sql file
     
-    Returns:
-        queries (list):         a list of sql queries as strings
+    Returns
+    -------
+    queries : list[str]
+        a list of sql queries as strings
     
     """
 
