@@ -32,58 +32,29 @@
      <verstretch>0</verstretch>
     </sizepolicy>
    </property>
-   <widget class="QLabel" name="label">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>10</y>
-      <width>461</width>
-      <height>18</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Dies ist das Frontend des LSAS Projektes.</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_2">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>40</y>
-      <width>511</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Bis jetzt lässt sich im UI:</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_3">
-    <property name="geometry">
-     <rect>
-      <x>30</x>
-      <y>60</y>
-      <width>221</width>
-      <height>18</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>- einstellungen setzen</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_4">
-    <property name="geometry">
-     <rect>
-      <x>30</x>
-      <y>80</y>
-      <width>321</width>
-      <height>18</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>- import, sowohl als csv oder db</string>
-    </property>
-   </widget>
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <widget class="QRadioButton" name="radio_clear">
+      <property name="text">
+       <string>Clear Data</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QRadioButton" name="radio_db_create">
+      <property name="text">
+       <string>Create db structure</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="button_execute">
+      <property name="text">
+       <string>Ausführen</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">

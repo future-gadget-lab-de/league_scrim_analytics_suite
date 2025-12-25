@@ -8,7 +8,7 @@ from src.visuals.ui.generated.ui_mainwindow import Ui_MainWindow
 from src.visuals.windows.settings import SettingsDialog
 from src.visuals.windows.maria_dialog import MariaDialog
 
-from src.core.reading import importMatchfileData
+from src.core.ops import importMatchfileData, clearData, databaseSetup
 
 from src.utils import writeSettingsFile, readSettingsFile, getRelPath
 
@@ -17,10 +17,23 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
+        self.settings = readSettingsFile("config/lsas.conf")
 
+        print("init")
+
+        if self.settings["mariadb"] == "0":
+            self.ui.radio_db_create.setCheckable(False)
+
+        self.ui.button_execute.clicked.connect(self.execute_radio)
         self.ui.actionSettings_2.triggered.connect(self.open_settings)
         self.ui.actionMariaDB.triggered.connect(self.open_mariadb_config)
         self.ui.actionImport_Matchfile.triggered.connect(self.filedialog_opener)
+
+    def execute_radio(self) -> None:
+        if self.ui.radio_clear.isChecked():
+            clearData()
+        if self.ui.radio_db_create.isChecked():
+            databaseSetup() 
 
     def filedialog_opener(self) -> None:
         dialog = QFileDialog(self)
@@ -40,6 +53,11 @@ class MainWindow(QMainWindow):
         dlg = SettingsDialog(self)
         if dlg.exec():  # True wenn accepted
             settings = dlg.get_settings()
+            if settings["mariadb"] == "1":
+                print("checkable")
+                self.ui.radio_db_create.setCheckable(True)
+            else:
+                self.ui.radio_db_create.setCheckable(False)
             writeSettingsFile(settings, "config/lsas.conf")
             logger.info("general settings saved")
 

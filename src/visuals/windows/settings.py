@@ -31,10 +31,10 @@ class SettingsDialog(QDialog):
 
     def change_maria_setting(self) -> None:
         if self.ui.checkbox_mariadb_activated.isChecked():
-            self.settings["mariadb"] = 1
+            self.settings["mariadb"] = "1"
             self.ui.lineEdit_csv_path.setDisabled(True)
         else:
-            self.settings["mariadb"] = 0
+            self.settings["mariadb"] = "0"
             self.ui.lineEdit_csv_path.setEnabled(True)
 
     def change_line_setting(self) -> None:

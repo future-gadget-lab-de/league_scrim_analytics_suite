@@ -50,7 +50,7 @@ def runAdvancedFrontend() -> None:
     sys.exit(app.exec())
 
 if __name__ == "__main__":
-    setup_logging(level = "INFO")
+    setup_logging(level = "DEBUG")
     runAdvancedFrontend()
     #databaseSetup()
     #runFrontend()

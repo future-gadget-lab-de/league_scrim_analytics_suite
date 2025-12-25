@@ -59,10 +59,10 @@ def executeQuery(queries: list[str], conn, cur):
     """
     for query in queries:
         try:
+            logger.debug("will execute the sql query: %s", query)
             cur.execute(query)
             if len(query) > 100:
                 logger.info("Executed a sql query. For Detail, adjust loglevel to DEBUG.")
-                logger.debug("Executed the sql query: %s", query)
             else:
                 logger.info("Executed the sql query: %s", query)
             conn.commit()

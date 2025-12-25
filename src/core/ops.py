@@ -1,10 +1,11 @@
 import logging
 logger = logging.getLogger(__name__)
 
-import csv
+import csv, os
 from src.core.match import loadMatchData
 from src.database.queries import returnInsertQuery
 from src.database.execution import executeQuery, buildConnection
+from src.database.sqltemplates.template import importSQLQueries
 from src.utils import readSettingsFile, addDictToCsv
 
 def importMatchfileData(relPathToFile: str) -> None:
@@ -36,5 +37,31 @@ def importMatchfileData(relPathToFile: str) -> None:
             conn, cur = buildConnection()
             executeQuery(queries, conn, cur)
 
+def clearData():
 
+    settings = readSettingsFile("config/lsas.conf")
+
+    match settings["mariadb"]:
+        case "0":
+            os.remove(settings["csv_directory"]+"metadata.csv")
+            os.remove(settings["csv_directory"]+"playerdata.csv")
+            os.remove(settings["csv_directory"]+"teamdata.csv")
+
+            logger.debug("Removing all .csv files")
+            
+        case "1":
+            delete_queries = importSQLQueries("src/database/sqltemplates/db_delete_alldata.sql")
+
+            logger.debug("Removing all contents of database tables.")
+
+            conn, cur = buildConnection()
+            executeQuery(delete_queries, conn, cur)
+
+def databaseSetup():
+    create_queries = importSQLQueries("src/database/sqltemplates/db_creation_dump.sql")
+
+    logger.debug("Creating DB Format.")
+
+    conn, cur = buildConnection()
+    executeQuery(create_queries, conn, cur)
 

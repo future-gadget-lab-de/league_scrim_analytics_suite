@@ -21,6 +21,7 @@ def importSQLQueries(relPathtoFile: str) -> list[str]:
     """
 
     sql_lines = readFileByLine(relPathtoFile)
+    print(sql_lines)
     queries = list()
 
     query = ""
@@ -29,9 +30,10 @@ def importSQLQueries(relPathtoFile: str) -> list[str]:
         if line.strip() == "":
             continue
         # skip commented lines
-        if line.startswith("-- "):
+        if line.startswith("--"):
             continue
         
+        print(line)
         query += line
 
         if line.endswith(";"):
@@ -39,4 +41,5 @@ def importSQLQueries(relPathtoFile: str) -> list[str]:
             query = ""
 
     logger.debug("loaded the file: %s", relPathtoFile)
+    print(queries)
     return queries
