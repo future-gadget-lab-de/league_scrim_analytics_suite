@@ -19,8 +19,6 @@ class MainWindow(QMainWindow):
         self.ui.setupUi(self)
         self.settings = readSettingsFile("config/lsas.conf")
 
-        print("init")
-
         if self.settings["mariadb"] == "0":
             self.ui.radio_db_create.setCheckable(False)
 
