@@ -6,64 +6,82 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>420</width>
-    <height>346</height>
+    <width>640</width>
+    <height>360</height>
    </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>640</width>
+    <height>360</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>640</width>
+    <height>360</height>
+   </size>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
    <widget class="QLabel" name="label">
     <property name="geometry">
      <rect>
       <x>10</x>
       <y>10</y>
-      <width>291</width>
-      <height>21</height>
+      <width>461</width>
+      <height>18</height>
      </rect>
     </property>
     <property name="text">
-     <string>Das hier ist die Startseite des LSAS Projektes.</string>
+     <string>Dies ist das Frontend des LSAS Projektes.</string>
     </property>
    </widget>
    <widget class="QLabel" name="label_2">
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>30</y>
-      <width>361</width>
-      <height>18</height>
+      <y>40</y>
+      <width>511</width>
+      <height>16</height>
      </rect>
     </property>
     <property name="text">
-     <string>Hier entsteht der Startpunkt für die gesamte Anwendung.</string>
+     <string>Bis jetzt lässt sich im UI:</string>
     </property>
    </widget>
    <widget class="QLabel" name="label_3">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>90</y>
-      <width>291</width>
-      <height>21</height>
+      <x>30</x>
+      <y>60</y>
+      <width>221</width>
+      <height>18</height>
      </rect>
     </property>
     <property name="text">
-     <string>Bis dato funktionieren:</string>
+     <string>- einstellungen setzen</string>
     </property>
    </widget>
    <widget class="QLabel" name="label_4">
     <property name="geometry">
      <rect>
       <x>30</x>
-      <y>110</y>
-      <width>111</width>
+      <y>80</y>
+      <width>321</width>
       <height>18</height>
      </rect>
     </property>
     <property name="text">
-     <string>- config schreiben</string>
+     <string>- import, sowohl als csv oder db</string>
     </property>
    </widget>
   </widget>
@@ -72,7 +90,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>420</width>
+     <width>640</width>
      <height>23</height>
     </rect>
    </property>

@@ -1,7 +1,21 @@
 import logging
 logger = logging.getLogger(__name__)
 
-import os, pathlib, json, requests
+import os, pathlib, json, requests, csv
+
+def getRelPath(absPath):
+    abs_path_object = pathlib.Path(absPath)
+    
+    return os.path.relpath(str(abs_path_object), start=os.getcwd())
+
+def addDictToCsv(data: dict, path_to_csv: str) -> None:
+    fields = list(data.keys())
+    print(fields)
+    os.makedirs(os.path.dirname(path_to_csv), exist_ok=True)
+    print(data)
+    with open(path_to_csv, mode='a', newline='') as file:
+        writer = csv.DictWriter(file, fieldnames=fields)
+        writer.writerows([data])  # Write data rows
 
 def readSettingsFile(rel_path_with_name: str) -> dict:
     """

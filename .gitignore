@@ -1,4 +1,5 @@
 *.pyc
-src/*/*.json
+src/*/*/*.json
 *.conf
 src/visuals/ui/generated/*
+*.csv

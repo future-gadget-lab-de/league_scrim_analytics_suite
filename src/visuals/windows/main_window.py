@@ -3,12 +3,14 @@ from __future__ import annotations
 import logging
 logger = logging.getLogger(__name__)
 
-from PySide6.QtWidgets import QMainWindow
+from PySide6.QtWidgets import QMainWindow, QFileDialog, QCheckBox
 from src.visuals.ui.generated.ui_mainwindow import Ui_MainWindow
 from src.visuals.windows.settings import SettingsDialog
 from src.visuals.windows.maria_dialog import MariaDialog
 
-from src.utils import writeSettingsFile, readSettingsFile
+from src.core.reading import importMatchfileData
+
+from src.utils import writeSettingsFile, readSettingsFile, getRelPath
 
 class MainWindow(QMainWindow):
     def __init__(self) -> None:
@@ -18,7 +20,21 @@ class MainWindow(QMainWindow):
 
         self.ui.actionSettings_2.triggered.connect(self.open_settings)
         self.ui.actionMariaDB.triggered.connect(self.open_mariadb_config)
-        
+        self.ui.actionImport_Matchfile.triggered.connect(self.filedialog_opener)
+
+    def filedialog_opener(self) -> None:
+        dialog = QFileDialog(self)
+        dialog.setFileMode(QFileDialog.FileMode.ExistingFiles)
+        dialog.setNameFilter("Matchfiles (*.json)")
+        dialog.setViewMode(QFileDialog.Detail)
+        dialog.selectFile("./")
+        if dialog.exec_():
+            
+            fileNames = dialog.selectedFiles()
+            for file in fileNames:
+                print(str(getRelPath(file)))
+                importMatchfileData(str(getRelPath(file)))
+        #self.
 
     def open_settings(self) -> None:
         dlg = SettingsDialog(self)

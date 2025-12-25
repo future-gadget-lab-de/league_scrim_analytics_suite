@@ -51,7 +51,7 @@ def loadMatchData(relPath: str | None = None):
     -------
     metadata : dict       
         Dictionary which maps all features to their values
-    playerdata : dict
+    playerdata : list[dict]
         Dictionary which maps all features to their values
     blueteamdata : dict
         Dictionary which maps all features to their values
