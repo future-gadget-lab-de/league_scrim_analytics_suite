@@ -43,7 +43,6 @@ class MainWindow(QMainWindow):
             
             fileNames = dialog.selectedFiles()
             for file in fileNames:
-                print(str(getRelPath(file)))
                 importMatchfileData(str(getRelPath(file)))
         #self.
 
@@ -52,7 +51,6 @@ class MainWindow(QMainWindow):
         if dlg.exec():  # True wenn accepted
             settings = dlg.get_settings()
             if settings["mariadb"] == "1":
-                print("checkable")
                 self.ui.radio_db_create.setCheckable(True)
             else:
                 self.ui.radio_db_create.setCheckable(False)
