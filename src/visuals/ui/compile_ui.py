@@ -22,7 +22,7 @@ def main() -> int:
 
     for ui in uis:
         out_py = OUT_DIR / f"ui_{ui.stem}.py"
-        cmd = ["pyside6-uic", str(ui), "-o", str(out_py)]
+        cmd = ["./.venv/bin/pyside6-uic", str(ui), "-o", str(out_py)]
         print(" ".join(cmd))
         subprocess.run(cmd, check=True)
 
