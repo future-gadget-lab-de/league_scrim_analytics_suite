@@ -5,8 +5,12 @@
 To be functional, one must first compile the .ui files:
 
 ```
-python3 -m ./src/visuals/ui/compile_ui.py
+.../LSAS $ python3 -m ./src/visuals/ui/compile_ui.py
 ``` 
+
+To successfully get this script working, one must check
+- that pwd returns `/pathtoprojects/.../LSAS` (not in a literal sense)
+- the virtual environment is installed in a the directory `.venv`
 
 ## Roadmap
 Highest Priority (ordered)
