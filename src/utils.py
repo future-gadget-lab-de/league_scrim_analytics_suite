@@ -3,16 +3,41 @@ logger = logging.getLogger(__name__)
 
 import os, pathlib, json, requests, csv
 
-def getRelPath(absPath):
+def getRelPath(absPath: str) -> str:
+    """
+    returns the relative path for some absolute path
+
+    Parameters
+    ----------
+    absPath : str
+        the absolute path, which is to be convert
+
+    Returns
+    -------
+    relPath : str
+        the resulting relative path
+    
+    """
+
     abs_path_object = pathlib.Path(absPath)
     
     return os.path.relpath(str(abs_path_object), start=os.getcwd())
 
 def addDictToCsv(data: dict, path_to_csv: str) -> None:
+    """
+    adds the data of a passed dict to a passed .csv
+
+    Parameters
+    ----------
+    data : str
+        the data which will get imported
+    path_to_csv : str
+        the relative path to the .csv file
+
+    
+    """
     fields = list(data.keys())
-    print(fields)
     os.makedirs(os.path.dirname(path_to_csv), exist_ok=True)
-    print(data)
     with open(path_to_csv, mode='a', newline='') as file:
         writer = csv.DictWriter(file, fieldnames=fields)
         writer.writerows([data])  # Write data rows

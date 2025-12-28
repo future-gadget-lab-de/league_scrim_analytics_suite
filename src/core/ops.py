@@ -9,7 +9,15 @@ from src.database.sqltemplates.template import importSQLQueries
 from src.utils import readSettingsFile, addDictToCsv
 
 def importMatchfileData(relPathToFile: str) -> None:
+    """
+    imports a matchfile
 
+    Parameters
+    ----------
+    relPathToFile : str
+        the relative path to the matchfile
+    
+    """
     settings = readSettingsFile("config/lsas.conf")
     metadata, playerdata, blueteamdata, redteamdata, data_file = loadMatchData(relPathToFile)
 
@@ -38,7 +46,9 @@ def importMatchfileData(relPathToFile: str) -> None:
             executeQuery(queries, conn, cur)
 
 def clearData():
-
+    """
+    clears all Data out of the connected databases or the .csv directory
+    """
     settings = readSettingsFile("config/lsas.conf")
 
     match settings["mariadb"]:
@@ -58,6 +68,9 @@ def clearData():
             executeQuery(delete_queries, conn, cur)
 
 def databaseSetup():
+    """
+    Setups the connected database with the correct datatypes 
+    """
     create_queries = importSQLQueries("src/database/sqltemplates/db_creation_dump.sql")
 
     logger.debug("Creating DB Format.")

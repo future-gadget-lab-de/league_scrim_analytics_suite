@@ -22,10 +22,13 @@ def main() -> int:
 
     for ui in uis:
         out_py = OUT_DIR / f"ui_{ui.stem}.py"
-        cmd = ["./.venv/bin/pyside6-uic", str(ui), "-o", str(out_py)]
-        print(" ".join(cmd))
-        subprocess.run(cmd, check=True)
-
+        try:
+            cmd = ["./.venv/bin/pyside6-uic", str(ui), "-o", str(out_py)]
+            print(" ".join(cmd))
+            subprocess.run(cmd, check=True)
+        except:
+            print("ERROR: your .venv is missing")
+            
     print(f"Generated {len(uis)} UI file(s) into {OUT_DIR}")
     return 0
 
