@@ -6,7 +6,7 @@ import subprocess, pathlib, sys
 from src.visuals.windows.main_window import MainWindow
 from PySide6.QtWidgets import QApplication
 
-LSAS = pathlib.Path(__file__).resolve().parents[1]
+LSAS = pathlib.Path(__file__).resolve().parents[3]
 COMPILE_UI = LSAS / "LSAS" / "src" / "visuals" / "ui" 
 
 def runAdvancedFrontend() -> None:
