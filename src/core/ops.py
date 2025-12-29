@@ -16,6 +16,7 @@ def enrollSettings(relPathToConf: str) -> None:
         the relative path to the config folder
     
     """
+
     settings_dict = {
         "lsas": {
             "config_directory": relPathToConf, 
@@ -34,7 +35,13 @@ def enrollSettings(relPathToConf: str) -> None:
 
     for key in settings_dict.keys():
         relPathToFile = relPathToConf + "/" + str(key) + ".conf"
-        writeSettingsFile(settings_dict[key], relPathToFile)
+
+        try: 
+            settings = readSettingsFile(relPathToConf + "/" + str(key) + ".conf")
+        except: 
+            settings = settings_dict[key]
+
+        writeSettingsFile(settings, relPathToFile)
     
 
 def importMatchfileData(relPathToFile: str) -> None:
