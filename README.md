@@ -2,15 +2,8 @@
 
 ## Prerequisite
 
-To be functional, one must first compile the .ui files:
-
-```
-.../LSAS $ python3 -m ./src/visuals/ui/compile_ui.py
-``` 
-
-To successfully get this script working, one must check
-- that pwd returns `/pathtoprojects/.../LSAS` (not in a literal sense)
-- the virtual environment is installed in a the directory `.venv`
+For loading the GUI it is mandatory, that one initializes a 
+virtual environment, using the `requirements.txt`.
 
 ## Roadmap
 Highest Priority (ordered)
