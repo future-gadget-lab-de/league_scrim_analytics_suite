@@ -135,7 +135,7 @@ def readFileByLine(relPathToFile) -> list[str]:
             lines = [line.rstrip() for line in file]  # remove \n
             return lines
     except:
-        print("ERROR: fileread not successful")
+        print("[ERROR] file: " + relPathToFile + " can't be read")
         exit(1)
 
 def moveFile(file, dest: str) -> None:
