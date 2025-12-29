@@ -54,7 +54,7 @@ def importMatchfileData(relPathToFile: str) -> None:
         the relative path to the matchfile
     
     """
-    settings = readSettingsFile("config/lsas.conf")
+    settings = readSettingsFile(".config/lsas.conf")
     metadata, playerdata, blueteamdata, redteamdata, data_file = loadMatchData(relPathToFile)
 
     match settings["mariadb"]:
@@ -85,7 +85,7 @@ def clearData():
     """
     clears all Data out of the connected databases or the .csv directory
     """
-    settings = readSettingsFile("config/lsas.conf")
+    settings = readSettingsFile(".config/lsas.conf")
 
     match settings["mariadb"]:
         case "0":
