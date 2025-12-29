@@ -6,7 +6,36 @@ from src.core.match import loadMatchData
 from src.database.queries import returnInsertQuery
 from src.database.execution import executeQuery, buildConnection
 from src.database.sqltemplates.template import importSQLQueries
-from src.utils import readSettingsFile, addDictToCsv
+from src.utils import readSettingsFile, writeSettingsFile, addDictToCsv
+
+def enrollSettings(relPathToConf: str) -> None:
+    """
+    Enrolls settings files for the user
+
+    relPathToConf : str
+        the relative path to the config folder
+    
+    """
+    settings_dict = {
+        "lsas": {
+            "config_directory": relPathToConf, 
+            "csv_directory": "",
+            "mariadb": "",
+            "API_key": ""
+        },
+        "database" : {
+            "host": "",
+            "user": "",
+            "password": "",
+            "port": "",
+            "database": ""
+        }
+    }
+
+    for key in settings_dict.keys():
+        relPathToFile = relPathToConf + "/" + str(key) + ".conf"
+        writeSettingsFile(settings_dict[key], relPathToFile)
+    
 
 def importMatchfileData(relPathToFile: str) -> None:
     """

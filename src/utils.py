@@ -228,3 +228,4 @@ def reloadjsonfiles(relPathToJson: str, linkToJson: str) -> dict:
             json.dump(data_dict, data)
 
         return data_dict
+
