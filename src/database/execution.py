@@ -3,26 +3,8 @@ logger = logging.getLogger(__name__)
 
 import mariadb, sys
 
-from src.utils import readFileByLine
-
-def loadDatabaseConfig():
-    """
-    Reads the Database config file and builds a dictionary for use in mariadb connection
- 
-    Returns
-    -------
-    config_dict : dict        
-        Database parameters as a dictionary.
-    
-    """
-
-    config = dict()
-    config_by_line = readFileByLine("config/database.conf")    
-    
-    for line in config_by_line:
-        setting = line.replace(" ", "").split("=")   # remove whitespace and split
-        config[setting[0]] = setting[1]    # build dict 
-    return config
+from src.utils import readSettingsFile
+from src.config import locPath_k
 
 def buildConnection() -> tuple:
     """builds a connection to mariadb server
@@ -36,7 +18,8 @@ def buildConnection() -> tuple:
     cur : cursor
         Executes SQL statements and procedures, and manages fetching results.
     """
-    conn_params = loadDatabaseConfig()
+    settings_loc = readSettingsFile(locPath_k)
+    conn_params = readSettingsFile(settings_loc["database"])
     conn_params['port'] = int(conn_params['port']) 
     conn = mariadb.connect(**conn_params)
     logger.info("Connection to MariaDB Server established.")

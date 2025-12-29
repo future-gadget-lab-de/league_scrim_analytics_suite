@@ -3,7 +3,8 @@ import logging, os
 logger = logging.getLogger(__name__)
 
 from src.visuals.gui import runAdvancedFrontend
-from src.core.ops import enrollSettings, importMatchfileData
+from src.core.ops import importMatchfileData
+from src.config import enrollSettings
 from src.args import initiliazeParser
 from src.utils import getRelPath
 

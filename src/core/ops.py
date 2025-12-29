@@ -7,42 +7,8 @@ from src.database.queries import returnInsertQuery
 from src.database.execution import executeQuery, buildConnection
 from src.database.sqltemplates.template import importSQLQueries
 from src.utils import readSettingsFile, writeSettingsFile, addDictToCsv, list_relative_filepaths, getRelPath
+from src.config import locPath_k
 
-def enrollSettings(relPathToConf: str) -> None:
-    """
-    Enrolls settings files for the user
-
-    relPathToConf : str
-        the relative path to the config folder
-    
-    """
-
-    settings_dict = {
-        "lsas": {
-            "config_directory": relPathToConf, 
-            "csv_directory": "",
-            "mariadb": "",
-            "API_key": ""
-        },
-        "database" : {
-            "host": "",
-            "user": "",
-            "password": "",
-            "port": "",
-            "database": ""
-        }
-    }
-
-    for key in settings_dict.keys():
-        relPathToFile = relPathToConf + "/" + str(key) + ".conf"
-
-        try: 
-            settings = readSettingsFile(relPathToConf + "/" + str(key) + ".conf")
-        except: 
-            settings = settings_dict[key]
-
-        writeSettingsFile(settings, relPathToFile)
-    
 
 def importMatchfileData(PathToFolder: str) -> None:
     """
@@ -64,10 +30,10 @@ def importMatchfileData(PathToFolder: str) -> None:
     else: # if it is a directory
         files = list_relative_filepaths(relPathToFolder)
 
-    settings = readSettingsFile(".config/lsas.conf")
+    settings_loc = readSettingsFile(locPath_k)
+    settings = readSettingsFile(settings_loc["lsas"])
 
     for file in files:
-
         metadata, playerdata, blueteamdata, redteamdata, data_file = loadMatchData(file)
 
         match settings["mariadb"]:
@@ -100,7 +66,8 @@ def clearData():
     """
     clears all Data out of the connected databases or the .csv directory
     """
-    settings = readSettingsFile(".config/lsas.conf")
+    settings_loc = readSettingsFile(locPath_k)
+    settings = readSettingsFile(settings_loc["lsas"])
 
     match settings["mariadb"]:
         case "0":
