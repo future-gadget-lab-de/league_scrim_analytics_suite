@@ -11,13 +11,16 @@ from src.visuals.windows.maria_dialog import MariaDialog
 from src.core.ops import importMatchfileData, clearData, databaseSetup
 
 from src.utils import writeSettingsFile, readSettingsFile, getRelPath
+from src.config import locPath_k
 
 class MainWindow(QMainWindow):
     def __init__(self) -> None:
         super().__init__()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
-        self.settings = readSettingsFile(".config/lsas.conf")
+        
+        self.settings_loc = readSettingsFile(locPath_k)
+        self.settings = readSettingsFile(self.settings_loc["lsas"])
 
         if self.settings["mariadb"] == "0":
             self.ui.radio_db_create.setCheckable(False)
@@ -54,12 +57,12 @@ class MainWindow(QMainWindow):
                 self.ui.radio_db_create.setCheckable(True)
             else:
                 self.ui.radio_db_create.setCheckable(False)
-            writeSettingsFile(settings, ".config/lsas.conf")
+            writeSettingsFile(settings, self.settings_loc["lsas"])
             logger.info("general settings saved")
 
     def open_mariadb_config(self) -> None:
         mdlg = MariaDialog(self)
         if mdlg.exec():
             settings = mdlg.get_settings()
-            writeSettingsFile(settings, ".config/database.conf")
+            writeSettingsFile(settings, self.settings_loc["database"])
             logger.info("mariadb settings saved")

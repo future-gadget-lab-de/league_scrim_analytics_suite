@@ -4,6 +4,7 @@ from PySide6.QtWidgets import QDialog
 from src.visuals.ui.generated.ui_settings import Ui_settings_dialog
 
 from src.utils import readSettingsFile
+from src.config import locPath_k
 
 class SettingsDialog(QDialog):
     def __init__(self, parent=None) -> None:
@@ -11,7 +12,8 @@ class SettingsDialog(QDialog):
         self.ui = Ui_settings_dialog()
         self.ui.setupUi(self)
         
-        self.settings = readSettingsFile(".config/lsas.conf")
+        settings_loc = readSettingsFile(locPath_k)
+        self.settings = readSettingsFile(settings_loc["lsas"])
         self.init_fields()
 
         self.ui.lineEdit_csv_path.textChanged.connect(self.change_line_setting)

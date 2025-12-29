@@ -2,7 +2,7 @@ import logging, os
 
 from src.utils import readSettingsFile, writeSettingsFile
 
-locPath_k = ".config/location.conf"
+locPath_k = ".internal/location.conf"
 
 def enrollSettings(relPathToConf: str) -> None:
     """
@@ -12,6 +12,8 @@ def enrollSettings(relPathToConf: str) -> None:
         the relative path to the config folder
     
     """
+    if os.path.isabs(relPathToConf):
+        raise ValueError("Path must be relative")
 
     settings_dict = {
         "location": {
