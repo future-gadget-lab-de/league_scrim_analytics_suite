@@ -117,17 +117,17 @@ def findFile(path: str) -> str:
     
 def readFileByLine(relPathToFile) -> list[str]:
     """
-    read a file as an array of string lines
+    Read a file as an array of string lines.
 
     Parameters
     ----------
     relPathToFile : str
-        the relative path to a file, which is to be read
+        The relative path to a file, which is to be read.
 
     Returns
     -------
     lines : list[str]
-        a list, containing each line per entry in the list    
+        A list, containing each line per entry in the list.   
     
     """
     try:    
@@ -145,9 +145,9 @@ def moveFile(file, dest: str) -> None:
     Parameters
     ----------
     file : str                  
-        the filename, which is to move
+        The filename, which is to move.
     dest : str             
-        the destination as a relative path (containing the new name)
+        The destination as a relative path (containing the new name).
     
     """
     path_hierarchy = dest.split("/")
@@ -170,20 +170,21 @@ def list_relative_filepaths(path: str) -> list[str]:
     
     Returns
     -------
-    filepaths : list[str]      
+    filepaths : list[str]
         List of file paths relative to the provided base directory.
 
     """
     if os.path.isabs(path):
         raise ValueError("Path must be relative")
 
-    base_path = os.path.abspath(path)
+    search_path = os.path.abspath(path)
+    base_path = os.getcwd()
 
     if not os.path.isdir(base_path):
         return []
 
     filepaths: list[str] = []
-    for root, _, files in os.walk(base_path):
+    for root, _, files in os.walk(search_path):
         for filename in files:
             absolute_path = os.path.join(root, filename)
             relative_path = os.path.relpath(absolute_path, start=base_path)

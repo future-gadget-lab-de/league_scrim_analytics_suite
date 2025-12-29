@@ -1,10 +1,11 @@
 from src.log_config import setup_logging
-import logging
+import logging, os
 logger = logging.getLogger(__name__)
 
 from src.visuals.gui import runAdvancedFrontend
-from src.core.ops import enrollSettings
+from src.core.ops import enrollSettings, importMatchfileData
 from src.args import initiliazeParser
+from src.utils import getRelPath
 
 
 if __name__ == "__main__":
@@ -17,6 +18,9 @@ if __name__ == "__main__":
         setup_logging(level = "DEBUG")
     else:
         setup_logging(level = "INFO")
+
+    if args.matchfile is not None:
+        importMatchfileData(args.matchfile)
 
     # the gui starts here
     if args.gui:
