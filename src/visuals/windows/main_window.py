@@ -17,7 +17,7 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
-        self.settings = readSettingsFile("config/lsas.conf")
+        self.settings = readSettingsFile(".config/lsas.conf")
 
         if self.settings["mariadb"] == "0":
             self.ui.radio_db_create.setCheckable(False)
@@ -54,12 +54,12 @@ class MainWindow(QMainWindow):
                 self.ui.radio_db_create.setCheckable(True)
             else:
                 self.ui.radio_db_create.setCheckable(False)
-            writeSettingsFile(settings, "config/lsas.conf")
+            writeSettingsFile(settings, ".config/lsas.conf")
             logger.info("general settings saved")
 
     def open_mariadb_config(self) -> None:
         mdlg = MariaDialog(self)
         if mdlg.exec():
             settings = mdlg.get_settings()
-            writeSettingsFile(settings, "config/database.conf")
+            writeSettingsFile(settings, ".config/database.conf")
             logger.info("mariadb settings saved")

@@ -11,7 +11,7 @@ class MariaDialog(QDialog):
         self.ui = Ui_Dialog()
         self.ui.setupUi(self)
         
-        self.settings = readSettingsFile("config/database.conf")
+        self.settings = readSettingsFile(".config/database.conf")
 
         self.ui.lineEdit_adress.setText(self.settings["host"])
         self.ui.lineEdit_db.setText(self.settings["database"])

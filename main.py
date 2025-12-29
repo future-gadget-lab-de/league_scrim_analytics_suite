@@ -27,6 +27,6 @@ def runAdvancedFrontend() -> None:
 
 if __name__ == "__main__":
     setup_logging(level = "DEBUG")
-    enrollSettings("config")
+    enrollSettings(".config")
     runAdvancedFrontend()
 

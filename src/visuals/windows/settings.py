@@ -11,7 +11,7 @@ class SettingsDialog(QDialog):
         self.ui = Ui_settings_dialog()
         self.ui.setupUi(self)
         
-        self.settings = readSettingsFile("config/lsas.conf")
+        self.settings = readSettingsFile(".config/lsas.conf")
         self.init_fields()
 
         self.ui.lineEdit_csv_path.textChanged.connect(self.change_line_setting)
