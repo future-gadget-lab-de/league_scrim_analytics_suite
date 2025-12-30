@@ -1,3 +1,13 @@
+"""
+Log Level explanation:
+    CRITICAL:   Errors which can damage the underlying Database or the system itself (this prolly will never occur)
+    ERROR:      Errors where Program cannot continue running , example: duplicate keys in database
+    WARN:       Failure in the Program that needs to alert the user but not halt , example: connection failed to DB, retry possible
+    INFO:       General Purpose logs, "Start importing file xy , finished importing file xy" and so on.
+    DEBUG:      Expands to log more frequently than Info, also with the file open at the time of logging.
+    TRACE:      Log EVERYTHING , what method is being called, what file is opened (...)
+"""
+
 import logging
 import logging.config
 from pathlib import Path
