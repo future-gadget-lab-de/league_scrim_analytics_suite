@@ -11,8 +11,12 @@ from src.config import locPath_k
 
 if __name__ == "__main__":
 
-    args = initiliazeParser().parse_args()
+    parser = initiliazeParser()
+    args = parser.parse_args()
     
+    if not len(sys.argv) > 1:
+        parser.print_help()
+
     # logging
     if args.verbose:
         setup_logging(level = "DEBUG")
@@ -34,4 +38,4 @@ if __name__ == "__main__":
     # the gui starts here
     if args.gui:
         runAdvancedFrontend()
-
+        
