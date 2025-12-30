@@ -5,11 +5,10 @@ from pathlib import Path
 def setup_logging(
     level: str = "INFO",
     log_dir: str | None = None,
-) -> None:
+    ) -> None:
     """
     central configuration for logging. \n
     hierarchie: DEBUG > INFO > WARNING > ERROR > CRITICAL
-
 
     Parameters
     ----------
@@ -45,7 +44,7 @@ def setup_logging(
         "disable_existing_loggers": False,
         "formatters": {
             "console": {
-                "format": "%(levelname)s %(name)s: %(message)s",
+                "format": "%(asctime)s [%(levelname)s] %(name)s: %(message)s",
             },
             "file": {
                 "format": "%(asctime)s %(levelname)s %(name)s "
@@ -58,5 +57,10 @@ def setup_logging(
             "handlers": list(handlers.keys()),
         },
     }
-
+    TRACE_LVL_NUM = 9
+    logging.addLevelName(TRACE_LVL_NUM, "TRACE")
+    def trace(self, message, *args, **kws):
+        if self.isEnabledFor(TRACE_LVL_NUM):
+            self._log(TRACE_LVL_NUM, message, args, **kws)
+    logging.Logger.trace = trace
     logging.config.dictConfig(logging_config)

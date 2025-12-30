@@ -19,23 +19,27 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # logging
-    if args.verbose:
+    print(args)
+    if args.very_verbose:
+        setup_logging(level ="TRACE")
+    elif args.verbose:
         setup_logging(level = "DEBUG")
     else:
         setup_logging(level = "INFO")
-
+    
+    logger.trace("Set Log-Level")
     if not os.path.isfile(locPath_c):
         enrollSettings(".config")
         logger.info("Enrolled a fresh config folder. restart the Application.")
         sys.exit(0)
-
     if args.config is not None:
         enrollSettings(args.config)
 
     # import of matchfiles
+    logger.trace("Starting Import Routine")
     if args.matchfile is not None:
         importMatchfileData(args.matchfile)
-
+    logger.trace("Finished Import Routine")
     # the gui starts here
     if args.gui:
         runAdvancedFrontend()
