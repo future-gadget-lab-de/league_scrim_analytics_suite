@@ -4,7 +4,7 @@ logger = logging.getLogger(__name__)
 import mariadb, sys
 
 from src.utils import readSettingsFile
-from src.config import locPath_k
+from src.config import locPath_c
 
 def buildConnection() -> tuple:
     """builds a connection to mariadb server
@@ -18,7 +18,7 @@ def buildConnection() -> tuple:
     cur : cursor
         Executes SQL statements and procedures, and manages fetching results.
     """
-    settings_loc = readSettingsFile(locPath_k)
+    settings_loc = readSettingsFile(locPath_c)
     conn_params = readSettingsFile(settings_loc["database"])
     conn_params['port'] = int(conn_params['port']) 
     conn = mariadb.connect(**conn_params)

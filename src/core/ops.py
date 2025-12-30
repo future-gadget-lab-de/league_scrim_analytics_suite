@@ -7,7 +7,7 @@ from src.database.queries import returnInsertQuery
 from src.database.execution import executeQuery, buildConnection
 from src.database.sqltemplates.template import importSQLQueries
 from src.utils import readSettingsFile, writeSettingsFile, addDictToCsv, list_relative_filepaths, getRelPath
-from src.config import locPath_k
+from src.config import locPath_c
 
 
 def importMatchfileData(PathToFolder: str) -> None:
@@ -30,7 +30,7 @@ def importMatchfileData(PathToFolder: str) -> None:
     else: # if it is a directory
         files = list_relative_filepaths(relPathToFolder)
 
-    settings_loc = readSettingsFile(locPath_k)
+    settings_loc = readSettingsFile(locPath_c)
     settings = readSettingsFile(settings_loc["lsas"])
 
     for file in files:
@@ -66,7 +66,7 @@ def clearData():
     """
     clears all Data out of the connected databases or the .csv directory
     """
-    settings_loc = readSettingsFile(locPath_k)
+    settings_loc = readSettingsFile(locPath_c)
     settings = readSettingsFile(settings_loc["lsas"])
 
     match settings["mariadb"]:

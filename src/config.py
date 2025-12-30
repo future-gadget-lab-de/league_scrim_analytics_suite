@@ -2,7 +2,7 @@ import logging, os
 
 from src.utils import readSettingsFile, writeSettingsFile
 
-locPath_k = ".internal/location.conf"
+locPath_c = ".internal/location.conf"
 
 def enrollSettings(relPathToConf: str) -> None:
     """
@@ -35,8 +35,8 @@ def enrollSettings(relPathToConf: str) -> None:
         }
     }
 
-    if os.path.isfile(locPath_k):
-        locs = readSettingsFile(locPath_k)
+    if os.path.isfile(locPath_c):
+        locs = readSettingsFile(locPath_c)
 
         for key in locs.keys():
             if os.path.isfile(locs[key]):
@@ -45,7 +45,7 @@ def enrollSettings(relPathToConf: str) -> None:
     for key in settings_dict.keys():
 
         if str(key) == "location":
-            writeSettingsFile(settings_dict[key], locPath_k)
+            writeSettingsFile(settings_dict[key], locPath_c)
             continue
 
         writeSettingsFile(settings_dict[key],settings_dict["location"][key])

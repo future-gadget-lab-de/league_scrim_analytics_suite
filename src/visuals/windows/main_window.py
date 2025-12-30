@@ -11,7 +11,7 @@ from src.visuals.windows.maria_dialog import MariaDialog
 from src.core.ops import importMatchfileData, clearData, databaseSetup
 
 from src.utils import writeSettingsFile, readSettingsFile, getRelPath
-from src.config import locPath_k
+from src.config import locPath_c
 
 class MainWindow(QMainWindow):
     def __init__(self) -> None:
@@ -19,7 +19,7 @@ class MainWindow(QMainWindow):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         
-        self.settings_loc = readSettingsFile(locPath_k)
+        self.settings_loc = readSettingsFile(locPath_c)
         self.settings = readSettingsFile(self.settings_loc["lsas"])
 
         if self.settings["mariadb"] == "0":

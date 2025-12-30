@@ -4,7 +4,7 @@ from PySide6.QtWidgets import QDialog
 from src.visuals.ui.generated.ui_settings import Ui_settings_dialog
 
 from src.utils import readSettingsFile
-from src.config import locPath_k
+from src.config import locPath_c
 
 class SettingsDialog(QDialog):
     def __init__(self, parent=None) -> None:
@@ -12,7 +12,7 @@ class SettingsDialog(QDialog):
         self.ui = Ui_settings_dialog()
         self.ui.setupUi(self)
         
-        settings_loc = readSettingsFile(locPath_k)
+        settings_loc = readSettingsFile(locPath_c)
         self.settings = readSettingsFile(settings_loc["lsas"])
         self.init_fields()
 

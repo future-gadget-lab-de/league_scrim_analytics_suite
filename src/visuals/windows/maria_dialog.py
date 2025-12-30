@@ -4,7 +4,7 @@ from PySide6.QtWidgets import QDialog
 from src.visuals.ui.generated.ui_maria_dialog import Ui_Dialog
 
 from src.utils import readSettingsFile
-from src.config import locPath_k
+from src.config import locPath_c
 
 class MariaDialog(QDialog):
     def __init__(self, parent=None) -> None:
@@ -12,7 +12,7 @@ class MariaDialog(QDialog):
         self.ui = Ui_Dialog()
         self.ui.setupUi(self)
         
-        settings_loc = readSettingsFile(locPath_k)
+        settings_loc = readSettingsFile(locPath_c)
         self.settings = readSettingsFile(settings_loc["database"])
 
         self.ui.lineEdit_adress.setText(self.settings["host"])
