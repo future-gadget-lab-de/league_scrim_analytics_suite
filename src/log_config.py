@@ -1,7 +1,7 @@
 """
 Log Level explanation:
-    CRITICAL:   Errors which can damage the underlying Database or the system itself (this prolly will never occur)
-    ERROR:      Errors where Program cannot continue running , example: duplicate keys in database
+    Critical:   Errors where Program cannot continue running , example: duplicate keys in database
+    ERROR:      Failure in a function that leads to that function not being able to complete.
     WARN:       Failure in the Program that needs to alert the user but not halt , example: connection failed to DB, retry possible
     INFO:       General Purpose logs, "Start importing file xy , finished importing file xy" and so on.
     DEBUG:      Expands to log more frequently than Info, also with the file open at the time of logging.
