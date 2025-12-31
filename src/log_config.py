@@ -7,7 +7,7 @@ Log Level explanation:
     Debug:      Expands to log more frequently than Info, also with the file open at the time of logging.
     Trace:      Log EVERYTHING , what method is being called, what file is opened (...)
 """
-
+import sys
 import logging
 import logging.config
 from pathlib import Path
@@ -44,11 +44,13 @@ def setup_logging(
             self._log(TRACE_LVL_NUM, message, args, **kws)
     logging.Logger.trace = trace
 
-
     # Define Logging
     logger = logging.getLogger()
-    handler = logging.StreamHandler()
-    formatter = AnsiColorFormatter('{asctime} | {levelname:<8s} | {name:<20s} | {message}', style='{')
-    handler.setFormatter(formatter)
+    if log_dir is not None:
+        handler = logging.FileHandler(log_dir + "lsas.log")
+    else:
+        handler = logging.StreamHandler(sys.stdout)
+        formatter = AnsiColorFormatter('{asctime} | {levelname:<8s} | {name:<20s} | {message}', style='{')
+        handler.setFormatter(formatter)
     logger.addHandler(handler)
     logger.setLevel(level)
