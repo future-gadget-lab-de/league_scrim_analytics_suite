@@ -18,10 +18,14 @@ def getRelPath(absPath: str) -> str:
         the resulting relative path
     
     """
+    logging.trace("Starting getRelPath function.")
 
     abs_path_object = pathlib.Path(absPath)
-    
-    return os.path.relpath(str(abs_path_object), start=os.getcwd())
+    relPath = os.path.relpath(str(abs_path_object), start=os.getcwd())
+
+    logging.debug("Converting absolute path: " + absPath + " into relative path: " +relPath)    
+    logging.trace("Finished getRelPath function.")
+    return relPath
 
 def addDictToCsv(data: dict, path_to_csv: str) -> None:
     """
@@ -33,15 +37,19 @@ def addDictToCsv(data: dict, path_to_csv: str) -> None:
         the data which will get imported
     path_to_csv : str
         the relative path to the .csv file
-
-    
     """
+    logging.trace("Starting addDictToCsv function")
+
     fields = list(data.keys())
+    
     os.makedirs(os.path.dirname(path_to_csv), exist_ok=True)
+    logging.debug("Attempting to write file: " + path_to_csv)
     with open(path_to_csv, mode='a', newline='') as file:
         writer = csv.DictWriter(file, fieldnames=fields)
         writer.writerows([data])  # Write data rows
-
+    logging.Info("Written file: " + path_to_csv)
+    logging.trace("Finished addDictToCsv function")
+    
 def readSettingsFile(rel_path_with_name: str) -> dict:
     """
     Reads a passed .conf file
