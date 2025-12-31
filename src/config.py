@@ -1,9 +1,8 @@
 import logging, os
-
 from src.utils import readSettingsFile, writeSettingsFile
 
 locPath_c = ".internal/location.conf"
-#TODO: Rewrite Logging
+logger = logging.getLogger(__name__)
 def enrollSettings(relPathToConf: str) -> None:
     """
     Enrolls settings files for the user
@@ -12,8 +11,14 @@ def enrollSettings(relPathToConf: str) -> None:
         the relative path to the config folder
     
     """
+    logger.trace("Checking if path to Config is relative")
+
     if os.path.isabs(relPathToConf):
-        raise ValueError("Path must be relative")
+        error_msg ="Path must be relative"
+        logger.error(error_msg)
+        raise ValueError(error_msg)
+    else:
+        logger.trace("Check successful")
 
     settings_dict = {
         "location": {
@@ -43,10 +48,8 @@ def enrollSettings(relPathToConf: str) -> None:
                 settings_dict[key] = readSettingsFile(locs[key])
 
     for key in settings_dict.keys():
-
         if str(key) == "location":
             writeSettingsFile(settings_dict[key], locPath_c)
             continue
 
         writeSettingsFile(settings_dict[key],settings_dict["location"][key])
-    

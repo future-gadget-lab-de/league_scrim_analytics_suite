@@ -1,7 +1,6 @@
-import logging
+import logging, os, pathlib, json, requests, csv
 logger = logging.getLogger(__name__)
 
-import os, pathlib, json, requests, csv
 #TODO: Rewrite Logging
 def getRelPath(absPath: str) -> str:
     """
@@ -18,13 +17,12 @@ def getRelPath(absPath: str) -> str:
         the resulting relative path
     
     """
-    logging.trace("Starting getRelPath function.")
+    logger.trace("Starting getRelPath function with input: " + absPath)
 
     abs_path_object = pathlib.Path(absPath)
     relPath = os.path.relpath(str(abs_path_object), start=os.getcwd())
 
-    logging.debug("Converting absolute path: " + absPath + " into relative path: " +relPath)    
-    logging.trace("Finished getRelPath function.")
+    logger.trace("Finished getRelPath function with Output: " + relPath)
     return relPath
 
 def addDictToCsv(data: dict, path_to_csv: str) -> None:
@@ -38,17 +36,19 @@ def addDictToCsv(data: dict, path_to_csv: str) -> None:
     path_to_csv : str
         the relative path to the .csv file
     """
-    logging.trace("Starting addDictToCsv function")
+    logger.trace("Starting addDictToCsv function with path:" + path_to_csv + " and data_dict: "+ str(data))
 
     fields = list(data.keys())
     
     os.makedirs(os.path.dirname(path_to_csv), exist_ok=True)
-    logging.debug("Attempting to write file: " + path_to_csv)
+    logger.debug("Attempting to write file: " + path_to_csv)
+
     with open(path_to_csv, mode='a', newline='') as file:
         writer = csv.DictWriter(file, fieldnames=fields)
         writer.writerows([data])  # Write data rows
-    logging.Info("Written file: " + path_to_csv)
-    logging.trace("Finished addDictToCsv function")
+
+    loggier.info("Written file: " + path_to_csv)
+    logger.trace("Finished addDictToCsv function")
     
 def readSettingsFile(rel_path_with_name: str) -> dict:
     """
@@ -65,12 +65,15 @@ def readSettingsFile(rel_path_with_name: str) -> dict:
         the dictionary, containing the settings
     
     """
+    logger.trace("Starting readSettingsFile Function with Input: " +rel_path_with_name)
     config = dict()
     config_by_line = readFileByLine(rel_path_with_name)    
     
     for line in config_by_line:
         setting = line.replace(" ", "").split("=")   # remove whitespace and split
         config[setting[0]] = setting[1]    # build dict 
+        logger.trace("Add the following value to config-dict.: "+ str(setting[1]))
+    logger.trace("Finished readSettingsFile Function with Output: "+ str(config))
     return config
 
 def writeSettingsFile(settings: dict, rel_path_with_name: str) -> None:
@@ -84,6 +87,8 @@ def writeSettingsFile(settings: dict, rel_path_with_name: str) -> None:
     rel_path_with_name : str
         Relative path including the filename (e.g. "config/lsas.conf").
     """
+    logger.trace("Starting writeSettingsFile Function")
+
     lines = [f"{key}={value}" for key, value in settings.items()]
     
     base_path = os.path.abspath(os.getcwd())
@@ -93,7 +98,7 @@ def writeSettingsFile(settings: dict, rel_path_with_name: str) -> None:
 
     with open(full_path, "w", encoding="utf-8") as conf_file:
         conf_file.write("\n".join(lines))
-
+        logger.debug("Written config file: " + full_path)
 
 def findFile(path: str) -> str:
     """
@@ -110,7 +115,7 @@ def findFile(path: str) -> str:
         relative path for the file
 
     """
-    
+    logger.trace("Starting findFile Function with Input: " + path)
     filelist = []
     with os.scandir(path) as ents:
         for e in ents:
@@ -119,10 +124,10 @@ def findFile(path: str) -> str:
             else:
                 filelist.append(e.name)
     filename=filelist[0]
-    matchfile = path + filename
-    return matchfile
-
-    
+    file = path + filename
+    logger.trace("Ended findFile Function with Output: " + file)
+    return file
+#NOTE Continue here
 def readFileByLine(relPathToFile) -> list[str]:
     """
     Read a file as an array of string lines.

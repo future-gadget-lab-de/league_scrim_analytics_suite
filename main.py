@@ -28,11 +28,14 @@ if __name__ == "__main__":
     logger.info("Set Log-Level to: " + logging.getLevelName(logger.getEffectiveLevel()))
 
     if not os.path.isfile(locPath_c):
+        logging.trace("Starting enrollSettings Function with fresh folder")
         enrollSettings(".config")
         logger.info("Enrolled a fresh config folder. restart the Application.")
         sys.exit(0)
     if args.config is not None:
+        logging.trace("Starting enrollSettings Function with user settings:" + str(args.config))
         enrollSettings(args.config)
+        logging.info("Changed Config settings to user specified.")
 
     # import of matchfiles
     if args.matchfile is not None:
