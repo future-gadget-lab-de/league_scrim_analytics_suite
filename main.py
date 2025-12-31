@@ -8,7 +8,7 @@ from src.config import enrollSettings
 from src.args import initiliazeParser
 from src.utils import getRelPath
 from src.config import locPath_c
-
+#TODO: Logging Rewrite
 if __name__ == "__main__":
 
     parser = initiliazeParser()

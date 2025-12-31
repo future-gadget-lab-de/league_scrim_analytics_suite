@@ -2,6 +2,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 # (id, dataRequested) --> explicit_name of given id
+#TODO: Rewrite Logging
 def mapId(id: int, dataRequested: str, patch: str | None = None):
     """
     Maps the given id, to the corresponding name ingame.

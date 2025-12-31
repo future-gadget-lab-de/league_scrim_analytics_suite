@@ -1,8 +1,7 @@
 """
 entrypoint for all GUI Applications
 """
-
-# from src.visuals.windows.main_window import MainWindow
+#TODO: Rewrite Logging
 import subprocess, pathlib, sys
 from PySide6.QtWidgets import QApplication
 

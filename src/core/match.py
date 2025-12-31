@@ -8,7 +8,7 @@ from src.core.map import mapId
 from src.core.team import playerTeamCheck
 
 from src.utils import findFile
-
+#TODO: Rewrite Logging
 def genBanArr(bans: dict) -> list:
 
     """

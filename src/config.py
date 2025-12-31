@@ -3,7 +3,7 @@ import logging, os
 from src.utils import readSettingsFile, writeSettingsFile
 
 locPath_c = ".internal/location.conf"
-
+#TODO: Rewrite Logging
 def enrollSettings(relPathToConf: str) -> None:
     """
     Enrolls settings files for the user

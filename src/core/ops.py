@@ -8,7 +8,7 @@ from src.database.execution import executeQuery, buildConnection
 from src.database.sqltemplates.template import importSQLQueries
 from src.utils import readSettingsFile, writeSettingsFile, addDictToCsv, list_relative_filepaths, getRelPath
 from src.config import locPath_c
-
+#TODO: Rewrite Logging
 
 def importMatchfileData(PathToFolder: str) -> None:
     """

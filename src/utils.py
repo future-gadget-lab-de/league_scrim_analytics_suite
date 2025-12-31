@@ -2,7 +2,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 import os, pathlib, json, requests, csv
-
+#TODO: Rewrite Logging
 def getRelPath(absPath: str) -> str:
     """
     returns the relative path for some absolute path

@@ -2,7 +2,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 from src.utils import readFileByLine
-
+#TODO: Rewrite Logging
 def importSQLQueries(relPathtoFile: str) -> list[str]:
     """imports a .sql file.
 

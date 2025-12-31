@@ -11,7 +11,7 @@ Log Level explanation:
 import logging
 import logging.config
 from pathlib import Path
-
+#TODO: Rewrite Logging
 def setup_logging(
     level: str = "INFO",
     log_dir: str | None = None,

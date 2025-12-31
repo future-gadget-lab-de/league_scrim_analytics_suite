@@ -12,7 +12,7 @@ from src.core.ops import importMatchfileData, clearData, databaseSetup
 
 from src.utils import writeSettingsFile, readSettingsFile, getRelPath
 from src.config import locPath_c
-
+#TODO: Rewrite Logging
 class MainWindow(QMainWindow):
     def __init__(self) -> None:
         super().__init__()

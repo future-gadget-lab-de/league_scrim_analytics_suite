@@ -18,7 +18,8 @@ def playerTeamCheck(pUuid: int) -> str:
         Known teamname or "enemyteam" as placeholder- Currently only supports ${Team_Name}
 
     """
-    #TODO: WIP Querying the DB for teams so we don't use a globals file + easy support for multi-team
+    #TODO:
+    #WIP Querying the DB for teams so we don't use a globals file + easy support for multi-team
     #query = queries.returnSelectQuery(teams, [TeamName, PlayerID])
     #conn_params = loadDatabaseConfig()
     #executeQuery(query, conn_params)
