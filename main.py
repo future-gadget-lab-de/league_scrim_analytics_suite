@@ -1,14 +1,13 @@
-from src.log_config import setup_logging
 import logging, os, sys
-logger = logging.getLogger(__name__)
-
+from src.log_config import setup_logging
 from src.visuals.gui import runAdvancedFrontend
 from src.core.ops import importMatchfileData
 from src.config import enrollSettings
 from src.args import initiliazeParser
 from src.utils import getRelPath
 from src.config import locPath_c
-#TODO: Logging Rewrite
+
+logger = logging.getLogger(__name__)
 if __name__ == "__main__":
 
     parser = initiliazeParser()
@@ -26,8 +25,8 @@ if __name__ == "__main__":
         setup_logging(level = "DEBUG")
     else:
         setup_logging(level = "INFO")
-    
-    logger.trace("Set Log-Level")
+    logger.info("Set Log-Level to: " + logging.getLevelName(logger.getEffectiveLevel()))
+
     if not os.path.isfile(locPath_c):
         enrollSettings(".config")
         logger.info("Enrolled a fresh config folder. restart the Application.")
@@ -36,11 +35,9 @@ if __name__ == "__main__":
         enrollSettings(args.config)
 
     # import of matchfiles
-    logger.trace("Starting Import Routine")
     if args.matchfile is not None:
         importMatchfileData(args.matchfile)
-    logger.trace("Finished Import Routine")
     # the gui starts here
     if args.gui:
+        logger.info("Starting GUI")
         runAdvancedFrontend()
-        
