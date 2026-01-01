@@ -1,7 +1,6 @@
 import logging, os, pathlib, json, requests, csv
 logger = logging.getLogger(__name__)
 
-#TODO: Rewrite Logging
 def getRelPath(absPath: str) -> str:
     """
     returns the relative path for some absolute path
@@ -99,7 +98,7 @@ def writeSettingsFile(settings: dict, rel_path_with_name: str) -> None:
     with open(full_path, "w", encoding="utf-8") as conf_file:
         conf_file.write("\n".join(lines))
         logger.debug("Written config file: " + full_path)
-
+        logger.trace("Finished writeSettingsFile function")
 def findFile(path: str) -> str:
     """
     Finds the first file in the folder given by path.
@@ -115,7 +114,7 @@ def findFile(path: str) -> str:
         relative path for the file
 
     """
-    logger.trace("Starting findFile Function with Input: " + path)
+    logger.trace("Starting findFile function with Input: " + path)
     filelist = []
     with os.scandir(path) as ents:
         for e in ents:
@@ -125,7 +124,7 @@ def findFile(path: str) -> str:
                 filelist.append(e.name)
     filename=filelist[0]
     file = path + filename
-    logger.trace("Ended findFile Function with Output: " + file)
+    logger.trace("Finished findFile function with Output: " + file)
     return file
 #NOTE Continue here
 def readFileByLine(relPathToFile) -> list[str]:
@@ -143,12 +142,14 @@ def readFileByLine(relPathToFile) -> list[str]:
         A list, containing each line per entry in the list.   
     
     """
+    logger.trace("Started readFileByLine function with Input: " + relPathToFile)
     try:    
         with open(relPathToFile) as file:
             lines = [line.rstrip() for line in file]  # remove \n
+            logger.trace("Finished readFileByLine function with Output:" + str(lines))
             return lines
     except:
-        print("[ERROR] file: " + relPathToFile + " can't be read")
+        logger.critical("file: " +relPathToFile + "cannot be read.")
         exit(1)
 
 def moveFile(file, dest: str) -> None:
@@ -161,16 +162,18 @@ def moveFile(file, dest: str) -> None:
         The filename, which is to move.
     dest : str             
         The destination as a relative path (containing the new name).
-    
     """
+    logger.trace("Started moveFile function with Inputs file: " + str(file) + " and destination: " +dest)
     path_hierarchy = dest.split("/")
     rel_path_to_folder = dest.removesuffix(path_hierarchy[-1])
     
     if not os.path.isdir(rel_path_to_folder):
+        logger.info("Created Folder: " + rel_path_to_folder)
         pathlib.Path(rel_path_to_folder).mkdir(parents=True, exist_ok=True)
 
     os.rename(file, dest)
-
+    logger.debug("Moved file : " + str(file) + " to " + dest)
+    logger.trace("Finished moveFile function")
 
 def list_relative_filepaths(path: str) -> list[str]:
     """
@@ -187,22 +190,26 @@ def list_relative_filepaths(path: str) -> list[str]:
         List of file paths relative to the provided base directory.
 
     """
+    logger.trace("Started list_relative_filepaths function with Input: " +path)
     if os.path.isabs(path):
-        raise ValueError("Path must be relative")
+        err_msg = "Path must be relative")
+        logger.error(err_msg)
+        raise ValueError(err_msg)
 
     search_path = os.path.abspath(path)
     base_path = os.getcwd()
 
     if not os.path.isdir(base_path):
+        logger.debug("No files found! Exiting list_relative_filepaths")
         return []
 
     filepaths: list[str] = []
-    for root, _, files in os.walk(search_path):
+    for root, _, files in os.walk(search_path): #NOTE Why the ,_, ?
         for filename in files:
             absolute_path = os.path.join(root, filename)
             relative_path = os.path.relpath(absolute_path, start=base_path)
             filepaths.append(relative_path)
-
+    logger.trace("Finished list_relative_filepaths Function with output: " + str(filepaths))
     return filepaths
 
 def reloadjsonfiles(relPathToJson: str, linkToJson: str) -> dict:
@@ -223,23 +230,23 @@ def reloadjsonfiles(relPathToJson: str, linkToJson: str) -> dict:
     data_dict : dict
         the json, from one of the sources above
     """
-
+    logger.trace("Started reloadjsonfiles function with inputs path: " +relPathToJson + "and link: " + linkToJson)
     # check if the file is already dumped
     if os.path.isfile(relPathToJson):
         with open(relPathToJson) as data:
-            # print("read json")
+            logger.debug("Read Json: " + relPathToJson)
+            logger.trace("Finished rejoadjsonfiles function with output: " + str(data))
             return json.load(data)
     else:
         logger.debug("Json file is not present. Downstreaming a new one.")
         data_url = linkToJson
         data_response = requests.get(data_url)
         data_dict = data_response.json()
-
         os.makedirs(os.path.dirname(relPathToJson), exist_ok=True)
 
         with open(relPathToJson, 'w') as data:
-            # print("dumped json")
             json.dump(data_dict, data)
-
+        logger.debug("Written json to dict")
+        logger.trace("Finished rejoadjsonfiles function with output: " + str(data_dict))
         return data_dict
 
