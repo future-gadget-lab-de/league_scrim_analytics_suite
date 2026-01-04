@@ -1,0 +1,25 @@
+stages: [docs]
+
+variables:
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+
+cache:
+  paths:
+    - .cache/pip
+
+build_sphinx:
+  stage: docs
+  image: python:3.12-slim
+  script:
+    - python -V
+    - python -m pip install --upgrade pip
+    - pip install -r docs/requirements.txt
+    - pip install -e .
+    - sphinx-build -b html docs/source docs/_build/html
+  artifacts:
+    when: always
+    paths:
+      - docs/_build/html
+    expire_in: 14 days
+  rules:
+    - if: $CI_COMMIT_BRANCH
