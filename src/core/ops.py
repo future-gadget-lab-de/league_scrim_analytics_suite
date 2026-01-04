@@ -38,11 +38,11 @@ def importMatchfileData(PathToFolder: str) -> None:
 
         match settings["mariadb"]:
             case "0":
-                addDictToCsv(metadata, settings["csv_directory"]+"metadata.csv")
+                addDictToCsv(metadata, settings["csv_directory"]+"/metadata.csv")
                 for dict_ in playerdata:
-                    addDictToCsv(dict_, settings["csv_directory"]+"playerdata.csv")
-                addDictToCsv(blueteamdata, settings["csv_directory"]+"teamdata.csv")
-                addDictToCsv(redteamdata, settings["csv_directory"]+"teamdata.csv")
+                    addDictToCsv(dict_, settings["csv_directory"]+"/playerdata.csv")
+                addDictToCsv(blueteamdata, settings["csv_directory"]+"/teamdata.csv")
+                addDictToCsv(redteamdata, settings["csv_directory"]+"/teamdata.csv")
 
 
 

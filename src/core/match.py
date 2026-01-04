@@ -91,12 +91,13 @@ def loadTeamData(data) -> dict:
         Dict for red team data
 
     """
-    teamdata = dict()
 
     # Create helper variable
     tlData      = data['teams'] 
 
     for i in range(2):
+
+        teamdata = dict()
         tData   = tlData[i]
         teamdata["gameid"] = data['gameId']
         teamdata["teamid"] = tData['teamId']
@@ -105,8 +106,8 @@ def loadTeamData(data) -> dict:
         banarr  = list()
         bans = tData['bans']
         try:
-            for i in range (0,5):
-                cId     = bans[i]['championId']
+            for j in range (0,5):
+                cId     = bans[j]['championId']
                 cName   = mapId(cId, 'champion')
                 banarr.append(cName)
         except:
@@ -136,36 +137,8 @@ def loadTeamData(data) -> dict:
         else:
             teamdata_blue = teamdata
         
-        teamdata = dict()
-
-            
+    
     return teamdata_blue, teamdata_red
-
-def loadPlayerIdentities(data):
-    """
-    Generates a dictionary of the players present in the Match and mapping their participant ID to their 
-    ingame Name
-
-    Parameters
-    ----------
-    data : dict           
-        The datafile for a given Match
-
-    Returns
-    -------
-    idendity_dict : dict  
-        Dictionary of the participant ID mapping to the player name and player-unique-identifieder
-
-    """
-    identity_dict = {}
-    for i in range (0,10):
-        pIdenData           = data['participantIdentities'][i] 
-        pId                 = pIdenData['participantId']
-        pName               = pIdenData['player']['gameName']
-        pUuid               = pIdenData['player']['puuid']
-        identity_dict[pId]  = (pName,pUuid)
-        
-    return identity_dict
 
 
 def loadPlayerData(data) -> list[dict]:
