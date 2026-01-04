@@ -7,7 +7,7 @@ main-test:
   stage: runnable
   tags:
     - doc
-  image: python:3.12-bookworm
+  image: ubuntu
   script:
     - python -V
     - python -m pip install --upgrade pip
