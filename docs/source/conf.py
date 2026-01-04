@@ -65,6 +65,7 @@ autodoc_default_options = {
     "show-inheritance": True,
 }
 autodoc_typehints = "description"  # Typen in die Beschreibung statt Signatur (oft lesbarer)
+autodoc_mock_imports = ["PySide6"]
 
 # Theme (beliebt, solide)
 html_theme = "sphinx_rtd_theme"
