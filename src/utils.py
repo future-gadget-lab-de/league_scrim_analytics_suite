@@ -138,6 +138,8 @@ def readFileByLine(relPathToFile) -> list[str]:
         print("[ERROR] file: " + relPathToFile + " can't be read")
         exit(1)
 
+
+
 def moveFile(file, dest: str) -> None:
     """
     Moves a file, to the provided destination
