@@ -1,5 +1,8 @@
+import sys, os
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
 from src.log_config import setup_logging
-import logging, os, sys
+import logging
 logger = logging.getLogger(__name__)
 
 from src.visuals.gui import runAdvancedFrontend
