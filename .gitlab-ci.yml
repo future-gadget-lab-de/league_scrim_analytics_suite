@@ -17,7 +17,11 @@ build_sphinx:
     - python -m pip install --upgrade pip
     - apt-get update && apt-get install -y graphviz
     - apt-get update && apt-get install -y gcc python3-dev pkg-config libmariadb-dev
+    - pip install virtualenv
+    - virtualenv venv
+    - source venv/bin/activate
     - pip install -r requirements.txt
+    - python ./src/visuals/ui/compile_ui.py
     - sphinx-apidoc -f -o docs/source/api src --separate --templatedir=docs/source/_templates
     - sphinx-build -b html docs/source docs/_build/html
   artifacts:
