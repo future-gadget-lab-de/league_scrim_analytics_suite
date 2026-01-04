@@ -14,4 +14,4 @@ if len(order) != len(paths) + 1:
 
 for i in range(1,len(order)+1):    
     with open("docs/source/index.rst", 'a') as file:
-        file.write("\n   " + order[str(i)])
+        file.write("\n   markdown/" + order[str(i)])
