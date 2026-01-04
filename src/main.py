@@ -1,15 +1,12 @@
-<<<<<<< HEAD:main.py
 import logging, os, sys
 from src.log_config import setup_logging
-=======
 import sys, os
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-
 from src.log_config import setup_logging
 import logging
-logger = logging.getLogger(__name__)
 
->>>>>>> development:src/main.py
+logger = logging.getLogger(__name__)
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
 from src.visuals.gui import runAdvancedFrontend
 from src.core.ops import importMatchfileData
 from src.config import enrollSettings
