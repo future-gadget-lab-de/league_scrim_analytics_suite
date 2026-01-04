@@ -9,42 +9,14 @@ from src.core.team import playerTeamCheck
 
 from src.utils import findFile
 
-def genBanArr(bans: dict) -> list:
 
-    """
-    Takes the ban dictionary exported from the match data and makes it into an array of championnames
-
-    Parameters
-    ----------
-    bans : dict
-        Dictionary mapping the ban order and champ ID together
-
-    Returns
-    -------
-    banarr : list
-        Array of Champion bans in the order they were banned by the Team
-    """
-
-    banarr  = []
-
-    try:
-        for i in range (0,5):
-            cId     = bans[i]['championId']
-            cName   = mapId(cId, 'champion')
-            banarr.append(cName)
-    except:
-        print("ERROR: The bans aren't proper in the given matchfile.")
-        exit(0)
-
-    return banarr
-
-def loadMatchData(relPath: str | None = None):
+def loadMatchData(relPath: str):
     """
     Wrapper method for the full data extraction of the first file found.
     
     Parameters
     ----------
-    relPath : str | None
+    relPath : str
         The datafile for a given Match
     
     Returns
@@ -57,22 +29,17 @@ def loadMatchData(relPath: str | None = None):
         Dictionary which maps all features to their values
     redteamdata : dict
         Dictionary which maps all features to their values
-    data_file : str
-        the filename of the read file
     """
-    data_file = findFile("gamefiles/matchdata/")
-    if relPath is not None:
-        data_file = relPath
-
     
-    if os.path.isfile(data_file):
-        with open(data_file) as f:
+    if os.path.isfile(relPath):
+        with open(relPath) as f:
             raw                             = f.read()
-            data                            = json.loads(raw)
-            metadata                        = loadMetadata(data)
-            playerdata                      = loadPlayerData(data)
-            blueteamdata, redteamdata       = loadTeamData(data)
-            return metadata, playerdata, blueteamdata, redteamdata, data_file
+            data_dict                       = json.loads(raw)
+            metadata                        = loadMetadata(data_dict)
+            playerdata                      = loadPlayerData(data_dict)
+            blueteamdata, redteamdata       = loadTeamData(data_dict)
+
+            return metadata, playerdata, blueteamdata, redteamdata
 
 def loadMetadata(data) -> dict:
     """
@@ -134,7 +101,19 @@ def loadTeamData(data) -> dict:
         teamdata["gameid"] = data['gameId']
         teamdata["teamid"] = tData['teamId']
 
-        bans    = genBanArr(tData['bans'])
+        # generating ban array
+        banarr  = list()
+        bans = tData['bans']
+        try:
+            for i in range (0,5):
+                cId     = bans[i]['championId']
+                cName   = mapId(cId, 'champion')
+                banarr.append(cName)
+        except:
+            print("ERROR: The bans aren't proper in the given matchfile.")
+            exit(1)
+        bans = banarr
+
         for j in range(5):
             teamdata["ban"+str(j+1)] = bans[j]
         
@@ -205,87 +184,57 @@ def loadPlayerData(data) -> list[dict]:
 
     """
     
-    playerIdentities    = loadPlayerIdentities(data)
-    pData_dict          = {}
-    items = list()
-    runes = list()
+
+    identity_dict = {}
     for i in range (0,10):
-        # Create helper Variables 
-        pData   = data['participants'][i]
-        pID     = pData['participantId']
-        pStats  = pData['stats']
+        pIdenData           = data['participantIdentities'][i] 
+        pId                 = pIdenData['participantId']
+        pName               = pIdenData['player']['gameName']
+        pUuid               = pIdenData['player']['puuid']
+        identity_dict[pId]  = (pName,pUuid)
 
-        # Extract Data from first level 
-        champ   = mapId(pData['championId'], "champion")
-        summ1   = mapId(pData['spell1Id'], "summoner")
-        summ2   = mapId(pData['spell2Id'], "summoner")
-        teamid  = pData['teamId']
-        team    = playerTeamCheck(playerIdentities[pID][1])
-        # Extract Itemdata  
-        item_dict = {}
-        for n in range (0,7):
-            itemnr="item"+str(n)
-            item_dict[n] = mapId(pStats[itemnr],'item')
-        
-        items.append(item_dict)
-        # Extract Rune Data
-        rune_dict = {}
-        for m in range (0,6):
-            runenr = "perk"+str(m)
-            rune_dict[m] = mapId(pStats[runenr], 'perk')
-        runes.append(rune_dict)
-        # Extract general Data
-        cwards_bought   =   pStats['visionWardsBoughtInGame']
-        wards_placed    =   pStats['wardsPlaced']
-        wards_destroyed =   pStats['wardsKilled']
-        vision_score    =   pStats['visionScore']
-        minions_killed  =   pStats['totalMinionsKilled']
-        own_jng_kill    =   pStats['neutralMinionsKilledTeamJungle']
-        ene_jng_kill    =   pStats['neutralMinionsKilledEnemyJungle']
-        kills           =   pStats['kills']
-        deaths          =   pStats['deaths']
-        assists         =   pStats['assists']
-        damage_dealt    =   pStats['totalDamageDealtToChampions']
-        gold_earned     =   pStats['goldEarned']
-        turret_dmg      =   pStats['damageDealtToTurrets']
-       
-        player_data     = [playerIdentities[pID],champ, summ1, summ2, item_dict.values(), rune_dict.values(), \
-                        cwards_bought, wards_placed, wards_destroyed, vision_score, minions_killed, \
-                        own_jng_kill, ene_jng_kill, kills, deaths, assists, damage_dealt, gold_earned, turret_dmg, teamid, team]
-        pData_dict[i] = player_data
-
+    playerIdentities    = identity_dict
+    
     # neue ausgabe als dict
-    player_dict = dict()
     dict_list = list()
 
     for i in range(0,10):
+
+        player_dict = dict()
         player_dict["gameid"] = data["gameId"]
-        player_dict["playerid"] = pData_dict[i][0][0]
-        player_dict["teamid"] = pData_dict[i][19]
-        player_dict["champ"] = pData_dict[i][1]
-        player_dict["summ1"] = pData_dict[i][2]
-        player_dict["summ2"] = pData_dict[i][3]
+
+        #helper
+        pData   = data['participants'][i]
+        pID     = pData['participantId']
+        pStats  = pData['stats']
+        
+        player_dict["playerid"] = playerIdentities[pID][0]
+        player_dict["teamid"] = pData['teamId']
+        player_dict["champ"] = mapId(pData['championId'], "champion")
+        player_dict["summ1"] = mapId(pData['spell1Id'], "summoner")
+        player_dict["summ2"] = mapId(pData['spell2Id'], "summoner")
         for j in range(7):
-            player_dict["item"+str(j+1)] = items[i][j]
+            itemnr="item"+str(j)
+            player_dict["item"+str(j+1)] = mapId(pStats[itemnr],'item')
         for j in range(6):
-            player_dict["rune"+str(j+1)] = runes[i][j]
-        player_dict["cwards_bought"] = pData_dict[i][6]
-        player_dict["wards_placed"] = pData_dict[i][7]
-        player_dict["wards_destroyed"] = pData_dict[i][8]
-        player_dict["vision_score"] = pData_dict[i][9]
-        player_dict["minions_killed"] = pData_dict[i][10]
-        player_dict["own_jng_kill"] = pData_dict[i][11]
-        player_dict["ene_jng_kill"] = pData_dict[i][12]
-        player_dict["kills"] = pData_dict[i][13]
-        player_dict["deaths"] = pData_dict[i][14]
-        player_dict["assists"] = pData_dict[i][15]
-        player_dict["damage_dealt"] = pData_dict[i][16]
-        player_dict["gold_earned"] = pData_dict[i][17]
-        player_dict["turret_dmg"] = pData_dict[i][18]
-        player_dict["team"] = pData_dict[i][20]
+            runenr = "perk"+str(j)
+            player_dict["rune"+str(j+1)] = mapId(pStats[runenr], 'perk')
+        player_dict["cwards_bought"] = pStats['visionWardsBoughtInGame']
+        player_dict["wards_placed"] = pStats['wardsPlaced']
+        player_dict["wards_destroyed"] = pStats['wardsKilled']
+        player_dict["vision_score"] = pStats['visionScore']
+        player_dict["minions_killed"] = pStats['totalMinionsKilled']
+        player_dict["own_jng_kill"] = pStats['neutralMinionsKilledTeamJungle']
+        player_dict["ene_jng_kill"] = pStats['neutralMinionsKilledEnemyJungle']
+        player_dict["kills"] = pStats['kills']
+        player_dict["deaths"] = pStats['deaths']
+        player_dict["assists"] = pStats['assists']
+        player_dict["damage_dealt"] = pStats['totalDamageDealtToChampions']
+        player_dict["gold_earned"] = pStats['goldEarned']
+        player_dict["turret_dmg"] = pStats['damageDealtToTurrets']
+        player_dict["team"] = playerTeamCheck(playerIdentities[pID][1])
 
         dict_list.append(player_dict)
-        player_dict = dict()
 
     return dict_list
 

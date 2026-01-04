@@ -34,7 +34,7 @@ def importMatchfileData(PathToFolder: str) -> None:
     settings = readSettingsFile(settings_loc["lsas"])
 
     for file in files:
-        metadata, playerdata, blueteamdata, redteamdata, data_file = loadMatchData(file)
+        metadata, playerdata, blueteamdata, redteamdata = loadMatchData(file)
 
         match settings["mariadb"]:
             case "0":
