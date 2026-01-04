@@ -16,6 +16,7 @@ build_sphinx:
     - python -V
     - python -m pip install --upgrade pip
     - apt-get update && apt-get install -y graphviz
+    - apt-get update && apt-get install -y gcc python3-dev pkg-config libmariadb-dev
     - pip install -r requirements.txt
     - sphinx-build -b html docs/source docs/_build/html
   artifacts:
