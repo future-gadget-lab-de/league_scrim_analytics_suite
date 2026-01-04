@@ -152,6 +152,8 @@ def readFileByLine(relPathToFile) -> list[str]:
         logger.critical("file: " +relPathToFile + "cannot be read.")
         exit(1)
 
+
+
 def moveFile(file, dest: str) -> None:
     """
     Moves a file, to the provided destination
