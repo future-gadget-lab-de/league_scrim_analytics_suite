@@ -14,4 +14,7 @@ if len(order) != len(paths) + 1:
 
 for i in range(1,len(order)+1):    
     with open("docs/source/index.rst", 'a') as file:
+        if order[str(i)].startswith("api"):
+            file.write("\n   " + order[str(i)])
+            continue
         file.write("\n   markdown/" + order[str(i)])
