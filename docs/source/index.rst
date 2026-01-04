@@ -6,18 +6,6 @@
 lsas documentation
 ==================
 
-Add your content using ``reStructuredText`` syntax. See the
-`reStructuredText <https://www.sphinx-doc.org/en/master/usage/restructuredtext/index.html>`_
-documentation for details.
-
-
-
-.. uml:: src.database.execution
-   :packages:
-
-Dependency graph
-================
-
 .. graphviz:: _generated/imports.dot
    :caption: Import dependencies (collapsed)
    :align: center
