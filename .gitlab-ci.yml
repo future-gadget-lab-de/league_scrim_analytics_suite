@@ -17,7 +17,7 @@ build_sphinx:
     - python -m pip install --upgrade pip
     - apt-get update && apt-get install -y graphviz
     - apt-get update && apt-get install -y gcc python3-dev pkg-config libmariadb-dev
-    - apt-get update && apt-get install -y --no-install-recommends libegl1 libgl1
+    - apt-get update && apt-get install -y --no-install-recommends libegl1 libgl1 libxkbcommon0
     - rm -rf /var/lib/apt/lists/*
     - pip install virtualenv
     - virtualenv venv
