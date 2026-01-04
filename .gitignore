@@ -3,4 +3,8 @@ src/*/*/*.json
 *.conf
 src/visuals/ui/generated/*
 *.csv
-docs/*
+docs/build/*
+docs/source/api
+docs/source/_static
+docs/source/_generated
+*.dot

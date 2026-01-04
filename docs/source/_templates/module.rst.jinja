@@ -1,0 +1,45 @@
+
+{%- if show_headings %}
+{{- [basename, "module"] | join(' ') | e | heading }}
+
+{% endif -%}
+
+.. automodule:: {{ qualname }}
+{%- for option in automodule_options %}
+   :{{ option }}:
+{%- endfor %}
+
+**Dependency Diagrams (without externals):**
+
+.. tabs::
+
+{%- for mode in ["export","import","neighbor","neighbor_reduced"] %}
+   .. tab:: Mode: {{ mode }}
+      .. tabs::
+
+{%- for i in range(1,6) %}
+         .. tab:: Range {{ i }}
+{%- set string_f = qualname.replace(".", "_")~"_False_"~mode~"_"~i|string~"_.dot" %}
+            .. graphviz:: /../source/_generated/{{string_f}}
+               :caption: Import dependencies (collapsed)
+               :align: center
+{%- endfor %}
+{%- endfor %}
+
+**Dependency Diagrams:**
+
+.. tabs::
+
+{%- for mode in ["export","import","neighbor","neighbor_reduced"] %}
+   .. tab:: Mode: {{ mode }}
+
+      .. tabs::
+
+{%- for i in range(1,6) %}
+         .. tab:: Range {{ i }}
+{%- set string_f = qualname.replace(".", "_")~"_True_"~mode~"_"~i|string~"_.dot" %}
+            .. graphviz:: /../source/_generated/{{string_f}}
+               :caption: Import dependencies (collapsed)
+               :align: center
+{%- endfor %}
+{%- endfor %}
