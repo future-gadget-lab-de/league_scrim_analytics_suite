@@ -1,14 +1,9 @@
-stages: [doc]
+stages:
+  - build
+  - deploy
 
-variables:
-  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
-
-cache:
-  paths:
-    - .cache/pip
-
-building documentation:
-  stage: doc
+sphinx:
+  stage: build
   tags:
     - doc
   image: python:3.12-slim
@@ -29,9 +24,18 @@ building documentation:
     - sphinx-build -b html docs/source docs/_build/html
     - echo "El Psy Kongroo"
   artifacts:
-    when: always
     paths:
-      - docs/_build/html
-    expire_in: 14 days
-  rules:
-    - if: $CI_COMMIT_BRANCH
+      - public
+
+pages:
+  stage: deploy
+  tags:
+    - doc
+  image: alpine:3.20
+  needs: ["sphinx"]
+  script:
+    - echo "Publishing Sphinx site from public/"
+  artifacts:
+    paths:
+      - public
+
