@@ -22,8 +22,8 @@ def enrollSettings(relPathToConf: str) -> None:
         },
         "lsas": {
             "config_directory": relPathToConf, 
-            "csv_directory": "",
-            "mariadb": "",
+            "csv_directory": ".data",
+            "mariadb": "0",
             "API_key": ""
         },
         "database" : {
