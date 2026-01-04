@@ -34,15 +34,15 @@ def importMatchfileData(PathToFolder: str) -> None:
     settings = readSettingsFile(settings_loc["lsas"])
 
     for file in files:
-        metadata, playerdata, blueteamdata, redteamdata, data_file = loadMatchData(file)
+        metadata, playerdata, blueteamdata, redteamdata = loadMatchData(file)
 
         match settings["mariadb"]:
             case "0":
-                addDictToCsv(metadata, settings["csv_directory"]+"metadata.csv")
+                addDictToCsv(metadata, settings["csv_directory"]+"/metadata.csv")
                 for dict_ in playerdata:
-                    addDictToCsv(dict_, settings["csv_directory"]+"playerdata.csv")
-                addDictToCsv(blueteamdata, settings["csv_directory"]+"teamdata.csv")
-                addDictToCsv(redteamdata, settings["csv_directory"]+"teamdata.csv")
+                    addDictToCsv(dict_, settings["csv_directory"]+"/playerdata.csv")
+                addDictToCsv(blueteamdata, settings["csv_directory"]+"/teamdata.csv")
+                addDictToCsv(redteamdata, settings["csv_directory"]+"/teamdata.csv")
 
 
 
