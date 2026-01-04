@@ -9,6 +9,8 @@ cache:
 
 build_sphinx:
   stage: doc
+  tags:
+    - doc
   image: python:3.12-slim
   script:
     - python -V
