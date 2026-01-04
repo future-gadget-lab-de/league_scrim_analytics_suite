@@ -1,0 +1,42 @@
+stages:
+  - build
+  - deploy
+
+sphinx:
+  stage: build
+  tags:
+    - doc
+  image: python:3.12-slim
+  script:
+    - python -V
+    - python -m pip install --upgrade pip
+    - apt-get update && apt-get install -y graphviz
+    - apt-get update && apt-get install -y gcc python3-dev pkg-config libmariadb-dev
+    - apt-get update && apt-get install -y --no-install-recommends libegl1 libgl1 libxkbcommon0
+    - rm -rf /var/lib/apt/lists/*
+    - pip install virtualenv
+    - virtualenv venv
+    - source venv/bin/activate
+    - pip install -r requirements.txt
+    - python ./src/visuals/ui/compile_ui.py
+    - python ./docs/markdown_setup.py
+    - sphinx-apidoc -f -o docs/source/api src --separate --templatedir=docs/source/_templates
+    - sphinx-build -b html docs/source public
+    - echo "El Psy Kongroo"
+  artifacts:
+    paths:
+      - public
+
+pages:
+  stage: deploy
+  tags:
+    - doc
+  image: alpine:3.20
+  needs: ["sphinx"]
+  script:
+    - echo "Publishing Sphinx site from public/"
+  artifacts:
+    paths:
+      - public
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "development"'
