@@ -27,6 +27,7 @@ building documentation:
     - python ./docs/markdown_setup.py
     - sphinx-apidoc -f -o docs/source/api src --separate --templatedir=docs/source/_templates
     - sphinx-build -b html docs/source docs/_build/html
+    - echo "El Psy Kongroo"
   artifacts:
     when: always
     paths:
