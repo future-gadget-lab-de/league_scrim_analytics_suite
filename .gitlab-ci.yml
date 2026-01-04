@@ -15,8 +15,8 @@ build_sphinx:
   script:
     - python -V
     - python -m pip install --upgrade pip
-    - pip install -r docs/requirements.txt
-    - pip install -e .
+    - apt-get update && apt-get install -y graphviz
+    - pip install -r requirements.txt
     - sphinx-build -b html docs/source docs/_build/html
   artifacts:
     when: always
