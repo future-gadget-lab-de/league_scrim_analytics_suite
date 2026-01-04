@@ -9,6 +9,7 @@ main-test:
     - doc
   image: ubuntu
   script:
+    - sudo apt install python3
     - python -V
     - python -m pip install --upgrade pip
     - apt-get update && apt-get install -y graphviz
