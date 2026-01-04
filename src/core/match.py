@@ -66,10 +66,11 @@ def loadMetadata(data) -> dict:
     """
     metadata = dict()
 
+    trimmedstamp=int(str(data['gameCreation'])[:-3])
+    
+    metadata["date"    ] = datetime.fromtimestamp(trimmedstamp).strftime("%Y-%m-%d")
     metadata["gameid"  ] = data['gameId']
     metadata["patch"   ] = ".".join(str(data['gameVersion']).split(".")[:2])
-    trimmedstamp=int(str(data['gameCreation'])[:-3])
-    metadata["date"    ] = datetime.fromtimestamp(trimmedstamp).strftime("%Y-%m-%d")
     metadata["duration"] = str(timedelta(seconds=int(data['gameDuration'])))
 
     return metadata
@@ -99,8 +100,6 @@ def loadTeamData(data) -> dict:
 
         teamdata = dict()
         tData   = tlData[i]
-        teamdata["gameid"] = data['gameId']
-        teamdata["teamid"] = tData['teamId']
 
         # generating ban array
         banarr  = list()
@@ -118,6 +117,8 @@ def loadTeamData(data) -> dict:
         for j in range(5):
             teamdata["ban"+str(j+1)] = bans[j]
         
+        teamdata["gameid"] = data['gameId']
+        teamdata["teamid"] = tData['teamId']
         teamdata["barons" ] = tData['baronKills'     ]
         teamdata["dragons"] = tData['dragonKills'    ]
         teamdata["herald" ] = tData['riftHeraldKills']
@@ -127,6 +128,7 @@ def loadTeamData(data) -> dict:
         teamdata["firstdr"] = tData['firstDargon'    ]
         teamdata["firstto"] = tData['firstTower'     ]
         teamdata["firstbr"] = tData['firstBaron'     ]
+
         if tData['win'] == "Win":
             teamdata["win"] = True
         else:
@@ -156,7 +158,6 @@ def loadPlayerData(data) -> list[dict]:
         list, that has a data_dict for each player
 
     """
-    
 
     identity_dict = {}
     for i in range (0,10):
@@ -181,31 +182,32 @@ def loadPlayerData(data) -> list[dict]:
         pID     = pData['participantId']
         pStats  = pData['stats']
         
-        player_dict["playerid"] = playerIdentities[pID][0]
-        player_dict["teamid"] = pData['teamId']
-        player_dict["champ"] = mapId(pData['championId'], "champion")
-        player_dict["summ1"] = mapId(pData['spell1Id'], "summoner")
-        player_dict["summ2"] = mapId(pData['spell2Id'], "summoner")
+        player_dict["playerid"]         = playerIdentities[pID][0]
+        player_dict["teamid"]           = pData['teamId']
+        player_dict["cwards_bought"]    = pStats['visionWardsBoughtInGame']
+        player_dict["wards_placed"]     = pStats['wardsPlaced']
+        player_dict["wards_destroyed"]  = pStats['wardsKilled']
+        player_dict["vision_score"]     = pStats['visionScore']
+        player_dict["minions_killed"]   = pStats['totalMinionsKilled']
+        player_dict["own_jng_kill"]     = pStats['neutralMinionsKilledTeamJungle']
+        player_dict["ene_jng_kill"]     = pStats['neutralMinionsKilledEnemyJungle']
+        player_dict["kills"]            = pStats['kills']
+        player_dict["deaths"]           = pStats['deaths']
+        player_dict["assists"]          = pStats['assists']
+        player_dict["damage_dealt"]     = pStats['totalDamageDealtToChampions']
+        player_dict["gold_earned"]      = pStats['goldEarned']
+        player_dict["turret_dmg"]       = pStats['damageDealtToTurrets']
+        player_dict["team"]             = playerTeamCheck(playerIdentities[pID][1])
+        player_dict["champ"]            = mapId(pData['championId'], "champion")
+        player_dict["summ1"]            = mapId(pData['spell1Id'], "summoner")
+        player_dict["summ2"]            = mapId(pData['spell2Id'], "summoner")
+
         for j in range(7):
             itemnr="item"+str(j)
             player_dict["item"+str(j+1)] = mapId(pStats[itemnr],'item')
         for j in range(6):
             runenr = "perk"+str(j)
             player_dict["rune"+str(j+1)] = mapId(pStats[runenr], 'perk')
-        player_dict["cwards_bought"] = pStats['visionWardsBoughtInGame']
-        player_dict["wards_placed"] = pStats['wardsPlaced']
-        player_dict["wards_destroyed"] = pStats['wardsKilled']
-        player_dict["vision_score"] = pStats['visionScore']
-        player_dict["minions_killed"] = pStats['totalMinionsKilled']
-        player_dict["own_jng_kill"] = pStats['neutralMinionsKilledTeamJungle']
-        player_dict["ene_jng_kill"] = pStats['neutralMinionsKilledEnemyJungle']
-        player_dict["kills"] = pStats['kills']
-        player_dict["deaths"] = pStats['deaths']
-        player_dict["assists"] = pStats['assists']
-        player_dict["damage_dealt"] = pStats['totalDamageDealtToChampions']
-        player_dict["gold_earned"] = pStats['goldEarned']
-        player_dict["turret_dmg"] = pStats['damageDealtToTurrets']
-        player_dict["team"] = playerTeamCheck(playerIdentities[pID][1])
 
         dict_list.append(player_dict)
 
