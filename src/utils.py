@@ -3,6 +3,39 @@ logger = logging.getLogger(__name__)
 
 import os, pathlib, json, requests, csv
 
+def transformPathtoFileList(PathToFolder: str) -> list[str]:
+    """
+    accepts a path which contains a folder or file
+    and accepts both rel and abs path. it returns a list
+    of provided files as a rel path.
+
+    Parameters
+    ----------
+    PathToFolder : str
+        provided path
+
+    Returns
+    -------
+    files : list[str]
+        a list of rel paths to the files
+    
+    """
+    relPathToFolder = PathToFolder
+    if os.path.isabs(PathToFolder):
+        relPathToFolder = getRelPath(PathToFolder)
+
+    if os.path.isfile(relPathToFolder):
+        files = [relPathToFolder]
+    else: # if it is a directory
+        files = list_relative_filepaths(relPathToFolder)
+
+    if len(files) == 0:
+        raise Exception("There are no files provided through args. Adjust the Path!")
+        sys.exit(1)
+
+    return files
+
+
 def getRelPath(absPath: str) -> str:
     """
     returns the relative path for some absolute path

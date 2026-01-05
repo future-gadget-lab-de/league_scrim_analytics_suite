@@ -6,7 +6,7 @@ from src.core.match import loadMatchData
 from src.database.queries import returnInsertQuery
 from src.database.execution import executeQuery, buildConnection
 from src.database.sqltemplates.template import importSQLQueries
-from src.utils import readSettingsFile, writeSettingsFile, addDictToCsv, list_relative_filepaths, getRelPath
+from src.utils import readSettingsFile, writeSettingsFile, addDictToCsv, transformPathtoFileList
 from src.config import locPath_c
 
 
@@ -21,21 +21,10 @@ def importMatchfileData(PathToFolder: str) -> None:
     
     """
 
-    relPathToFolder = PathToFolder
-    if os.path.isabs(PathToFolder):
-        relPathToFolder = getRelPath(PathToFolder)
-
-    if os.path.isfile(relPathToFolder):
-        files = [relPathToFolder]
-    else: # if it is a directory
-        files = list_relative_filepaths(relPathToFolder)
+    files = transformPathtoFileList(PathToFolder)
 
     settings_loc = readSettingsFile(locPath_c)
     settings = readSettingsFile(settings_loc["lsas"])
-
-    if len(files) == 0:
-        raise Exception("There are no files provided through args. Adjust the Path!")
-        sys.exit(1)
 
     for file in files:
 
@@ -76,7 +65,7 @@ def importMatchfileData(PathToFolder: str) -> None:
                         raise Exception("Your MariaDB Config can't establish a connection. Reconfigure the database.conf!")
                         sys.exit(1)
 
-def clearData():
+def clearData() -> None:
     """
     clears all Data out of the connected databases or the .csv directory
     """
@@ -99,7 +88,7 @@ def clearData():
             conn, cur = buildConnection()
             executeQuery(delete_queries, conn, cur)
 
-def databaseSetup():
+def databaseSetup() -> None:
     """
     Setups the connected database with the correct datatypes 
     """
@@ -110,3 +99,28 @@ def databaseSetup():
     conn, cur = buildConnection()
     executeQuery(create_queries, conn, cur)
 
+def executeSQLFiles(pathToFile: str) -> None:
+    """
+    executes a .sql file
+
+    Parameters
+    ----------
+    PathToFolder : str
+        the relative (or absolute) path to a matchfile or folder of matchfiles
+
+    """
+
+    settings_loc = readSettingsFile(locPath_c)
+    
+    match settings_loc["connected"]:
+        case "1":
+            files = transformPathtoFileList(pathToFile)
+
+            for file in files:
+                sql_queries = importSQLQueries(file)
+                conn, cur = buildConnection()
+                executeQuery(sql_queries, conn, cur)
+
+        case "0":
+            raise Exception("Your MariaDB Config can't establish a connection. Reconfigure the database.conf!")
+            sys.exit(1)

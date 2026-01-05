@@ -7,7 +7,7 @@ logger = logging.getLogger(__name__)
 
 from src.database.execution import updateConnectionState
 from src.visuals.gui import runAdvancedFrontend
-from src.core.ops import importMatchfileData
+from src.core.ops import importMatchfileData, executeSQLFiles
 from src.config import enrollSettings
 from src.args import initiliazeParser
 from src.utils import getRelPath, readSettingsFile
@@ -53,6 +53,10 @@ if __name__ == "__main__":
         logger.trace("Starting Import Routine")
         importMatchfileData(args.matchfile)
         logger.trace("Finished Import Routine")
+
+    if args.execute is not None:
+        executeSQLFiles(args.execute)
+
     # the gui starts here
     if args.gui:
         runAdvancedFrontend()
