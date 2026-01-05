@@ -75,9 +75,9 @@ def clearData():
 
     match settings["mariadb"]:
         case "0":
-            os.remove(settings["csv_directory"]+"metadata.csv")
-            os.remove(settings["csv_directory"]+"playerdata.csv")
-            os.remove(settings["csv_directory"]+"teamdata.csv")
+            os.remove(settings["csv_directory"]+"/metadata.csv")
+            os.remove(settings["csv_directory"]+"/playerdata.csv")
+            os.remove(settings["csv_directory"]+"/teamdata.csv")
 
             logger.debug("Removing all .csv files")
             

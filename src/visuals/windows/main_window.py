@@ -21,14 +21,18 @@ class MainWindow(QMainWindow):
         
         self.settings_loc = readSettingsFile(locPath_c)
         self.settings = readSettingsFile(self.settings_loc["lsas"])
+        self.initMainWindow()
 
-        if self.settings["mariadb"] == "0":
-            self.ui.radio_db_create.setCheckable(False)
-
+        # connect waiter
         self.ui.button_execute.clicked.connect(self.execute_radio)
         self.ui.actionSettings_2.triggered.connect(self.open_settings)
         self.ui.actionMariaDB.triggered.connect(self.open_mariadb_config)
         self.ui.actionImport_Matchfile.triggered.connect(self.filedialog_opener)
+
+    def initMainWindow(self) -> None:
+        if self.settings["mariadb"] == "0":
+            self.ui.radio_db_create.setDisabled(True)
+            self.ui.actionMariaDB.setDisabled(True)
 
     def execute_radio(self) -> None:
         if self.ui.radio_clear.isChecked():
@@ -54,9 +58,11 @@ class MainWindow(QMainWindow):
         if dlg.exec():  # True wenn accepted
             settings = dlg.get_settings()
             if settings["mariadb"] == "1":
-                self.ui.radio_db_create.setCheckable(True)
+                self.ui.radio_db_create.setDisabled(False)
+                self.ui.actionMariaDB.setDisabled(False)
             else:
-                self.ui.radio_db_create.setCheckable(False)
+                self.ui.radio_db_create.setDisabled(True)
+                self.ui.actionMariaDB.setDisabled(True)
             writeSettingsFile(settings, self.settings_loc["lsas"])
             logger.info("general settings saved")
 

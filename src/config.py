@@ -18,7 +18,8 @@ def enrollSettings(relPathToConf: str) -> None:
     settings_dict = {
         "location": {
             "lsas": (relPathToConf + "/lsas.conf"),
-            "database": (relPathToConf + "/database.conf")
+            "database": (relPathToConf + "/database.conf"),
+            "connected": "0"
         },
         "lsas": {
             "config_directory": relPathToConf, 
