@@ -5,11 +5,12 @@ from src.log_config import setup_logging
 import logging
 logger = logging.getLogger(__name__)
 
+from src.database.execution import updateConnectionState
 from src.visuals.gui import runAdvancedFrontend
 from src.core.ops import importMatchfileData
 from src.config import enrollSettings
 from src.args import initiliazeParser
-from src.utils import getRelPath
+from src.utils import getRelPath, readSettingsFile
 from src.config import locPath_c
 
 if __name__ == "__main__":
@@ -36,6 +37,10 @@ if __name__ == "__main__":
         sys.exit(0)
     if args.config is not None:
         enrollSettings(args.config)
+
+
+    # is a connection possible?
+    updateConnectionState()
 
     # import of matchfiles
     logger.trace("Starting Import Routine")

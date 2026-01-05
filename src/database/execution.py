@@ -3,8 +3,23 @@ logger = logging.getLogger(__name__)
 
 import mariadb, sys
 
-from src.utils import readSettingsFile
+from src.utils import readSettingsFile, writeSettingsFile
 from src.config import locPath_c
+
+def updateConnectionState() -> bool:
+
+    settings_loc = readSettingsFile(locPath_c)
+
+    try:
+        buildConnection()
+        settings_loc["connected"] = "1"
+        writeSettingsFile(settings_loc, locPath_c)
+        return True
+    except:
+        settings_loc["connected"] = "0"
+        writeSettingsFile(settings_loc, locPath_c)
+        return False
+
 
 def buildConnection() -> tuple:
     """builds a connection to mariadb server

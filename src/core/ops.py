@@ -33,38 +33,48 @@ def importMatchfileData(PathToFolder: str) -> None:
     settings_loc = readSettingsFile(locPath_c)
     settings = readSettingsFile(settings_loc["lsas"])
 
+    if len(files) == 0:
+        raise Exception("There are no files provided through args. Adjust the Path!")
+        sys.exit(1)
+
     for file in files:
 
-        if settings["old_patch_support"] == "1":
-            metadata, playerdata, blueteamdata, redteamdata = loadMatchData(file, True)
-        else:
-            metadata, playerdata, blueteamdata, redteamdata = loadMatchData(file)
+        match settings["old_patch_support"]:
+            case "1":
+                metadata, playerdata, blueteamdata, redteamdata = loadMatchData(file, True)
+            case "0":
+                metadata, playerdata, blueteamdata, redteamdata = loadMatchData(file)
 
         match settings["mariadb"]:
             case "0":
+
                 addDictToCsv(metadata, settings["csv_directory"]+"/metadata.csv")
                 for dict_ in playerdata:
                     addDictToCsv(dict_, settings["csv_directory"]+"/playerdata.csv")
                 addDictToCsv(blueteamdata, settings["csv_directory"]+"/teamdata.csv")
                 addDictToCsv(redteamdata, settings["csv_directory"]+"/teamdata.csv")
 
-
-
                 logger.info("Loading the matchfile in the location: %s", PathToFolder)
                 
             case "1":
-                queries = list()
+                
+                match settings_loc["connected"]:
+                    case "1":
+                        queries = list()
+                        queries.append(returnInsertQuery("metadata",metadata))
+                        for playerdict in playerdata:
+                            queries.append(returnInsertQuery("playerdata",playerdict))
+                        queries.append(returnInsertQuery("teamdata",blueteamdata))
+                        queries.append(returnInsertQuery("teamdata",redteamdata))
 
-                queries.append(returnInsertQuery("metadata",metadata))
-                for playerdict in playerdata:
-                    queries.append(returnInsertQuery("playerdata",playerdict))
-                queries.append(returnInsertQuery("teamdata",blueteamdata))
-                queries.append(returnInsertQuery("teamdata",redteamdata))
+                        logger.info("Loading the matchfile in the location: %s", PathToFolder)
 
-                logger.info("Loading the matchfile in the location: %s", PathToFolder)
+                        conn, cur = buildConnection()
+                        executeQuery(queries, conn, cur)
 
-                conn, cur = buildConnection()
-                executeQuery(queries, conn, cur)
+                    case "0":
+                        raise Exception("Your MariaDB Config can't establish a connection. Reconfigure the database.conf!")
+                        sys.exit(1)
 
 def clearData():
     """
