@@ -1,9 +1,14 @@
 # League Scrim Analytics Suite
 
-## Prerequisite
+## Installing LSAS
 
-For loading the GUI it is mandatory, that one initializes a 
-virtual environment, using the `requirements.txt`.
+For using `lsas`, one can use the `Makefile`:
+
+```
+make build
+```
+
+Then there will be a binary build in the `lsas_build` directory. Currently only Linux systems are supported.
 
 ## Roadmap
 Highest Priority (ordered)

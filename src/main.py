@@ -22,7 +22,6 @@ if __name__ == "__main__":
         sys.exit(0)
 
     # logging
-    print(args)
     if args.very_verbose:
         setup_logging(level ="TRACE")
     elif args.verbose:
