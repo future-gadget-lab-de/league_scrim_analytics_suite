@@ -10,4 +10,5 @@ docs/source/_generated
 *.dot
 dist/*
 build/*
-main.spec
+lsas.spec
+lsas_build

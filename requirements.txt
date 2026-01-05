@@ -24,3 +24,5 @@ sphinx-uml
 # von sphinx-uml für pyreverse (praktisch oft nötig, je nach Installation)
 pylint
 
+pyinstaller
+
