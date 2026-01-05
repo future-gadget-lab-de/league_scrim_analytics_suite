@@ -21,6 +21,7 @@ build: src/main.py | deps-python
 	if [ -d lsas_build ]; then \
 		rm -rf lsas_build; \
 	fi
+	$(PYTHON) ./src/visuals/ui/compile_ui.py
 	$(PYINSTALLER) --noconfirm --clean --onedir --name $(appname) $<
 	mv dist/lsas lsas_build
 	make clean
