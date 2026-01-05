@@ -31,7 +31,7 @@ if __name__ == "__main__":
     
     logger.trace("Set Log-Level")
     if not os.path.isfile(locPath_c):
-        enrollSettings(".config")
+        enrollSettings("config")
         logger.info("Enrolled a fresh config folder. restart the Application.")
         sys.exit(0)
     if args.config is not None:

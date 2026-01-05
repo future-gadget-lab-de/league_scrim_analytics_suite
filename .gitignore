@@ -12,3 +12,5 @@ dist/*
 build/*
 lsas.spec
 lsas_build
+config
+data
