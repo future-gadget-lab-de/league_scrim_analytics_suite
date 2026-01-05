@@ -34,7 +34,11 @@ def importMatchfileData(PathToFolder: str) -> None:
     settings = readSettingsFile(settings_loc["lsas"])
 
     for file in files:
-        metadata, playerdata, blueteamdata, redteamdata = loadMatchData(file)
+
+        if settings["old_patch_support"] == "1":
+            metadata, playerdata, blueteamdata, redteamdata = loadMatchData(file, True)
+        else:
+            metadata, playerdata, blueteamdata, redteamdata = loadMatchData(file)
 
         match settings["mariadb"]:
             case "0":

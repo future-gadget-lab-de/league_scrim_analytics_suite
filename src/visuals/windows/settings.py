@@ -19,11 +19,14 @@ class SettingsDialog(QDialog):
         self.ui.lineEdit_csv_path.textChanged.connect(self.change_line_setting)
         self.ui.lineEdit_API.textChanged.connect(self.change_line_setting)
         self.ui.checkbox_mariadb_activated.stateChanged.connect(self.change_maria_setting)
+        self.ui.checkBox_old_patch.stateChanged.connect(self.change_Legacy_Support)
 
     def init_fields(self) -> None:
         if self.settings["mariadb"] == "1":
             self.ui.checkbox_mariadb_activated.setChecked(True)
             self.ui.lineEdit_csv_path.setDisabled(True)
+        if self.settings["old_patch_support"] == "1":
+            self.ui.checkBox_old_patch.setChecked(True)
         self.ui.lineEdit_csv_path.setText(self.settings["csv_directory"])
         self.ui.lineEdit_API.setText(self.settings["API_key"])
 
@@ -38,6 +41,12 @@ class SettingsDialog(QDialog):
         else:
             self.settings["mariadb"] = "0"
             self.ui.lineEdit_csv_path.setEnabled(True)
+
+    def change_Legacy_Support(self):
+        if self.ui.checkBox_old_patch.isChecked():
+            self.settings["old_patch_support"] = "1"
+        else:
+            self.settings["old_patch_support"] = "0"
 
     def change_line_setting(self) -> None:
         self.settings["csv_directory"] = self.ui.lineEdit_csv_path.text()

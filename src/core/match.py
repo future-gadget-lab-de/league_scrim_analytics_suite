@@ -10,7 +10,7 @@ from src.core.team import playerTeamCheck
 from src.utils import findFile
 
 
-def loadMatchData(relPath: str):
+def loadMatchData(relPath: str, useIncludedGameversion: bool = False):
     """
     Wrapper method for the full data extraction of the first file found.
     
@@ -18,6 +18,8 @@ def loadMatchData(relPath: str):
     ----------
     relPath : str
         The datafile for a given Match
+    useIncludedGameversion : bool
+        when true, the patch bundled with the gamefile is used for internal methods
     
     Returns
     -------
@@ -35,11 +37,18 @@ def loadMatchData(relPath: str):
         with open(relPath) as f:
             raw                             = f.read()
             data_dict                       = json.loads(raw)
-            metadata                        = loadMetadata(data_dict)
-            playerdata                      = loadPlayerData(data_dict)
-            blueteamdata, redteamdata       = loadTeamData(data_dict)
 
-            return metadata, playerdata, blueteamdata, redteamdata
+    patch = None
+    if useIncludedGameversion:
+        raw_version = data_dict["gameVersion"]
+        raw_version_list = raw_version.split(".")
+        patch = ".".join([raw_version_list[0],raw_version_list[1],"1"])
+
+    metadata                        = loadMetadata(data_dict)
+    playerdata                      = loadPlayerData(data_dict, patch)
+    blueteamdata, redteamdata       = loadTeamData(data_dict, patch)
+
+    return metadata, playerdata, blueteamdata, redteamdata
 
 def loadMetadata(data) -> dict:
     """
@@ -75,7 +84,7 @@ def loadMetadata(data) -> dict:
 
     return metadata
 
-def loadTeamData(data) -> dict:
+def loadTeamData(data: dict, patch: str | None = None) -> dict:
     """
     Extracts Playerdata from a given match 
 
@@ -107,7 +116,7 @@ def loadTeamData(data) -> dict:
         try:
             for j in range (0,5):
                 cId     = bans[j]['championId']
-                cName   = mapId(cId, 'champion')
+                cName   = mapId(cId, 'champion', patch)
                 banarr.append(cName)
         except:
             print("ERROR: The bans aren't proper in the given matchfile.")
@@ -143,7 +152,7 @@ def loadTeamData(data) -> dict:
     return teamdata_blue, teamdata_red
 
 
-def loadPlayerData(data) -> list[dict]:
+def loadPlayerData(data: dict, patch: str | None = None) -> list[dict]:
     """
     Extracts Playerdata from a given match 
 
@@ -198,16 +207,16 @@ def loadPlayerData(data) -> list[dict]:
         player_dict["gold_earned"]      = pStats['goldEarned']
         player_dict["turret_dmg"]       = pStats['damageDealtToTurrets']
         player_dict["team"]             = playerTeamCheck(playerIdentities[pID][1])
-        player_dict["champ"]            = mapId(pData['championId'], "champion")
-        player_dict["summ1"]            = mapId(pData['spell1Id'], "summoner")
-        player_dict["summ2"]            = mapId(pData['spell2Id'], "summoner")
+        player_dict["champ"]            = mapId(pData['championId'], "champion", patch)
+        player_dict["summ1"]            = mapId(pData['spell1Id'], "summoner", patch)
+        player_dict["summ2"]            = mapId(pData['spell2Id'], "summoner", patch)
 
         for j in range(7):
             itemnr="item"+str(j)
-            player_dict["item"+str(j+1)] = mapId(pStats[itemnr],'item')
+            player_dict["item"+str(j+1)] = mapId(pStats[itemnr],'item', patch)
         for j in range(6):
             runenr = "perk"+str(j)
-            player_dict["rune"+str(j+1)] = mapId(pStats[runenr], 'perk')
+            player_dict["rune"+str(j+1)] = mapId(pStats[runenr], 'perk', patch)
 
         dict_list.append(player_dict)
 
