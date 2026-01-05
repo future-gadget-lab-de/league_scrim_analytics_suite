@@ -8,3 +8,6 @@ docs/source/api
 docs/source/_static
 docs/source/_generated
 *.dot
+dist/*
+build/*
+main.spec
