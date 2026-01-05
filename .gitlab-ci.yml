@@ -36,9 +36,6 @@ binaries:
     - rm -rf /var/lib/apt/lists/*
     - make build
     - echo "successful"
-  artifacts:
-    paths:
-      - lsas_build
 
 sphinx:
   stage: build
