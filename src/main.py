@@ -42,11 +42,17 @@ if __name__ == "__main__":
     # is a connection possible?
     updateConnectionState()
 
+    if args.status: 
+        if updateConnectionState():
+            logger.info("You can connect, to your MariaDB Server!")
+        else:
+            logger.info("You can't establish a connection with your current MariaDB Config. Adjust the database.conf!")
+
     # import of matchfiles
-    logger.trace("Starting Import Routine")
     if args.matchfile is not None:
+        logger.trace("Starting Import Routine")
         importMatchfileData(args.matchfile)
-    logger.trace("Finished Import Routine")
+        logger.trace("Finished Import Routine")
     # the gui starts here
     if args.gui:
         runAdvancedFrontend()

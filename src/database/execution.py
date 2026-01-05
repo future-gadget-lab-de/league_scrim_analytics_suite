@@ -37,7 +37,7 @@ def buildConnection() -> tuple:
     conn_params = readSettingsFile(settings_loc["database"])
     conn_params['port'] = int(conn_params['port']) 
     conn = mariadb.connect(**conn_params)
-    logger.info("Connection to MariaDB Server established.")
+    logger.debug("Connection to MariaDB Server established.")
     cur = conn.cursor()
     return conn, cur
 

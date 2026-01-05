@@ -12,6 +12,7 @@ def initiliazeParser() -> argparse.ArgumentParser:
     group.add_argument("-f", "--matchfile", type=str, help="imports the matchfiles passed into the arg via absolute path (folder & file support)")
     group.add_argument("-c", "--config", type=str, help="adjusts the config folder with a passed relative path")
     group.add_argument("-g", "--gui", help="runs the graphical user interface, shipped with lsas", action="store_true")
+    group.add_argument("-s", "--status", help="returns the current mariaDB status", action="store_true")
     
 
     return parser
