@@ -37,7 +37,7 @@ binaries:
     - apt-get update && apt-get install -y --no-install-recommends libegl1 libgl1 libxkbcommon0
     - rm -rf /var/lib/apt/lists/*
     - pip install virtualenv
-    - make
+    - make build
     - echo "successful"
   artifacts:
     paths:
