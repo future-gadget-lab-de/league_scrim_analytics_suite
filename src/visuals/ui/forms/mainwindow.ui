@@ -164,21 +164,6 @@
     </layout>
    </widget>
   </widget>
-  <action name="actionsettings">
-   <property name="text">
-    <string>settings</string>
-   </property>
-  </action>
-  <action name="actionSettings">
-   <property name="text">
-    <string>Settings</string>
-   </property>
-  </action>
-  <action name="action">
-   <property name="text">
-    <string>Import Matchfile</string>
-   </property>
-  </action>
   <action name="actionSettings_2">
    <property name="icon">
     <iconset theme="QIcon::ThemeIcon::DocumentOpen"/>
