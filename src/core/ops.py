@@ -135,10 +135,8 @@ def executeSQLFiles(pathToFile: str) -> None | list[dict]:
             conn, cur = buildConnection()
             
             for queries in queries_of_file:
-                print(queries)
                 executeQuery(queries, conn, cur)
 
-            print(queries_of_file)
             if len(files) == 1 and queries_of_file[0][-1].startswith("SELECT"):
                 output = getCursorSelect(cur)
                 
