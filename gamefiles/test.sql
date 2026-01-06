@@ -1,0 +1,1 @@
+SELECT cwards_bought FROM playerdata WHERE playerid="Emperor";

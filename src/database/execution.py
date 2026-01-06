@@ -70,3 +70,11 @@ def executeQuery(queries: list[str], conn, cur):
             logger.error("Error connecting to MariaDB Platform: %s", e)
             sys.exit(1)
     
+def getCursorSelect(cur) -> list[dict]:
+    cols = [d[0] for d in cur.description]
+    parsed_rows = list[dict]()
+
+    for row in cur:
+        parsed_rows.append(dict(zip(cols, row)))
+    return parsed_rows
+

@@ -4,7 +4,7 @@ logger = logging.getLogger(__name__)
 import csv, os
 from src.core.match import loadMatchData
 from src.database.queries import returnInsertQuery
-from src.database.execution import executeQuery, buildConnection
+from src.database.execution import executeQuery, buildConnection, getCursorSelect
 from src.database.sqltemplates.template import importSQLQueries
 from src.utils import readSettingsFile, writeSettingsFile, addDictToCsv, transformPathtoFileList
 from src.config import locPath_c
@@ -60,7 +60,8 @@ def importMatchfileData(PathToFolder: str) -> None:
 
                         conn, cur = buildConnection()
                         executeQuery(queries, conn, cur)
-
+                        conn.close()
+                        cur.close()
                     case "0":
                         raise Exception("Your MariaDB Config can't establish a connection. Reconfigure the database.conf!")
                         sys.exit(1)
@@ -87,6 +88,8 @@ def clearData() -> None:
 
             conn, cur = buildConnection()
             executeQuery(delete_queries, conn, cur)
+            conn.close()
+            cur.close()
 
 def databaseSetup() -> None:
     """
@@ -98,29 +101,57 @@ def databaseSetup() -> None:
 
     conn, cur = buildConnection()
     executeQuery(create_queries, conn, cur)
+    conn.close()
+    cur.close()
 
-def executeSQLFiles(pathToFile: str) -> None:
+def executeSQLFiles(pathToFile: str) -> None | list[dict]:
     """
-    executes a .sql file
+    executes a .sql file. if only one file is given and the last command is a SELECT, it also outputs a dict
 
     Parameters
     ----------
     PathToFolder : str
-        the relative (or absolute) path to a matchfile or folder of matchfiles
+        the relative (or absolute) path to a .sql file
+
+    Returns
+    -------
+    possible_select : list[dict]
+        can return a dict, if one file is passed, with select at last
 
     """
 
     settings_loc = readSettingsFile(locPath_c)
     
+    files = transformPathtoFileList(pathToFile)
+
+    queries_of_file = list[list[str]]()
+
+    for file in files:
+        queries_of_file.append(importSQLQueries(file))
+
     match settings_loc["connected"]:
         case "1":
-            files = transformPathtoFileList(pathToFile)
 
-            for file in files:
-                sql_queries = importSQLQueries(file)
-                conn, cur = buildConnection()
-                executeQuery(sql_queries, conn, cur)
+            conn, cur = buildConnection()
+            
+            for queries in queries_of_file:
+                print(queries)
+                executeQuery(queries, conn, cur)
+
+            print(queries_of_file)
+            if len(files) == 1 and queries_of_file[0][-1].startswith("SELECT"):
+                output = getCursorSelect(cur)
+                
+                conn.close()
+                cur.close()
+
+                return output
+
+            conn.close()
+            cur.close()
+            return None
 
         case "0":
             raise Exception("Your MariaDB Config can't establish a connection. Reconfigure the database.conf!")
             sys.exit(1)
+

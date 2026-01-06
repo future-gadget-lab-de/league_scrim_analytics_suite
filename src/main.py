@@ -55,7 +55,7 @@ if __name__ == "__main__":
         logger.trace("Finished Import Routine")
 
     if args.execute is not None:
-        executeSQLFiles(args.execute)
+        logger.info(executeSQLFiles(args.execute))
 
     # the gui starts here
     if args.gui:
