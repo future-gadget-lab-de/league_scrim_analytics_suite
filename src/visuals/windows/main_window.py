@@ -3,12 +3,17 @@ from __future__ import annotations
 import logging
 logger = logging.getLogger(__name__)
 
-from PySide6.QtWidgets import QMainWindow, QFileDialog, QCheckBox
+from PySide6.QtWidgets import QMainWindow, QFileDialog, QCheckBox, QLabel
 from src.visuals.ui.generated.ui_mainwindow import Ui_MainWindow
 from src.visuals.windows.settings import SettingsDialog
 from src.visuals.windows.maria_dialog import MariaDialog
 from src.visuals.windows.analytics_space import AnalyticsSpace
 
+from src.visuals.plotting import sqlDictToPandas
+
+from src.database.queries import returnSelectQuery
+from src.database.execution import buildConnection,executeQuery,getCursorSelect
+from src.database.sqltemplates.template import importSQLQueries
 from src.core.ops import importMatchfileData, clearData, databaseSetup
 
 from src.utils import writeSettingsFile, readSettingsFile, getRelPath
@@ -28,6 +33,8 @@ class MainWindow(QMainWindow):
        
         self.ui.stackWorkspace.addWidget(self.space)
 
+        self.updateFiles()
+
         # connect waiter
         self.ui.actionAdd_AnalyticsSpace.triggered.connect(self.space.addInstance)
         self.ui.actionRemove_AnalyticsSpace.triggered.connect(self.space.removeInstance)
@@ -42,8 +49,6 @@ class MainWindow(QMainWindow):
             self.ui.actionMariaDB.setDisabled(True)
 
     def execute_radio(self) -> None:
-        if self.ui.radio_clear.isChecked():
-            clearData()
         if self.ui.radio_db_create.isChecked():
             databaseSetup() 
 
@@ -59,6 +64,24 @@ class MainWindow(QMainWindow):
             for file in fileNames:
                 importMatchfileData(str(getRelPath(file)))
         #self.
+
+    def updateFiles(self) -> None:
+
+        query_date = returnSelectQuery("metadata",["gameid"])
+
+        conn,cur = buildConnection()
+
+        executeQuery([query_date], conn, cur)
+        output_date = getCursorSelect(cur)
+
+        conn.close()
+        cur.close()
+
+        data = sqlDictToPandas(output_date)
+
+        for gameid in [str(gameid) for gameid in data["gameid"].values.tolist()]:
+            self.ui.verticalLayout_2.addWidget(QLabel(text=gameid))
+
 
     def open_settings(self) -> None:
         dlg = SettingsDialog(self)

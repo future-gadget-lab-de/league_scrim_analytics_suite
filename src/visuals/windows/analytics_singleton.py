@@ -6,7 +6,7 @@ from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import QWidget, QGraphicsView
 #from src.visuals.ui.generated.ui_central_workspace import Ui_centralworkspace
 from src.visuals.ui.generated.ui_central_workspace_Kopie import Ui_centralworkspace
-from src.visuals.plotting import buildAnalyticsFigure
+from src.visuals.plotting import buildAnalyticsFigure, buildAnalyticsFigureBulk
 
 from src.utils import readSettingsFile, writeSettingsFile
 from src.config import locPath_c
@@ -37,8 +37,10 @@ class AnalyticsSingleton(QWidget):
         player = self.ui.lineEdit.text()
         mode = self.ui.comboBox.currentText()
 
-        buildAnalyticsFigure(player, mode, (self.ui.piclabel.width(), 400))
-
+        if self.ui.comboBox_2.currentText() == "histo":
+            buildAnalyticsFigureBulk(player, mode, (self.ui.piclabel.width(), 400))
+        else:
+            buildAnalyticsFigure(player, mode, (self.ui.piclabel.width(), 400))
         self.pic = QPixmap(f"gamefiles/{mode}_{player}.png")
         self.ui.piclabel.setPixmap(self.pic)
 

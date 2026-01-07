@@ -135,6 +135,12 @@
                     <height>0</height>
                    </size>
                   </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>150</width>
+                    <height>16777215</height>
+                   </size>
+                  </property>
                   <item>
                    <property name="text">
                     <string>cwards_bought</string>
@@ -198,6 +204,32 @@
                   <item>
                    <property name="text">
                     <string>turret_dmg</string>
+                   </property>
+                  </item>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QComboBox" name="comboBox_2">
+                  <property name="minimumSize">
+                   <size>
+                    <width>100</width>
+                    <height>0</height>
+                   </size>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>100</width>
+                    <height>16777215</height>
+                   </size>
+                  </property>
+                  <item>
+                   <property name="text">
+                    <string>histo</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>line</string>
                    </property>
                   </item>
                  </widget>

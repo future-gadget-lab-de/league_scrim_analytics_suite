@@ -59,3 +59,39 @@ def buildAnalyticsFigure(player: str, mode: str, dim: tuple[int]):
     plt.savefig(f"gamefiles/{mode}_{player}.png")
     plt.close()
 
+
+def buildAnalyticsFigureBulk(player: str, mode: str, dim: tuple[int]):
+
+    query_player = returnSelectQuery("playerdata",[mode],f"playerid='{player}'")
+    query_date = returnSelectQuery("metadata",["date","gameid"])
+
+    conn,cur = buildConnection()
+
+    executeQuery([query_player], conn, cur)
+    output_player = getCursorSelect(cur)
+
+    executeQuery([query_date], conn, cur)
+    output_date = getCursorSelect(cur)
+
+    conn.close()
+    cur.close()
+
+    data_player = sqlDictToPandas(output_player)
+    data_date = sqlDictToPandas(output_date)
+
+    data = data_player.join(data_date)
+
+    data = data.sort_values(by=["gameid"])
+
+    dpi = 100
+    figsize = (float(dim[0])/float(dpi), float(dim[1])/float(dpi))
+    plt.figure(dpi, figsize)
+
+    plt.bar([str(gameid) for gameid in data["gameid"].values.tolist()], data[mode].values.tolist())
+    plt.grid()
+    plt.ylabel(mode)
+    plt.title("Line Chart Example")
+    plt.show()
+    os.makedirs(os.path.dirname(f"gamefiles/{mode}_{player}.png"), exist_ok=True)
+    plt.savefig(f"gamefiles/{mode}_{player}.png")
+    plt.close()
