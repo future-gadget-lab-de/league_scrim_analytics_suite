@@ -3,7 +3,7 @@ entrypoint for all GUI Applications
 """
 
 # from src.visuals.windows.main_window import MainWindow
-import subprocess, pathlib, sys
+import subprocess, pathlib, sys, platform
 from PySide6.QtWidgets import QApplication
 
 LSAS = pathlib.Path(__file__).resolve().parents[3]
@@ -11,12 +11,18 @@ COMPILE_UI = LSAS / "LSAS" / "src" / "visuals" / "ui"
 
 def runAdvancedFrontend() -> None:
 
-    from src.visuals.windows.main_window import MainWindow
+    #from src.visuals.windows.main_window import MainWindow
     try:
         from src.visuals.windows.main_window import MainWindow
     except:
         try:
-            cmd = ["python3", str(COMPILE_UI) + "/compile_ui.py"]
+            match platform.system():
+                case "Windows":
+                    binary = "./.venv/Scripts/python.exe"
+                case "Linux":
+                    binary = "./.venv/bin/python"
+
+            cmd = [binary, str(COMPILE_UI) + "/compile_ui.py"]
             print(" ".join(cmd))
             subprocess.run(cmd, check=True)
 

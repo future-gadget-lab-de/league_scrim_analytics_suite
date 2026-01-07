@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
+import platform
 import subprocess
 from pathlib import Path
 import os
@@ -48,7 +49,10 @@ def find_file_in_path(base_abs_path: str, target_filename: str) -> str:
 
 def main() -> int:
 
-    binary = find_file_in_path(str(LSAS), "pyside6-uic")
+    if platform.system() == "Windows":
+        binary = find_file_in_path(str(LSAS), "pyside6-uic.exe")
+    else:
+        binary = find_file_in_path(str(LSAS), "pyside6-uic")
 
     if not FORMS_DIR.exists():
         raise SystemExit(f"Forms directory not found: {FORMS_DIR}")

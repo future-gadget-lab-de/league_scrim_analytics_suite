@@ -1,4 +1,4 @@
-import sys, os
+import sys, os, platform
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from src.log_config import setup_logging
@@ -15,9 +15,13 @@ from src.config import locPath_c
 
 if __name__ == "__main__":
 
+    if platform.system() == "Windows":
+        sys.argv.append("-g")
+
     parser = initiliazeParser()
     args = parser.parse_args()
     
+
     if not len(sys.argv) > 1:
         parser.print_help()
         sys.exit(0)
