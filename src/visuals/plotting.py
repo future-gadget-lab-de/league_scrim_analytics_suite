@@ -55,6 +55,7 @@ def buildAnalyticsFigure(player: str, mode: str, dim: tuple[int]):
     plt.ylabel(mode)
     plt.title("Line Chart Example")
     plt.grid()
+    os.makedirs(os.path.dirname(f"gamefiles/{mode}_{player}.png"), exist_ok=True)
     plt.savefig(f"gamefiles/{mode}_{player}.png")
     plt.close()
 
