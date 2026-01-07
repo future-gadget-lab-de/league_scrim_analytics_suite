@@ -1,6 +1,5 @@
-import logging, os, pathlib, json, requests, csv
-logger = logging.getLogger(__name__)
-
+import os, pathlib, json, requests, csv
+from loguru import logger
 def getRelPath(absPath: str) -> str:
     """
     returns the relative path for some absolute path
@@ -194,7 +193,7 @@ def list_relative_filepaths(path: str) -> list[str]:
     """
     logger.trace("Started list_relative_filepaths function with Input: " +path)
     if os.path.isabs(path):
-        err_msg = "Path must be relative")
+        err_msg = "Path must be relative"
         logger.error(err_msg)
         raise ValueError(err_msg)
 
