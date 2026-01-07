@@ -42,7 +42,7 @@ def returnScrapeLink(dataRequested: str, patch: str | None = None) -> str:
     link : str
         The link according to the wanted type of data
     """
-    logger.trace("Started returnScrapeLink function for patch: " + patch)
+    logger.trace("Started returnScrapeLink function for patch: " + str(patch))
     if patch is None:
         patch = scrapeRecentPatch()
 
@@ -77,15 +77,15 @@ def loadDatabase(dataRequested: str, patch: str | None = None) -> dict:
     data_dict : dict
         The Dictionary, which has the wanted lol data
     """
-    logger.trace("Started function loadDatabase with dataRequested: " + dataRequested + ", for patch: " + patch)
     if patch is None:
         patch = scrapeRecentPatch()
-        
+    logger.trace("Started function loadDatabase with dataRequested: " + dataRequested + ", for patch: " + str(patch))
+
     data_file_path = f"src/scraping/dictionaries/{dataRequested}_{patch}.json"
-    logging.debug("Reload of the %s data.",dataRequested)
+    logger.debug("Reload of the %s data.",dataRequested)
 
     scrape_link = returnScrapeLink(dataRequested)
     data_output = reloadjsonfiles(data_file_path, scrape_link)
-    logger.trace("Finished loadDatabase function with output: + " str(data_output) )
+    logger.trace( "Finished loadDatabase Function with output: " + str(data_output) ) 
     return data_output
 
