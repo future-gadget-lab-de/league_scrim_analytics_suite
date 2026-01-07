@@ -194,7 +194,7 @@ def list_relative_filepaths(path: str) -> list[str]:
     """
     logger.trace("Started list_relative_filepaths function with Input: " +path)
     if os.path.isabs(path):
-        err_msg = "Path must be relative")
+        err_msg = "Path must be relative"
         logger.error(err_msg)
         raise ValueError(err_msg)
 

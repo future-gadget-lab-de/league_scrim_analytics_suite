@@ -20,19 +20,17 @@ def returnInsertQuery(table: str, data: dict) -> str:
     query : str
         the final INSERT query
     """
+    logger.trace("Started returnInsertQuery for table: " + table + ", with data: " + str(data) )
     query = "INSERT INTO " + table + " ("
-    
+    logger.info("Generating Insert Queries")
     # construct the tuple, where we insert
     for key in data.keys():
         query += str(key) + ","
     query = query.removesuffix(",")
-    
     query += ") VALUES "
-
     query += str(tuple(data.values()))
-
     query += ";"
-
+    logger.trace("Finished returnInsertQuery with query: " + query)
     return query
 
 def returnMatchfileQuery(relPathtoFile: str)-> list[str]:
@@ -50,18 +48,18 @@ def returnMatchfileQuery(relPathtoFile: str)-> list[str]:
     queries : list[str]
         a list of queries to import the given matchfile
     """
+    logger.trace("Starting returnMatchfileQuery function for file: " + relPathtoFile)
     metadata, playerdata, blueteamdata, redteamdata = loadMatchData(relPathtoFile)
 
     queries = list()
-
+    logger.info("Generating matchfile Query")
     queries.append(returnInsertQuery("metadata",metadata))
     for playerdict in playerdata:
         queries.append(returnInsertQuery("playerdata",playerdict))
     queries.append(returnInsertQuery("teamdata",blueteamdata))
     queries.append(returnInsertQuery("teamdata",redteamdata))
 
-    logger.debug("Loading the matchfile in the location: %s", relPathtoFile)
-
+    logger.trace("Finished returnMatchfileQuery.")
     return queries
 
 def returnSelectQuery(table: str, columns: list[str]) -> str:
@@ -81,12 +79,15 @@ def returnSelectQuery(table: str, columns: list[str]) -> str:
     query : str
         the wanted SELECT query
     """
+    logger.trace("Starting returnSelectQuery for table: " + table +", with columns: " +str(columns) )
     query = "SELECT" 
-
+    logger.info("Generating select query")
     for col in columns:
+        logger.trace("Adding: "+ str(col))
         query += str(col) + ","
 
     query = query.removesuffix(",")
     query += "FROM" + table + ";"
+    logger.trace("Finished returnSelectQuery with query: " + query )
     return query
 
