@@ -5,7 +5,6 @@ from src.visuals.ui.generated.ui_maria_dialog import Ui_Dialog
 
 from src.utils import readSettingsFile
 from src.config import locPath_c
-#TODO: Rewrite Logging
 class MariaDialog(QDialog):
     def __init__(self, parent=None) -> None:
         super().__init__(parent)
@@ -30,7 +29,7 @@ class MariaDialog(QDialog):
     def get_settings(self) -> dict:
         return self.settings
 
-    def change_setting(self) -> None:
+    def change_setting(self) -> None: #Logging erfolgt in den einzelnen Methods
         self.settings["host"] = self.ui.lineEdit_adress.text()
         self.settings["database"] = self.ui.lineEdit_db.text()
         self.settings["port"] = self.ui.lineEdit_port.text()

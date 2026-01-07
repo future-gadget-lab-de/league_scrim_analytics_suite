@@ -1,8 +1,9 @@
-import logging, os
+import  os
 from src.utils import readSettingsFile, writeSettingsFile
 
 locPath_c = ".internal/location.conf"
-logger = logging.getLogger(__name__)
+from loguru import logger
+
 def enrollSettings(relPathToConf: str) -> None:
     """
     Enrolls settings files for the user
