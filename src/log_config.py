@@ -11,8 +11,8 @@ Log Level explanation:
 import sys
 from loguru import logger
 
-def custom_format(record ):
-    if record["level"].no >= 10:
+def custom_format(record ): #TODO: Make alle 7 Levels unique - Trace -> Grey , Debug -> Light Grey , Info -> White Succ -> Green, Warn -> Orange , Error -> Red , Critical -> Dark Red
+    if record["level"].no == 50:
         return "<red>{time}</> - {level} - <red>{thread}</> - <lvl>{message}</>\n{exception}"
     else:
         return "<green>{time}</> - {level} - <lvl>{message}</lvl>\n{exception}"
