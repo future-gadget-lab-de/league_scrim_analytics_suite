@@ -2,10 +2,9 @@
 from __future__ import annotations
 
 import subprocess
-import logging 
 from pathlib import Path
 import os
-logger = logging.getLogger(__name__)
+from loguru import logger
 
 ROOT = Path(__file__).resolve().parents[1]
 LSAS = Path(__file__).resolve().parents[3]

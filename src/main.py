@@ -9,7 +9,7 @@ from src.args import initiliazeParser
 from src.utils import getRelPath
 from src.config import locPath_c
 from src.log_config import setup_logging
-logger = logging.getLogger(__name__)
+from loguru import logger
 if __name__ == "__main__":
 
     parser = initiliazeParser()
@@ -21,21 +21,23 @@ if __name__ == "__main__":
 
     # logging
     if args.very_verbose:
-        setup_logging(level ="TRACE")
+        level ="TRACE"
     elif args.verbose:
-        setup_logging(level = "DEBUG")
+        level = "DEBUG"
     else:
-        setup_logging(level = "INFO")
-    logger.info("Set Log-Level to: " + logging.getLevelName(logger.getEffectiveLevel()))
+        level = "INFO"
+
+    setup_logging(level)
+    logger.info("Set Log-Level to: " + str(logger.level(level)))
 
     if not os.path.isfile(locPath_c):
         enrollSettings("config")
         logger.info("Enrolled a fresh config folder. restart the Application.")
         sys.exit(0)
     if args.config is not None:
-        logging.trace("Starting enrollSettings Function with user settings:" + str(args.config))
+        logger.trace("Starting enrollSettings Function with user settings:" + str(args.config))
         enrollSettings(args.config)
-        logging.info("Changed Config settings to user specified.")
+        logger.info("Changed Config settings to user specified.")
 
     # import of matchfiles
     if args.matchfile is not None:

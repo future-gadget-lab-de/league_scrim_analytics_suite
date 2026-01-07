@@ -3,10 +3,9 @@ entrypoint for all GUI Applications
 """
 import subprocess, pathlib, sys,logging
 from PySide6.QtWidgets import QApplication
-logger = logging.getLogger(__name__)
 LSAS = pathlib.Path(__file__).resolve().parents[3]
 COMPILE_UI = LSAS / "LSAS" / "src" / "visuals" / "ui" 
-
+from loguru import logger
 def runAdvancedFrontend() -> None:
     logger.trace("Started runAdvancedFrontend Function.")
     try:

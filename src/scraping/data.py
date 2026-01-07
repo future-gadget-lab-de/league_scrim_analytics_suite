@@ -1,8 +1,7 @@
-import logging
-logger = logging.getLogger(__name__)
 
 import datetime
 from src.utils import reloadjsonfiles
+from loguru import logger
 #TODO: Rewrite Logging
 def scrapeRecentPatch() -> str:
     """scrapes the recent patch

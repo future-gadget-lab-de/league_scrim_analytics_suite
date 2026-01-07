@@ -1,8 +1,5 @@
-import logging
-logger = logging.getLogger(__name__)
-
 from src.globals import k_teamname, k_roster
-
+from loguru import logger
 def playerTeamCheck(pUuid: int) -> str:
     """
     Uses a Players identifier to check if he's on a known Team.

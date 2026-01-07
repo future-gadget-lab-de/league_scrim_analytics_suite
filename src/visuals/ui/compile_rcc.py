@@ -1,11 +1,9 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
-import subprocess,logging
+import subprocess
 from pathlib import Path
-logger = logging.getLogger(__name__)
-
-#TODO: Rewrite Logging
+from loguru import logger
 ROOT = Path(__file__).resolve().parents[1]
 QRC = ROOT / "ui" / "resources.qrc"
 OUT = ROOT / "ui" / "generated_resources.py"
@@ -19,7 +17,6 @@ def main() -> int:
     cmd = ["pyside6-rcc", str(QRC), "-o", str(OUT)]
     #print(" ".join(cmd)) HACK: Wieso ist das da ??? 
     subprocess.run(cmd, check=True)
-    print(f"Generated resources into {OUT}")
     logger.debug("Generated ressources into " + str(OUT))
     return 0
 

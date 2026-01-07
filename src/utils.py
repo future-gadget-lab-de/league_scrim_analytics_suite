@@ -1,6 +1,5 @@
-import logging, os, pathlib, json, requests, csv
-logger = logging.getLogger(__name__)
-
+import os, pathlib, json, requests, csv
+from loguru import logger
 def getRelPath(absPath: str) -> str:
     """
     returns the relative path for some absolute path
