@@ -5,7 +5,7 @@ import mariadb, sys
 
 from src.utils import readSettingsFile
 from src.config import locPath_c
-
+#TODO: Rewrite Logging
 def buildConnection() -> tuple:
     """builds a connection to mariadb server
 

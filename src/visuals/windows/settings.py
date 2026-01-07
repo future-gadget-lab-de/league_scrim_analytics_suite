@@ -5,7 +5,7 @@ from src.visuals.ui.generated.ui_settings import Ui_settings_dialog
 
 from src.utils import readSettingsFile
 from src.config import locPath_c
-
+#TODO: Rewrite Logging
 class SettingsDialog(QDialog):
     def __init__(self, parent=None) -> None:
         super().__init__(parent)

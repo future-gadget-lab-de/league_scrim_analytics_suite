@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import subprocess
 from pathlib import Path
-
+#TODO: Rewrite Logging
 ROOT = Path(__file__).resolve().parents[1]
 QRC = ROOT / "ui" / "resources.qrc"
 OUT = ROOT / "ui" / "generated_resources.py"

@@ -1,7 +1,5 @@
-import logging
+import logging, os, pathlib, json, requests, csv
 logger = logging.getLogger(__name__)
-
-import os, pathlib, json, requests, csv
 
 def getRelPath(absPath: str) -> str:
     """
@@ -18,10 +16,13 @@ def getRelPath(absPath: str) -> str:
         the resulting relative path
     
     """
+    logger.trace("Starting getRelPath function with input: " + absPath)
 
     abs_path_object = pathlib.Path(absPath)
-    
-    return os.path.relpath(str(abs_path_object), start=os.getcwd())
+    relPath = os.path.relpath(str(abs_path_object), start=os.getcwd())
+
+    logger.trace("Finished getRelPath function with Output: " + relPath)
+    return relPath
 
 def addDictToCsv(data: dict, path_to_csv: str) -> None:
     """
@@ -33,15 +34,21 @@ def addDictToCsv(data: dict, path_to_csv: str) -> None:
         the data which will get imported
     path_to_csv : str
         the relative path to the .csv file
-
-    
     """
+    logger.trace("Starting addDictToCsv function with path:" + path_to_csv + " and data_dict: "+ str(data))
+
     fields = list(data.keys())
+    
     os.makedirs(os.path.dirname(path_to_csv), exist_ok=True)
+    logger.debug("Attempting to write file: " + path_to_csv)
+
     with open(path_to_csv, mode='a', newline='') as file:
         writer = csv.DictWriter(file, fieldnames=fields)
         writer.writerows([data])  # Write data rows
 
+    loggier.info("Written file: " + path_to_csv)
+    logger.trace("Finished addDictToCsv function")
+    
 def readSettingsFile(rel_path_with_name: str) -> dict:
     """
     Reads a passed .conf file
@@ -57,12 +64,15 @@ def readSettingsFile(rel_path_with_name: str) -> dict:
         the dictionary, containing the settings
     
     """
+    logger.trace("Starting readSettingsFile Function with Input: " +rel_path_with_name)
     config = dict()
     config_by_line = readFileByLine(rel_path_with_name)    
     
     for line in config_by_line:
         setting = line.replace(" ", "").split("=")   # remove whitespace and split
         config[setting[0]] = setting[1]    # build dict 
+        logger.trace("Add the following value to config-dict.: "+ str(setting[1]))
+    logger.trace("Finished readSettingsFile Function with Output: "+ str(config))
     return config
 
 def writeSettingsFile(settings: dict, rel_path_with_name: str) -> None:
@@ -76,6 +86,8 @@ def writeSettingsFile(settings: dict, rel_path_with_name: str) -> None:
     rel_path_with_name : str
         Relative path including the filename (e.g. "config/lsas.conf").
     """
+    logger.trace("Starting writeSettingsFile Function")
+
     lines = [f"{key}={value}" for key, value in settings.items()]
     
     base_path = os.path.abspath(os.getcwd())
@@ -85,8 +97,8 @@ def writeSettingsFile(settings: dict, rel_path_with_name: str) -> None:
 
     with open(full_path, "w", encoding="utf-8") as conf_file:
         conf_file.write("\n".join(lines))
-
-
+        logger.debug("Written config file: " + full_path)
+        logger.trace("Finished writeSettingsFile function")
 def findFile(path: str) -> str:
     """
     Finds the first file in the folder given by path.
@@ -102,7 +114,7 @@ def findFile(path: str) -> str:
         relative path for the file
 
     """
-    
+    logger.trace("Starting findFile function with Input: " + path)
     filelist = []
     with os.scandir(path) as ents:
         for e in ents:
@@ -111,10 +123,10 @@ def findFile(path: str) -> str:
             else:
                 filelist.append(e.name)
     filename=filelist[0]
-    matchfile = path + filename
-    return matchfile
-
-    
+    file = path + filename
+    logger.trace("Finished findFile function with Output: " + file)
+    return file
+#NOTE Continue here
 def readFileByLine(relPathToFile) -> list[str]:
     """
     Read a file as an array of string lines.
@@ -130,12 +142,14 @@ def readFileByLine(relPathToFile) -> list[str]:
         A list, containing each line per entry in the list.   
     
     """
+    logger.trace("Started readFileByLine function with Input: " + relPathToFile)
     try:    
         with open(relPathToFile) as file:
             lines = [line.rstrip() for line in file]  # remove \n
+            logger.trace("Finished readFileByLine function with Output:" + str(lines))
             return lines
     except:
-        print("[ERROR] file: " + relPathToFile + " can't be read")
+        logger.critical("file: " +relPathToFile + "cannot be read.")
         exit(1)
 
 
@@ -150,16 +164,18 @@ def moveFile(file, dest: str) -> None:
         The filename, which is to move.
     dest : str             
         The destination as a relative path (containing the new name).
-    
     """
+    logger.trace("Started moveFile function with Inputs file: " + str(file) + " and destination: " +dest)
     path_hierarchy = dest.split("/")
     rel_path_to_folder = dest.removesuffix(path_hierarchy[-1])
     
     if not os.path.isdir(rel_path_to_folder):
+        logger.info("Created Folder: " + rel_path_to_folder)
         pathlib.Path(rel_path_to_folder).mkdir(parents=True, exist_ok=True)
 
     os.rename(file, dest)
-
+    logger.debug("Moved file : " + str(file) + " to " + dest)
+    logger.trace("Finished moveFile function")
 
 def list_relative_filepaths(path: str) -> list[str]:
     """
@@ -176,22 +192,26 @@ def list_relative_filepaths(path: str) -> list[str]:
         List of file paths relative to the provided base directory.
 
     """
+    logger.trace("Started list_relative_filepaths function with Input: " +path)
     if os.path.isabs(path):
-        raise ValueError("Path must be relative")
+        err_msg = "Path must be relative")
+        logger.error(err_msg)
+        raise ValueError(err_msg)
 
     search_path = os.path.abspath(path)
     base_path = os.getcwd()
 
     if not os.path.isdir(base_path):
+        logger.debug("No files found! Exiting list_relative_filepaths")
         return []
 
     filepaths: list[str] = []
-    for root, _, files in os.walk(search_path):
+    for root, _, files in os.walk(search_path): #NOTE Why the ,_, ?
         for filename in files:
             absolute_path = os.path.join(root, filename)
             relative_path = os.path.relpath(absolute_path, start=base_path)
             filepaths.append(relative_path)
-
+    logger.trace("Finished list_relative_filepaths Function with output: " + str(filepaths))
     return filepaths
 
 def reloadjsonfiles(relPathToJson: str, linkToJson: str) -> dict:
@@ -212,23 +232,23 @@ def reloadjsonfiles(relPathToJson: str, linkToJson: str) -> dict:
     data_dict : dict
         the json, from one of the sources above
     """
-
+    logger.trace("Started reloadjsonfiles function with inputs path: " +relPathToJson + "and link: " + linkToJson)
     # check if the file is already dumped
     if os.path.isfile(relPathToJson):
         with open(relPathToJson) as data:
-            # print("read json")
+            logger.debug("Read Json: " + relPathToJson)
+            logger.trace("Finished rejoadjsonfiles function with output: " + str(data))
             return json.load(data)
     else:
         logger.debug("Json file is not present. Downstreaming a new one.")
         data_url = linkToJson
         data_response = requests.get(data_url)
         data_dict = data_response.json()
-
         os.makedirs(os.path.dirname(relPathToJson), exist_ok=True)
 
         with open(relPathToJson, 'w') as data:
-            # print("dumped json")
             json.dump(data_dict, data)
-
+        logger.debug("Written json to dict")
+        logger.trace("Finished rejoadjsonfiles function with output: " + str(data_dict))
         return data_dict
 

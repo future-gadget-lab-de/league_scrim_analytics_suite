@@ -9,7 +9,7 @@ ROOT = Path(__file__).resolve().parents[1]
 LSAS = Path(__file__).resolve().parents[3]
 FORMS_DIR = ROOT / "ui" / "forms"
 OUT_DIR = ROOT / "ui" / "generated"
-
+#TODO: Rewrite Logging
 
 def find_file_in_path(base_abs_path: str, target_filename: str) -> str:
     """

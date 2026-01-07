@@ -2,7 +2,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 from src.core.match import loadMatchData
-
+#TODO: Rewrite Logging
 def returnInsertQuery(table: str, data: dict) -> str:
     """returns a INSERT query
 
