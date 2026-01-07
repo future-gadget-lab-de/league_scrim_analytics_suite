@@ -4,7 +4,7 @@ set cus_install=.\.venv\Scripts\pyinstaller.exe
 set APP=lsas
 set build_dir=%APP%_build
 
-py -m venv .venv
+python -m venv .venv
 %cus_pip% install -r requirements.txt
 %cus_py% .\src\visuals\ui\compile_ui.py
 
