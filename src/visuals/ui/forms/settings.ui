@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>389</width>
-    <height>135</height>
+    <height>155</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,7 +17,7 @@
    <property name="geometry">
     <rect>
      <x>160</x>
-     <y>90</y>
+     <y>110</y>
      <width>211</width>
      <height>41</height>
     </rect>
@@ -35,7 +35,7 @@
      <x>10</x>
      <y>10</y>
      <width>371</width>
-     <height>81</height>
+     <height>105</height>
     </rect>
    </property>
    <layout class="QFormLayout" name="formLayout">
@@ -43,7 +43,7 @@
      <enum>QFormLayout::FieldGrowthPolicy::AllNonFixedFieldsGrow</enum>
     </property>
     <property name="labelAlignment">
-     <set>Qt::AlignmentFlag::AlignCenter</set>
+     <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
     </property>
     <property name="formAlignment">
      <set>Qt::AlignmentFlag::AlignCenter</set>
@@ -57,39 +57,53 @@
     <property name="leftMargin">
      <number>0</number>
     </property>
-    <item row="0" column="0">
+    <item row="1" column="0">
      <widget class="QLabel" name="label_mariadb_activated">
       <property name="text">
        <string>activate MariaDB integration</string>
       </property>
      </widget>
     </item>
-    <item row="0" column="1">
+    <item row="1" column="1">
      <widget class="QCheckBox" name="checkbox_mariadb_activated">
       <property name="text">
        <string notr="true"/>
       </property>
      </widget>
     </item>
-    <item row="1" column="0">
+    <item row="2" column="0">
      <widget class="QLabel" name="label_csv_path">
       <property name="text">
        <string>.csv directory (fallback to DB)</string>
       </property>
      </widget>
     </item>
-    <item row="1" column="1">
+    <item row="2" column="1">
      <widget class="QLineEdit" name="lineEdit_csv_path"/>
     </item>
-    <item row="2" column="0">
+    <item row="3" column="0">
      <widget class="QLabel" name="label_API">
       <property name="text">
        <string>API KEY for riot games API</string>
       </property>
      </widget>
     </item>
-    <item row="2" column="1">
+    <item row="3" column="1">
      <widget class="QLineEdit" name="lineEdit_API"/>
+    </item>
+    <item row="0" column="0">
+     <widget class="QLabel" name="label_old_patch">
+      <property name="text">
+       <string>activate old patch support</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="1">
+     <widget class="QCheckBox" name="checkBox_old_patch">
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
     </item>
    </layout>
   </widget>
