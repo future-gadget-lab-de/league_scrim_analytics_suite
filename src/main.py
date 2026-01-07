@@ -1,10 +1,5 @@
 import logging, os, sys
-from src.log_config import setup_logging
-import sys, os
-from src.log_config import setup_logging
-import logging
 
-logger = logging.getLogger(__name__)
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from src.visuals.gui import runAdvancedFrontend
@@ -13,7 +8,7 @@ from src.config import enrollSettings
 from src.args import initiliazeParser
 from src.utils import getRelPath
 from src.config import locPath_c
-
+from src.log_config import setup_logging
 logger = logging.getLogger(__name__)
 if __name__ == "__main__":
 
