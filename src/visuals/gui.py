@@ -11,6 +11,7 @@ COMPILE_UI = LSAS / "LSAS" / "src" / "visuals" / "ui"
 
 def runAdvancedFrontend() -> None:
 
+    from src.visuals.windows.main_window import MainWindow
     try:
         from src.visuals.windows.main_window import MainWindow
     except:

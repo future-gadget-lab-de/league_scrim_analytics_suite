@@ -7,6 +7,7 @@ from PySide6.QtWidgets import QMainWindow, QFileDialog, QCheckBox
 from src.visuals.ui.generated.ui_mainwindow import Ui_MainWindow
 from src.visuals.windows.settings import SettingsDialog
 from src.visuals.windows.maria_dialog import MariaDialog
+from src.visuals.windows.analytics_space import AnalyticsSpace
 
 from src.core.ops import importMatchfileData, clearData, databaseSetup
 
@@ -23,7 +24,13 @@ class MainWindow(QMainWindow):
         self.settings = readSettingsFile(self.settings_loc["lsas"])
         self.initMainWindow()
 
+        self.space = AnalyticsSpace(self)
+       
+        self.ui.stackWorkspace.addWidget(self.space)
+
         # connect waiter
+        self.ui.actionAdd_AnalyticsSpace.triggered.connect(self.space.addInstance)
+        self.ui.actionRemove_AnalyticsSpace.triggered.connect(self.space.removeInstance)
         self.ui.button_execute.clicked.connect(self.execute_radio)
         self.ui.actionSettings_2.triggered.connect(self.open_settings)
         self.ui.actionMariaDB.triggered.connect(self.open_mariadb_config)

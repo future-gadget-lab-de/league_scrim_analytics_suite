@@ -1,1 +1,0 @@
-SELECT cwards_bought FROM playerdata WHERE playerid="Emperor" ORDER BY gameid ASC;

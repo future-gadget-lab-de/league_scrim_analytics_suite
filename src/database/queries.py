@@ -64,7 +64,7 @@ def returnMatchfileQuery(relPathtoFile: str)-> list[str]:
 
     return queries
 
-def returnSelectQuery(table: str, columns: list[str]) -> str:
+def returnSelectQuery(table: str, columns: list[str], where_cond: str | None = None) -> str:
     """generates a SELECT query
 
     this method generates a sql query for selecting the colums in table.
@@ -81,12 +81,17 @@ def returnSelectQuery(table: str, columns: list[str]) -> str:
     query : str
         the wanted SELECT query
     """
-    query = "SELECT" 
+    query = "SELECT " 
 
     for col in columns:
         query += str(col) + ","
 
     query = query.removesuffix(",")
-    query += "FROM" + table + ";"
+    query += " FROM " + table
+    if where_cond is not None:
+        query += " WHERE " + where_cond
+    
+    query += ";"
+
     return query
 

@@ -71,7 +71,15 @@
     <addaction name="actionMariaDB"/>
     <addaction name="actionImport_Matchfile"/>
    </widget>
+   <widget class="QMenu" name="menuEdit">
+    <property name="title">
+     <string>Edit</string>
+    </property>
+    <addaction name="actionAdd_AnalyticsSpace"/>
+    <addaction name="actionRemove_AnalyticsSpace"/>
+   </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuEdit"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <widget class="QToolBar" name="tools">
@@ -90,6 +98,9 @@
    <addaction name="actionSettings_2"/>
    <addaction name="actionMariaDB"/>
    <addaction name="actionImport_Matchfile"/>
+   <addaction name="separator"/>
+   <addaction name="actionAdd_AnalyticsSpace"/>
+   <addaction name="actionRemove_AnalyticsSpace"/>
    <addaction name="separator"/>
   </widget>
   <widget class="QDockWidget" name="left_dock">
@@ -186,6 +197,28 @@
    </property>
    <property name="text">
     <string>Import Matchfile</string>
+   </property>
+  </action>
+  <action name="actionAdd_AnalyticsSpace">
+   <property name="icon">
+    <iconset theme="QIcon::ThemeIcon::ListAdd"/>
+   </property>
+   <property name="text">
+    <string>Add AnalyticsSpace</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::MenuRole::TextHeuristicRole</enum>
+   </property>
+  </action>
+  <action name="actionRemove_AnalyticsSpace">
+   <property name="icon">
+    <iconset theme="QIcon::ThemeIcon::ListRemove"/>
+   </property>
+   <property name="text">
+    <string>Remove AnalyticsSpace</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::MenuRole::TextHeuristicRole</enum>
    </property>
   </action>
  </widget>
