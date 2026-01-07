@@ -50,7 +50,7 @@ def returnMatchfileQuery(relPathtoFile: str)-> list[str]:
     queries : list[str]
         a list of queries to import the given matchfile
     """
-    metadata, playerdata, blueteamdata, redteamdata, data_file = loadMatchData(relPathtoFile)
+    metadata, playerdata, blueteamdata, redteamdata = loadMatchData(relPathtoFile)
 
     queries = list()
 
