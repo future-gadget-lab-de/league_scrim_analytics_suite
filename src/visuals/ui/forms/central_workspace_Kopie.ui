@@ -168,12 +168,12 @@
                   </item>
                   <item>
                    <property name="text">
-                    <string>own_jgl_kill</string>
+                    <string>own_jng_kill</string>
                    </property>
                   </item>
                   <item>
                    <property name="text">
-                    <string>ene_jgl_kill</string>
+                    <string>ene_jng_kill</string>
                    </property>
                   </item>
                   <item>
