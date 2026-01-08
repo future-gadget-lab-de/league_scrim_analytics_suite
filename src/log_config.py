@@ -11,11 +11,23 @@ Log Level explanation:
 import sys
 from loguru import logger
 
-def custom_format(record ): #TODO: Make alle 7 Levels unique - Trace -> Grey , Debug -> Light Grey , Info -> White Succ -> Green, Warn -> Orange , Error -> Red , Critical -> Dark Red
-    if record["level"].no == 50:
-        return "<red>{time}</> - {level} - <red>{thread}</> - <lvl>{message}</>\n{exception}"
-    else:
-        return "<green>{time}</> - {level} - <lvl>{message}</lvl>\n{exception}"
+def custom_format(record ):
+    lvl = record["level"].no
+    if lvl == 50:
+        return "<b><fg #b22222>{time:YYYY-MM-DD HH:mm:ss.SSSZZ} | {level:^8} | Proc: {process:^8} | Thread: {thread: ^16} | Mod: {module:^8} | Func: {function:^20} | Line: {line:^4} | Message: {message}</></>\n"
+    elif lvl == 40:
+        return "<b><fg #F37676>{time:YYYY-MM-DD HH:mm:ss.SSSZZ} | {level:^8} | Proc: {process:^8} | Thread: {thread: ^16} | Mod: {module:^8} | Func: {function:^20} | Line: {line:^4} | Message: {message}</></>\n"
+    elif lvl == 30:
+        return "<fg #F37676>{time:YYYY-MM-DD HH:mm:ss.SSSZZ} | {level:^8} | Proc: {process:^8} | Thread: {thread: ^16} | Mod: {module:^8} | Func: {function:^20} | Line: {line:^4} | Message: {message}</>\n"
+    elif lvl == 25:
+        return "<green>{time:YYYY-MM-DD HH:mm:ss.SSSZZ} | {level:^8} | Line: {line:^4} | Message: {message}</>\n"
+    elif lvl == 20:
+        return "<white>{time:YYYY-MM-DD HH:mm:ss.SSSZZ} | {level:^8} | Line: {line:^4} | Message: {message}</>\n"
+    elif lvl == 10:
+        return "<fg #808080>{time:YYYY-MM-DD HH:mm:ss.SSSZZ} | {level:^8} | Mod: {module:^8} | Func: {function:^8} | Line: {line:^4} | Message: {message}</>\n"
+    elif lvl == 5:
+        return "<dim><fg #808080>{time:YYYY-MM-DD HH:mm:ss.SSSZZ} | {level:^8} | Proc: {process: ^8} | Thread: {thread: ^16} | Mod: {module: ^8} | Function: {function: ^20} | Line: {line:^4} | Message: {message}</></>\n"
+
 def setup_logging(
     level: str = "INFO",
     log_dir: str | None = None,
@@ -23,3 +35,12 @@ def setup_logging(
     # Clear definition
     logger.remove()
     logger.add(sys.stderr , level=level, format= custom_format)
+    logger.info("Set Loglevel to: " + level)
+    if level == "TRACE" or level == "DEBUG":
+        logger.critical("Crit Test")
+        logger.error("Error test")
+        logger.warning("Warning test")
+        logger.success("Success test")
+        logger.info("Info test")
+        logger.debug("Debug test")
+        logger.trace("Trace test")
