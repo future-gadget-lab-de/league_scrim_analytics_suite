@@ -2,7 +2,7 @@ from loguru import logger
 
 #TODO: Rewrite Logging
 # (id, dataRequested) --> explicit_name of given id
-def mapId(id: int, dataRequested: str, patch: str | None = None) -> str | "placeholder":
+def mapId(id: int, dataRequested: str, patch: str | None = None) -> str:
     """
     Maps the given id, to the corresponding name ingame.
 
