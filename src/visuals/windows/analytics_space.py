@@ -4,7 +4,7 @@ import time
 
 from PySide6.QtWidgets import QWidget
 from src.visuals.windows.analytics_singleton import AnalyticsSingleton
-from src.visuals.ui.generated.ui_central_scrollcontainer import Ui_Form
+from src.visuals.ui.generated.ui_scroll_wrapper import Ui_Scroll_wrapper
 
 from src.utils import readSettingsFile, writeSettingsFile
 from src.config import locPath_c
@@ -14,7 +14,7 @@ class AnalyticsSpace(QWidget):
         super().__init__(parent)
 
 
-        self.ui = Ui_Form()
+        self.ui = Ui_Scroll_wrapper()
         self.ui.setupUi(self)
 
         self.instances = list[AnalyticsSingleton]()

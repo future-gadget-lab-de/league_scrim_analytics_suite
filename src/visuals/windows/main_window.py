@@ -80,7 +80,7 @@ class MainWindow(QMainWindow):
         data = sqlDictToPandas(output_date)
 
         for gameid in [str(gameid) for gameid in data["gameid"].values.tolist()]:
-            self.ui.verticalLayout_2.addWidget(QLabel(text=gameid))
+            self.ui.scroll_sub_content.addWidget(QLabel(text=gameid))
 
 
     def open_settings(self) -> None:

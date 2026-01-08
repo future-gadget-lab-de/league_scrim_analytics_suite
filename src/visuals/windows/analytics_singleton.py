@@ -4,8 +4,7 @@ import time
 
 from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import QWidget, QGraphicsView
-#from src.visuals.ui.generated.ui_central_workspace import Ui_centralworkspace
-from src.visuals.ui.generated.ui_central_workspace_Kopie import Ui_centralworkspace
+from src.visuals.ui.generated.ui_diagram_generator import Ui_DiagramGenerator
 from src.visuals.plotting import buildAnalyticsFigure, buildAnalyticsFigureBulk
 
 from src.utils import readSettingsFile, writeSettingsFile
@@ -15,11 +14,11 @@ class AnalyticsSingleton(QWidget):
     def __init__(self, parent=None) -> None:
         super().__init__(parent)
 
-        self.ui = Ui_centralworkspace()
+        self.ui = Ui_DiagramGenerator()
         self.ui.setupUi(self)
 
         self.pic = QPixmap()
-        self.ui.piclabel.setPixmap(self.pic)
+        self.ui.image_label.setPixmap(self.pic)
 
         #self.ui.piclabel.clear()
         #picture = QGraphicsView("gamefiles/yo.png")
@@ -27,23 +26,25 @@ class AnalyticsSingleton(QWidget):
         self.settings_loc = readSettingsFile(locPath_c)
         self.settings = readSettingsFile(self.settings_loc["database"])
         self.initWindow()
-        self.ui.pushButton.clicked.connect(self.loadAnalytics)
-        self.ui.pushButton_2.clicked.connect(self.resetAnalytics)
+        self.ui.show_button.clicked.connect(self.loadAnalytics)
+        self.ui.del_button.clicked.connect(self.resetAnalytics)
 
     def initWindow(self):
         pass
 
     def loadAnalytics(self) -> None:
-        player = self.ui.lineEdit.text()
-        mode = self.ui.comboBox.currentText()
+        player = self.ui.summoner_edit.text()
+        mode = self.ui.prop_choose.currentText()
+        diagram = self.ui.diagram_choose.currentText()
+        current_width = self.ui.image_label.width()
 
-        if self.ui.comboBox_2.currentText() == "histo":
-            buildAnalyticsFigureBulk(player, mode, (self.ui.piclabel.width(), 400))
+        if diagram == "histo":
+            buildAnalyticsFigureBulk(player, mode, (current_width, 400))
         else:
-            buildAnalyticsFigure(player, mode, (self.ui.piclabel.width(), 400))
+            buildAnalyticsFigure(player, mode, (current_width, 400))
         self.pic = QPixmap(f"gamefiles/{mode}_{player}.png")
-        self.ui.piclabel.setPixmap(self.pic)
+        self.ui.image_label.setPixmap(self.pic)
 
 
     def resetAnalytics(self) -> None:
-         self.ui.piclabel.clear()
+         self.ui.image_label.clear()

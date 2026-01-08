@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>centralworkspace</class>
- <widget class="QWidget" name="centralworkspace">
+ <class>DiagramGenerator</class>
+ <widget class="QWidget" name="DiagramGenerator">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -106,7 +106,7 @@
                  <number>5</number>
                 </property>
                 <item>
-                 <widget class="QLineEdit" name="lineEdit">
+                 <widget class="QLineEdit" name="summoner_edit">
                   <property name="sizePolicy">
                    <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                     <horstretch>0</horstretch>
@@ -128,7 +128,7 @@
                  </widget>
                 </item>
                 <item>
-                 <widget class="QComboBox" name="comboBox">
+                 <widget class="QComboBox" name="prop_choose">
                   <property name="minimumSize">
                    <size>
                     <width>150</width>
@@ -209,7 +209,7 @@
                  </widget>
                 </item>
                 <item>
-                 <widget class="QComboBox" name="comboBox_2">
+                 <widget class="QComboBox" name="diagram_choose">
                   <property name="minimumSize">
                    <size>
                     <width>100</width>
@@ -239,7 +239,7 @@
               <item>
                <layout class="QHBoxLayout" name="horizontalLayout_5">
                 <item>
-                 <spacer name="horizontalSpacer">
+                 <spacer name="cus_spacer">
                   <property name="orientation">
                    <enum>Qt::Orientation::Horizontal</enum>
                   </property>
@@ -252,7 +252,7 @@
                  </spacer>
                 </item>
                 <item>
-                 <widget class="QPushButton" name="pushButton_2">
+                 <widget class="QPushButton" name="del_button">
                   <property name="maximumSize">
                    <size>
                     <width>100</width>
@@ -265,7 +265,7 @@
                  </widget>
                 </item>
                 <item>
-                 <widget class="QPushButton" name="pushButton">
+                 <widget class="QPushButton" name="show_button">
                   <property name="maximumSize">
                    <size>
                     <width>100</width>
@@ -315,7 +315,7 @@
          <item>
           <layout class="QVBoxLayout" name="viewLayout">
            <item>
-            <widget class="QLabel" name="piclabel">
+            <widget class="QLabel" name="image_label">
              <property name="text">
               <string/>
              </property>

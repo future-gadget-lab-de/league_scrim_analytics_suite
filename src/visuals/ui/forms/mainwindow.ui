@@ -128,7 +128,7 @@
       <number>0</number>
      </property>
      <item>
-      <layout class="QVBoxLayout" name="verticalLayout_3">
+      <layout class="QVBoxLayout" name="left_dock_layout">
        <item>
         <widget class="QRadioButton" name="radio_db_create">
          <property name="text">
@@ -147,14 +147,14 @@
         </widget>
        </item>
        <item>
-        <widget class="QLabel" name="label">
+        <widget class="QLabel" name="import_head">
          <property name="text">
           <string>IMPORTED:</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QScrollArea" name="scrollArea">
+        <widget class="QScrollArea" name="import_scroll_area">
          <property name="widgetResizable">
           <bool>true</bool>
          </property>
@@ -181,9 +181,9 @@
             <number>0</number>
            </property>
            <item>
-            <layout class="QHBoxLayout" name="horizontalLayout">
+            <layout class="QHBoxLayout" name="scroll_root_content">
              <item>
-              <layout class="QVBoxLayout" name="verticalLayout_2"/>
+              <layout class="QVBoxLayout" name="scroll_sub_content"/>
              </item>
             </layout>
            </item>
