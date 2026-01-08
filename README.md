@@ -1,20 +1,8 @@
 # League Scrim Analytics Suite
 
-## Installing LSAS
+## Documentation
 
-The first prerequisite is to install Python. In the Windows case, that is enough (see [Python Downloads for Windows](https://www.python.org/downloads/)), but in the Linux case there could be packages to install, too.
-
-### Linux
-One can use the `Makefile` to build the Program:
-
-```
-make build
-```
-and then use it under the `lsas_build` directory.
-
-### Windows
-
-Here one can just execute the provided `build.bat`. Then the build program should be in the directory `lsas_build` aswell.
+See our [Gitlab Pages](https://pages.future-gadget-lab.de/tools/LSAS/index.html).
 
 ## Roadmap
 Highest Priority (ordered)
