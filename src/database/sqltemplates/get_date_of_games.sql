@@ -1,0 +1,1 @@
+SELECT `date`, gameid FROM metadata ORDER BY gameid ASC;

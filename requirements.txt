@@ -26,3 +26,8 @@ pylint
 
 pyinstaller
 
+matplotlib
+
+numpy
+
+pandas

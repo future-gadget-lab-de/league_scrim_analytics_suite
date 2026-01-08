@@ -2,13 +2,19 @@
 
 ## Installing LSAS
 
-For using `lsas`, one can use the `Makefile`:
+The first prerequisite is to install Python. In the Windows case, that is enough (see [Python Downloads for Windows](https://www.python.org/downloads/)), but in the Linux case there could be packages to install, too.
+
+### Linux
+One can use the `Makefile` to build the Program:
 
 ```
 make build
 ```
+and then use it under the `lsas_build` directory.
 
-Then there will be a binary build in the `lsas_build` directory. Currently only Linux systems are supported.
+### Windows
+
+Here one can just execute the provided `build.bat`. Then the build program should be in the directory `lsas_build` aswell.
 
 ## Roadmap
 Highest Priority (ordered)
