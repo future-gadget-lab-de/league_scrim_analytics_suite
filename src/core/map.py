@@ -1,6 +1,6 @@
-import logging
-logger = logging.getLogger(__name__)
+from loguru import logger
 
+#TODO: Rewrite Logging
 # (id, dataRequested) --> explicit_name of given id
 def mapId(id: int, dataRequested: str, patch: str | None = None) -> str | "placeholder":
     """

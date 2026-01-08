@@ -1,9 +1,5 @@
-import sys, os, platform
+import logging, sys, os, platform
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-
-from src.log_config import setup_logging
-import logging
-logger = logging.getLogger(__name__)
 
 from src.database.execution import updateConnectionState
 from src.visuals.gui import runAdvancedFrontend
@@ -12,7 +8,8 @@ from src.config import enrollSettings
 from src.args import initiliazeParser
 from src.utils import getRelPath, readSettingsFile
 from src.config import locPath_c
-
+from src.log_config import setup_logging
+from loguru import logger
 if __name__ == "__main__":
 
     if platform.system() == "Windows":
@@ -28,19 +25,23 @@ if __name__ == "__main__":
 
     # logging
     if args.very_verbose:
-        setup_logging(level ="TRACE")
+        level ="TRACE"
     elif args.verbose:
-        setup_logging(level = "DEBUG")
+        level = "DEBUG"
     else:
-        setup_logging(level = "INFO")
-    
-    logger.trace("Set Log-Level")
+        level = "INFO"
+
+    setup_logging(level)
+    logger.info("Set Log-Level to: " + str(logger.level(level)))
+
     if not os.path.isfile(locPath_c):
         enrollSettings("config")
         logger.info("Enrolled a fresh config folder. restart the Application.")
         sys.exit(0)
     if args.config is not None:
+        logger.trace("Starting enrollSettings Function with user settings:" + str(args.config))
         enrollSettings(args.config)
+        logger.info("Changed Config settings to user specified.")
 
 
     # is a connection possible?
@@ -63,5 +64,5 @@ if __name__ == "__main__":
 
     # the gui starts here
     if args.gui:
+        logger.info("Starting GUI")
         runAdvancedFrontend()
-        

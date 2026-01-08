@@ -1,21 +1,19 @@
 """
 entrypoint for all GUI Applications
 """
-
-# from src.visuals.windows.main_window import MainWindow
-import subprocess, pathlib, sys, platform
+import subprocess, pathlib, sys, logging, platform
 from PySide6.QtWidgets import QApplication
-
 LSAS = pathlib.Path(__file__).resolve().parents[3]
 COMPILE_UI = LSAS / "LSAS" / "src" / "visuals" / "ui" 
+from loguru import logger
 
 def runAdvancedFrontend() -> None:
-
-    #from src.visuals.windows.main_window import MainWindow
+    logger.trace("Started runAdvancedFrontend Function.")
     try:
         from src.visuals.windows.main_window import MainWindow
     except:
         try:
+            logger.info("Compiling UI.")
             match platform.system():
                 case "Windows":
                     binary = "./.venv/Scripts/python.exe"
@@ -30,7 +28,6 @@ def runAdvancedFrontend() -> None:
         except:
             raise Exception("Something went off, while compiling the ui")
             sys.exit(1)
-
 
     app = QApplication(sys.argv)
     window = MainWindow()

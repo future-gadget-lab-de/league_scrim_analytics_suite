@@ -1,5 +1,3 @@
-import logging
-logger = logging.getLogger(__name__)
 
 import json, os
 from datetime import datetime, timedelta
@@ -9,7 +7,7 @@ from src.core.team import playerTeamCheck
 
 from src.utils import findFile
 
-
+from loguru import logger
 def loadMatchData(relPath: str, useIncludedGameversion: bool = False):
     """
     Wrapper method for the full data extraction of the first file found.

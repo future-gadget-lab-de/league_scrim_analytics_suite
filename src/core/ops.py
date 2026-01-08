@@ -1,5 +1,3 @@
-import logging
-logger = logging.getLogger(__name__)
 
 import csv, os
 from src.core.match import loadMatchData
@@ -8,7 +6,8 @@ from src.database.execution import executeQuery, buildConnection, getCursorSelec
 from src.database.sqltemplates.template import importSQLQueries
 from src.utils import readSettingsFile, writeSettingsFile, addDictToCsv, transformPathtoFileList
 from src.config import locPath_c
-
+from loguru import logger
+#TODO: Rewrite Logging
 
 def importMatchfileData(PathToFolder: str) -> None:
     """

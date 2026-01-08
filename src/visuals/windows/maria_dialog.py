@@ -9,7 +9,6 @@ from src.visuals.ui.generated.ui_maria_dialog import Ui_Dialog
 from src.database.execution import updateConnectionState
 from src.utils import readSettingsFile, writeSettingsFile
 from src.config import locPath_c
-
 class MariaDialog(QDialog):
     def __init__(self, parent=None) -> None:
         super().__init__(parent)

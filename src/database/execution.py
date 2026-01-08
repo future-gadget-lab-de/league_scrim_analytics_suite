@@ -1,10 +1,8 @@
-import logging
-logger = logging.getLogger(__name__)
-
 import mariadb, sys
 
 from src.utils import readSettingsFile, writeSettingsFile
 from src.config import locPath_c
+from loguru import logger
 
 def updateConnectionState() -> bool:
 
@@ -20,7 +18,7 @@ def updateConnectionState() -> bool:
         writeSettingsFile(settings_loc, locPath_c)
         return False
 
-
+#TODO: Rewrite Logging
 def buildConnection() -> tuple:
     """builds a connection to mariadb server
 
