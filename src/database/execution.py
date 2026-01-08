@@ -55,17 +55,17 @@ def executeQuery(queries: list[str], conn, cur):
     """
     for query in queries:
         try:
-            logger.debug("will execute the sql query: %s", query)
+            logger.debug(f"will execute the sql query: {query}", )
             cur.execute(query)
             if len(query) > 100:
                 logger.info("Executed a sql query. For Detail, adjust loglevel to DEBUG.")
             else:
-                logger.info("Executed the sql query: %s", query)
+                logger.info(f"Executed the sql query: {query}")
             conn.commit()
             #TODO: Log query here.
         except mariadb.Error as e:
             cur.close()
-            logger.error("Error connecting to MariaDB Platform: %s", e)
+            logger.error(f"Error connecting to MariaDB Platform: {e}")
             sys.exit(1)
     
 def getCursorSelect(cur) -> list[dict]:
