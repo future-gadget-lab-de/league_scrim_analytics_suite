@@ -1,8 +1,23 @@
 import mariadb, sys
 
-from src.utils import readSettingsFile
+from src.utils import readSettingsFile, writeSettingsFile
 from src.config import locPath_c
 from loguru import logger
+
+def updateConnectionState() -> bool:
+
+    settings_loc = readSettingsFile(locPath_c)
+
+    try:
+        buildConnection()
+        settings_loc["connected"] = "1"
+        writeSettingsFile(settings_loc, locPath_c)
+        return True
+    except:
+        settings_loc["connected"] = "0"
+        writeSettingsFile(settings_loc, locPath_c)
+        return False
+
 #TODO: Rewrite Logging
 def buildConnection() -> tuple:
     """builds a connection to mariadb server
@@ -20,7 +35,7 @@ def buildConnection() -> tuple:
     conn_params = readSettingsFile(settings_loc["database"])
     conn_params['port'] = int(conn_params['port']) 
     conn = mariadb.connect(**conn_params)
-    logger.info("Connection to MariaDB Server established.")
+    logger.debug("Connection to MariaDB Server established.")
     cur = conn.cursor()
     return conn, cur
 
@@ -40,16 +55,24 @@ def executeQuery(queries: list[str], conn, cur):
     """
     for query in queries:
         try:
-            logger.debug("will execute the sql query: %s", query)
+            logger.debug(f"will execute the sql query: {query}", )
             cur.execute(query)
             if len(query) > 100:
                 logger.info("Executed a sql query. For Detail, adjust loglevel to DEBUG.")
             else:
-                logger.info("Executed the sql query: %s", query)
+                logger.info(f"Executed the sql query: {query}")
             conn.commit()
             #TODO: Log query here.
         except mariadb.Error as e:
             cur.close()
-            logger.error("Error connecting to MariaDB Platform: %s", e)
+            logger.error(f"Error connecting to MariaDB Platform: {e}")
             sys.exit(1)
     
+def getCursorSelect(cur) -> list[dict]:
+    cols = [d[0] for d in cur.description]
+    parsed_rows = list[dict]()
+
+    for row in cur:
+        parsed_rows.append(dict(zip(cols, row)))
+    return parsed_rows
+

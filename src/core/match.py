@@ -113,6 +113,9 @@ def loadTeamData(data: dict, patch: str | None = None) -> dict:
         bans = tData['bans']
         try:
             for j in range (0,5):
+                if len(bans)==0:
+                    banarr.append("placeholder")
+                    continue
                 cId     = bans[j]['championId']
                 cName   = mapId(cId, 'champion', patch)
                 banarr.append(cName)

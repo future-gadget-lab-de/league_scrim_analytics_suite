@@ -60,7 +60,7 @@ def returnMatchfileQuery(relPathtoFile: str)-> list[str]:
     logger.trace("Finished returnMatchfileQuery.")
     return queries
 
-def returnSelectQuery(table: str, columns: list[str]) -> str:
+def returnSelectQuery(table: str, columns: list[str], where_cond: str | None = None) -> str:
     """generates a SELECT query
 
     this method generates a sql query for selecting the colums in table.
@@ -78,14 +78,19 @@ def returnSelectQuery(table: str, columns: list[str]) -> str:
         the wanted SELECT query
     """
     logger.trace("Starting returnSelectQuery for table: " + table +", with columns: " +str(columns) )
-    query = "SELECT" 
+    query = "SELECT " 
     logger.info("Generating select query")
     for col in columns:
         logger.trace("Adding: "+ str(col))
         query += str(col) + ","
 
     query = query.removesuffix(",")
-    query += "FROM" + table + ";"
+    query += " FROM " + table
+    if where_cond is not None:
+        query += " WHERE " + where_cond
+    
+    query += ";"
+
     logger.trace("Finished returnSelectQuery with query: " + query )
     return query
 

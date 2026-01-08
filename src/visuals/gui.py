@@ -1,11 +1,12 @@
 """
 entrypoint for all GUI Applications
 """
-import subprocess, pathlib, sys,logging
+import subprocess, pathlib, sys, logging, platform
 from PySide6.QtWidgets import QApplication
 LSAS = pathlib.Path(__file__).resolve().parents[3]
 COMPILE_UI = LSAS / "LSAS" / "src" / "visuals" / "ui" 
 from loguru import logger
+
 def runAdvancedFrontend() -> None:
     logger.trace("Started runAdvancedFrontend Function.")
     try:
@@ -13,7 +14,13 @@ def runAdvancedFrontend() -> None:
     except:
         try:
             logger.info("Compiling UI.")
-            cmd = ["python3", str(COMPILE_UI) + "/compile_ui.py"]
+            match platform.system():
+                case "Windows":
+                    binary = "./.venv/Scripts/python.exe"
+                case "Linux":
+                    binary = "./.venv/bin/python"
+
+            cmd = [binary, str(COMPILE_UI) + "/compile_ui.py"]
             print(" ".join(cmd))
             subprocess.run(cmd, check=True)
 
