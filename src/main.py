@@ -32,7 +32,6 @@ if __name__ == "__main__":
         level = "INFO"
 
     setup_logging(level)
-    logger.info("Set Log-Level to: " + str(logger.level(level)))
 
     if not os.path.isfile(locPath_c):
         enrollSettings("config")
