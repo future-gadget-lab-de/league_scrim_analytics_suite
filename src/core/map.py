@@ -2,7 +2,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 # (id, dataRequested) --> explicit_name of given id
-def mapId(id: int, dataRequested: str, patch: str | None = None):
+def mapId(id: int, dataRequested: str, patch: str | None = None) -> str | "placeholder":
     """
     Maps the given id, to the corresponding name ingame.
 
@@ -13,11 +13,15 @@ def mapId(id: int, dataRequested: str, patch: str | None = None):
     dataRequested : str 
         Determines the dataBase, which the function will downstream.
         Currently supported: "summoner", "perk", "champion", "item"
-    
+    patch : str, optional
+        if an Argument is passed, the passed patchnumber will be used
+        instead of the most recent
+
     Returns
     -------
     name : str
-        The name, which corresponds to the id
+        The name, which corresponds to the id. if the mapping process fails, it inserts
+        "placeholder" instead.
     """
     from src.scraping.data import loadDatabase
 
