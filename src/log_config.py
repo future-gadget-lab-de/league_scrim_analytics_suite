@@ -1,20 +1,28 @@
 """
-Log Level explanation:
-    - Critical(50):   Errors where Program cannot continue running , example: duplicate keys in database
+Log Level explanation
 
-    - Error(40):      Failure in a function that leads to that function not being able to complete.
+**Critical** (50)
+    Errors where program cannot continue running (e.g., duplicate keys in database).
 
-    - Warn(30):       Failure in the Program that needs to alert the user but not halt , example: connection failed to DB, retry possible
+**Error** (40)
+    Failure in a function that prevents it from completing.
 
-    - Success(25):    Log succesful larger operations.
+**Warning** (30)
+    Failure that should alert the user but does not halt the program (e.g., DB connection failed; retry possible).
 
-    - Info(20):       General Purpose logs, "Start importing file xy , finished importing file xy" and so on.
+**Success** (25)
+    Successful larger operations.
 
-    - Debug(10):      Expands to log more frequently than Info, also with the file open at the time of logging.
+**Info** (20)
+    General purpose logs (e.g., “start importing file … / finished importing file …”).
 
-    - Trace(5):       Log EVERYTHING , what method is being called, what file is opened (...)
-    
+**Debug** (10)
+    More frequent than Info; include additional state (e.g., open file).
+
+**Trace** (5)
+    Log everything (calls, opened files, …).
 """
+
 import sys
 from loguru import logger
 
