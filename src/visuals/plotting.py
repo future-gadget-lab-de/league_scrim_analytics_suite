@@ -42,6 +42,7 @@ def buildAnalyticsFigure(player: str, feature: str, dim: tuple[int], diagram: st
         plt.xlabel("date")
 
     elif diagram == "histo":
+        data = data.sort_values(["gameid"])
         plt.bar([str(gameid) for gameid in data["gameid"].values.tolist()], data[feature].values.tolist())
 
     plt.ylabel(feature)
