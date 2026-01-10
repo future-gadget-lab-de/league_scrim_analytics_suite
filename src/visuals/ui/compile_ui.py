@@ -12,7 +12,7 @@ LSAS = Path(__file__).resolve().parents[3]
 FORMS_DIR = ROOT / "ui" / "forms"
 OUT_DIR = ROOT / "ui" / "generated"
 
-def find_file_in_path(base_abs_path: str, target_filename: str) -> str: #NOTE: Gehört das nicht in Utils eig. ?
+def find_file_in_path(base_abs_path: str, target_filename: str) -> str: #NOTE: Gehört das nicht in Utils eig. ? #NOTE: Nein.
     """
     Searches recursively for a file name within an absolute base path and returns its absolute path.
 
@@ -80,7 +80,6 @@ def main() -> int:
         try:
             logger.trace("Compiling: "+str(ui))
             cmd = [binary, str(ui), "-o", str(out_py)]
-            print(" ".join(cmd)) #HACK: Wieso ?
             subprocess.run(cmd, check=True)
         except:
             err_msg = "Your pyside6 installation isnt inside a venv."

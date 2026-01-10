@@ -1,14 +1,12 @@
 
 import json, os
 from datetime import datetime, timedelta
-
 from src.core.map import mapId
 from src.core.team import playerTeamCheck
-
-from src.utils import findFile
+from src.config import readSettings, settings_list_c
 
 from loguru import logger
-def loadMatchData(relPath: str, useIncludedGameversion: bool = False):
+def loadMatchData(relPath: str):
     """
     Wrapper method for the full data extraction of the first file found.
     
@@ -31,13 +29,16 @@ def loadMatchData(relPath: str, useIncludedGameversion: bool = False):
         Dictionary which maps all features to their values
     """
     
+    settings_lsas = readSettings(settings_list_c[0])
+
     if os.path.isfile(relPath):
-        with open(relPath) as f:
+        with open(relPath, encoding="utf-8") as f:
             raw                             = f.read()
             data_dict                       = json.loads(raw)
 
     patch = None
-    if useIncludedGameversion:
+
+    if settings_lsas["old_patch_support"] == "1":
         raw_version = data_dict["gameVersion"]
         raw_version_list = raw_version.split(".")
         patch = ".".join([raw_version_list[0],raw_version_list[1],"1"])
@@ -60,15 +61,7 @@ def loadMetadata(data) -> dict:
     Returns
     -------
     metadata : dict
-    With the content:
-        gameid : int          
-            Number that respresents a unique identifier to the Match
-        patch : str            
-            The LoL patch number
-        date : str             
-            Date of the Match played in the format: yyyy-mm-dd
-        duration : str
-            Duration of the match in the format: hh:mm:ss
+        a dict containing the games metadata
 
     """
     metadata = dict()

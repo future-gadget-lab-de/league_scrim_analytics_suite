@@ -1,4 +1,5 @@
-from src.core.match import loadMatchData
+"""this file contains code for generating .sql queries"""
+
 from loguru import logger
 #TODO: Rewrite Logging
 def returnInsertQuery(table: str, data: dict) -> str:
@@ -31,7 +32,7 @@ def returnInsertQuery(table: str, data: dict) -> str:
     logger.trace("Finished returnInsertQuery with query: " + query)
     return query
 
-def returnMatchfileQuery(relPathtoFile: str)-> list[str]:
+def returnMatchfileQuery(metadata: list[dict], teamdata: list[dict], playerdata: list[dict])-> list[str]:
     """query for matchfile importing.
 
     Returns a list of queries, which can be used to import a passed matchfile
@@ -46,16 +47,14 @@ def returnMatchfileQuery(relPathtoFile: str)-> list[str]:
     queries : list[str]
         a list of queries to import the given matchfile
     """
-    logger.trace("Starting returnMatchfileQuery function for file: " + relPathtoFile)
-    metadata, playerdata, blueteamdata, redteamdata = loadMatchData(relPathtoFile)
 
     queries = list()
     logger.info("Generating matchfile Query")
-    queries.append(returnInsertQuery("metadata",metadata))
+    queries.append(returnInsertQuery("metadata",metadata[0]))
     for playerdict in playerdata:
         queries.append(returnInsertQuery("playerdata",playerdict))
-    queries.append(returnInsertQuery("teamdata",blueteamdata))
-    queries.append(returnInsertQuery("teamdata",redteamdata))
+    queries.append(returnInsertQuery("teamdata",teamdata[0]))
+    queries.append(returnInsertQuery("teamdata",teamdata[1]))
 
     logger.trace("Finished returnMatchfileQuery.")
     return queries

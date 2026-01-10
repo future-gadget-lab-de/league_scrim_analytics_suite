@@ -1,15 +1,14 @@
 import logging, sys, os, platform
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from src.database.execution import updateConnectionState
+from src.database.mariadb.execution import updateConnectionState, executeSQLFiles
 from src.visuals.gui import runAdvancedFrontend
-from src.core.ops import importMatchfileData, executeSQLFiles
-from src.config import enrollSettings
+from src.core.ops import importMatchfileData
+from src.config import enrollSettings, locPath_c
 from src.args import initiliazeParser
-from src.utils import getRelPath, readSettingsFile
-from src.config import locPath_c
 from src.log_config import setup_logging
 from loguru import logger
+
 if __name__ == "__main__":
 
     if platform.system() == "Windows":
@@ -34,7 +33,7 @@ if __name__ == "__main__":
     setup_logging(level)
 
     if not os.path.isfile(locPath_c):
-        enrollSettings("config")
+        enrollSettings()
         logger.info("Enrolled a fresh config folder. restart the Application.")
         sys.exit(0)
     if args.config is not None:
@@ -42,12 +41,11 @@ if __name__ == "__main__":
         enrollSettings(args.config)
         logger.info("Changed Config settings to user specified.")
 
-
     # is a connection possible?
     updateConnectionState()
 
     if args.status: 
-        if updateConnectionState():
+        if updateConnectionState() == "1":
             logger.info("You can connect, to your MariaDB Server!")
         else:
             logger.info("You can't establish a connection with your current MariaDB Config. Adjust the database.conf!")

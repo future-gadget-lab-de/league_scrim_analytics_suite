@@ -4,94 +4,50 @@ import numpy as np
 import matplotlib.pyplot as plt 
 import pandas as pd 
 
-from src.core.ops import executeSQLFiles
+from src.database.wrapper import executeSelectQuery
 from src.database.queries import returnSelectQuery
-from src.database.execution import buildConnection,executeQuery,getCursorSelect
-from src.database.sqltemplates.template import importSQLQueries
 
-def sqlDictToPandas(SQL_DATA: list[dict]) -> pd.DataFrame:
-    data_dict = dict()
-    for key in SQL_DATA[0].keys():
 
-        data_list = list()
-
-        for data in SQL_DATA:
-            data_list.append(data[key])
+def buildAnalyticsFigure(player: str, feature: str, dim: tuple[int], diagram: str = "line") -> None:
+    """builds a diagram for a given player/feature relation. uses the internal data
+    
+    Parameters
+    ----------
+    player : str
+        the player, of which the diagram is wanted
+    feature : str
+        a numerical feature
+    dim : tuple[int]
+        the dimensions of the diagram in int x int
+    diagram : str, optional
+        a specifier for a diagram. supported: line, histo
         
-        data_dict[key] = data_list
+    """
 
-    return pd.DataFrame(data_dict)
-
-def buildAnalyticsFigure(player: str, mode: str, dim: tuple[int]):
-
-    query_player = returnSelectQuery("playerdata",[mode],f"playerid='{player}'")
+    query_player = returnSelectQuery("playerdata",[feature],f"playerid='{player}'")
     query_date = returnSelectQuery("metadata",["date","gameid"])
 
-    conn,cur = buildConnection()
-
-    executeQuery([query_player], conn, cur)
-    output_player = getCursorSelect(cur)
-
-    executeQuery([query_date], conn, cur)
-    output_date = getCursorSelect(cur)
-
-    conn.close()
-    cur.close()
-
-    data_player = sqlDictToPandas(output_player)
-    data_date = sqlDictToPandas(output_date)
-
-    data = data_player.join(data_date)
-
-    data = data.groupby("date", as_index=False).mean(numeric_only=True)
-
+    data_player = executeSelectQuery(query_player)
+    data_date = executeSelectQuery(query_date)
     dpi = 100
     figsize = (float(dim[0])/float(dpi), float(dim[1])/float(dpi))
-
-    plt.figure(dpi, figsize)
-
-    plt.plot(data["date"], data[mode], linestyle="-", marker='o')
-    plt.xlabel("date")
-    plt.ylabel(mode)
-    plt.title("Line Chart Example")
-    plt.grid()
-    os.makedirs(os.path.dirname(f"gamefiles/{mode}_{player}.png"), exist_ok=True)
-    plt.savefig(f"gamefiles/{mode}_{player}.png")
-    plt.close()
-
-
-def buildAnalyticsFigureBulk(player: str, mode: str, dim: tuple[int]):
-
-    query_player = returnSelectQuery("playerdata",[mode],f"playerid='{player}'")
-    query_date = returnSelectQuery("metadata",["date","gameid"])
-
-    conn,cur = buildConnection()
-
-    executeQuery([query_player], conn, cur)
-    output_player = getCursorSelect(cur)
-
-    executeQuery([query_date], conn, cur)
-    output_date = getCursorSelect(cur)
-
-    conn.close()
-    cur.close()
-
-    data_player = sqlDictToPandas(output_player)
-    data_date = sqlDictToPandas(output_date)
-
+    
     data = data_player.join(data_date)
-
-    data = data.sort_values(by=["gameid"])
-
-    dpi = 100
-    figsize = (float(dim[0])/float(dpi), float(dim[1])/float(dpi))
     plt.figure(dpi, figsize)
 
-    plt.bar([str(gameid) for gameid in data["gameid"].values.tolist()], data[mode].values.tolist())
+    if diagram == "line":
+
+        data = data.groupby("date", as_index=False).mean(numeric_only=True)
+        plt.plot(data["date"], data[feature], linestyle="-", marker='o')
+        plt.xlabel("date")
+
+    elif diagram == "histo":
+        data = data.sort_values(["gameid"])
+        plt.bar([str(gameid) for gameid in data["gameid"].values.tolist()], data[feature].values.tolist())
+
+    plt.ylabel(feature)
     plt.grid()
-    plt.ylabel(mode)
-    plt.title("Line Chart Example")
-    plt.show()
-    os.makedirs(os.path.dirname(f"gamefiles/{mode}_{player}.png"), exist_ok=True)
-    plt.savefig(f"gamefiles/{mode}_{player}.png")
+    os.makedirs(os.path.dirname(f"gamefiles/{feature}_{player}_{diagram}.png"), exist_ok=True)
+    plt.savefig(f"gamefiles/{feature}_{player}_{diagram}.png")
     plt.close()
+
