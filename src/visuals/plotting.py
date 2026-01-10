@@ -33,11 +33,12 @@ def buildAnalyticsFigure(player: str, feature: str, dim: tuple[int], diagram: st
     figsize = (float(dim[0])/float(dpi), float(dim[1])/float(dpi))
     
     data = data_player.join(data_date)
-    data = data.groupby("date", as_index=False).mean(numeric_only=True)
     plt.figure(dpi, figsize)
 
     if diagram == "line":
-        plt.plot(data["date"], data[mode], linestyle="-", marker='o')
+
+        data = data.groupby("date", as_index=False).mean(numeric_only=True)
+        plt.plot(data["date"], data[feature], linestyle="-", marker='o')
         plt.xlabel("date")
 
     elif diagram == "histo":
