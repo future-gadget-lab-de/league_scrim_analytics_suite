@@ -32,7 +32,7 @@ def loadMatchData(relPath: str):
     settings_lsas = readSettings(settings_list_c[0])
 
     if os.path.isfile(relPath):
-        with open(relPath) as f:
+        with open(relPath, encoding="utf-8") as f:
             raw                             = f.read()
             data_dict                       = json.loads(raw)
 

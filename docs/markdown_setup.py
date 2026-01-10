@@ -13,7 +13,7 @@ if len(order) != len(paths) + 1:
     raise Exception("order not set, for all files provided")
 
 for i in range(1,len(order)+1):    
-    with open("docs/source/index.rst", 'a') as file:
+    with open("docs/source/index.rst", 'a', encoding="utf-8") as file:
         if order[str(i)].startswith("api"):
             file.write("\n   " + order[str(i)])
             continue
