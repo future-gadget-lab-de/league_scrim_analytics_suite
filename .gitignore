@@ -16,3 +16,4 @@ config
 data
 *.png
 gamefiles
+public

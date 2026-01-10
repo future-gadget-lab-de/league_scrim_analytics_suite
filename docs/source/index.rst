@@ -6,10 +6,6 @@
 lsas documentation
 ==================
 
-.. graphviz:: _generated/imports.dot
-   :caption: Import dependencies (collapsed)
-   :align: center
-
 .. toctree::
    :maxdepth: 2
    :caption: Contents:

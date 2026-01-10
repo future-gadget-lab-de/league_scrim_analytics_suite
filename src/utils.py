@@ -79,7 +79,7 @@ def addDictToCsv(data: dict, path_to_csv: str) -> None:
         writer = csv.DictWriter(file, fieldnames=fields)
         writer.writerows([data])  # Write data rows
 
-    loggier.info("Written file: " + path_to_csv)
+    logger.info("Written file: " + path_to_csv)
     logger.trace("Finished addDictToCsv function")
     
 def readSettingsFile(rel_path_with_name: str) -> dict:
