@@ -8,7 +8,10 @@ COMPILE_UI = LSAS / "LSAS" / "src" / "visuals" / "ui"
 from loguru import logger
 
 def runAdvancedFrontend() -> None:
+    """entrypoint method for all GUI applications"""
+    
     logger.trace("Started runAdvancedFrontend Function.")
+    from src.visuals.windows.main_window import MainWindow
     try:
         from src.visuals.windows.main_window import MainWindow
     except:
@@ -25,8 +28,8 @@ def runAdvancedFrontend() -> None:
             subprocess.run(cmd, check=True)
 
             from src.visuals.windows.main_window import MainWindow
-        except:
-            raise Exception("Something went off, while compiling the ui")
+        except Exception as e:
+            raise Exception("Something went off, while compiling the ui"+ str(e))
             sys.exit(1)
 
     app = QApplication(sys.argv)

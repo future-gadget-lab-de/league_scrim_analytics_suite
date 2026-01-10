@@ -1,3 +1,4 @@
+"""this file contains code for parsing .sql files"""
 import logging
 logger = logging.getLogger(__name__)
 
@@ -40,3 +41,5 @@ def importSQLQueries(relPathtoFile: str) -> list[str]:
 
     logger.debug("loaded the file: %s", relPathtoFile)
     return queries
+
+

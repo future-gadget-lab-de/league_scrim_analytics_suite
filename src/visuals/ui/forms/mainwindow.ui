@@ -167,25 +167,22 @@
             <height>331</height>
            </rect>
           </property>
-          <layout class="QVBoxLayout" name="verticalLayout_4">
-           <property name="leftMargin">
-            <number>5</number>
-           </property>
-           <property name="topMargin">
-            <number>0</number>
-           </property>
-           <property name="rightMargin">
-            <number>5</number>
-           </property>
-           <property name="bottomMargin">
-            <number>0</number>
-           </property>
+          <layout class="QVBoxLayout" name="verticalLayout_3">
            <item>
-            <layout class="QHBoxLayout" name="scroll_root_content">
-             <item>
-              <layout class="QVBoxLayout" name="scroll_sub_content"/>
-             </item>
-            </layout>
+            <layout class="QVBoxLayout" name="scroll_sub_content"/>
+           </item>
+           <item>
+            <spacer name="verticalSpacer">
+             <property name="orientation">
+              <enum>Qt::Orientation::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>302</height>
+              </size>
+             </property>
+            </spacer>
            </item>
           </layout>
          </widget>

@@ -75,11 +75,11 @@ def addDictToCsv(data: dict, path_to_csv: str) -> None:
     os.makedirs(os.path.dirname(path_to_csv), exist_ok=True)
     logger.debug("Attempting to write file: " + path_to_csv)
 
-    with open(path_to_csv, mode='a', newline='') as file:
+    with open(path_to_csv, mode='a', newline='',encoding="utf-8") as file:
         writer = csv.DictWriter(file, fieldnames=fields)
         writer.writerows([data])  # Write data rows
 
-    loggier.info("Written file: " + path_to_csv)
+    logger.info("Written file: " + path_to_csv)
     logger.trace("Finished addDictToCsv function")
     
 def readSettingsFile(rel_path_with_name: str) -> dict:
@@ -177,7 +177,7 @@ def readFileByLine(relPathToFile) -> list[str]:
     """
     logger.trace("Started readFileByLine function with Input: " + relPathToFile)
     try:    
-        with open(relPathToFile) as file:
+        with open(relPathToFile, encoding="utf-8") as file:
             lines = [line.rstrip() for line in file]  # remove \n
             logger.trace("Finished readFileByLine function with Output:" + str(lines))
             return lines
@@ -268,7 +268,7 @@ def reloadjsonfiles(relPathToJson: str, linkToJson: str) -> dict:
     logger.trace("Started reloadjsonfiles function with inputs path: " +relPathToJson + "and link: " + linkToJson)
     # check if the file is already dumped
     if os.path.isfile(relPathToJson):
-        with open(relPathToJson) as data:
+        with open(relPathToJson, encoding="utf-8") as data:
             logger.debug("Read Json: " + relPathToJson)
             logger.trace("Finished rejoadjsonfiles function with output: " + str(data))
             return json.load(data)
@@ -279,7 +279,7 @@ def reloadjsonfiles(relPathToJson: str, linkToJson: str) -> dict:
         data_dict = data_response.json()
         os.makedirs(os.path.dirname(relPathToJson), exist_ok=True)
 
-        with open(relPathToJson, 'w') as data:
+        with open(relPathToJson, 'w', encoding="utf-8") as data:
             json.dump(data_dict, data)
         logger.debug("Written json to dict")
         logger.trace("Finished rejoadjsonfiles function with output: " + str(data_dict))
