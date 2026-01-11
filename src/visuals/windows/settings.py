@@ -11,7 +11,7 @@ from loguru import logger
 class SettingsDialog(QDialog):
     """Wrapper class for the general settings window"""
 
-    def __init__(self, parent=None) -> None:
+    def __init__(self, parent) -> None:
         super().__init__(parent)
         self.ui = Ui_settings_dialog()
         self.ui.setupUi(self)
