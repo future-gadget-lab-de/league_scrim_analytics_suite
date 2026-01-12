@@ -7,7 +7,7 @@ import src.utils as ut
 paths = ut.list_relative_filepaths("docs/source/markdown")
 
 if os.path.isfile("docs/source/order.json"):
-    order = ut.reloadjsonfiles("docs/source/order.json", "")
+    order = ut.loadjsonfiles("docs/source/order.json")
 
 if len(order) != len(paths) + 1:
     raise Exception("order not set, for all files provided")

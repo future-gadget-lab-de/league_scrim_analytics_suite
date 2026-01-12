@@ -275,7 +275,7 @@ def list_relative_filepaths(path: str) -> list[str]:
     logger.trace("Finished list_relative_filepaths Function with output: " + str(filepaths))
     return filepaths
 
-def reloadjsonfiles(relPathToJson: str, linkToJson: str) -> dict:
+def loadjsonfiles(relPathToJson: str, linkToJson: str | None = None) -> dict:
     """loads (or reloads) a specified .json
 
     this method checks, if a json is existens and returns it. if it doesnt
@@ -285,7 +285,7 @@ def reloadjsonfiles(relPathToJson: str, linkToJson: str) -> dict:
     ----------
     relPathToJson : str
         relative path to the .json file, which is checked for
-    linkToJson : str
+    linkToJson : str, optional
         link to the corresponding online source
     
     Returns
@@ -293,14 +293,18 @@ def reloadjsonfiles(relPathToJson: str, linkToJson: str) -> dict:
     data_dict : dict
         the json, from one of the sources above
     """
-    logger.trace("Started reloadjsonfiles function with inputs path: " +relPathToJson + "and link: " + linkToJson)
+    
     # check if the file is already dumped
     if os.path.isfile(relPathToJson):
+        logger.trace("Started loadjsonfiles function with inputs path: " +relPathToJson)
         with open(relPathToJson, encoding="utf-8") as data:
             logger.debug("Read Json: " + relPathToJson)
             logger.trace("Finished rejoadjsonfiles function with output: " + str(data))
             return json.load(data)
-    else:
+    
+    if linkToJson is not None:
+
+        logger.trace("Started loadjsonfiles function with inputs path: " +relPathToJson + "and link: " + linkToJson)
         logger.debug("Json file is not present. Downstreaming a new one.")
         data_url = linkToJson
         data_response = requests.get(data_url)

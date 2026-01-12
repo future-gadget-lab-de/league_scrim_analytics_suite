@@ -1,6 +1,6 @@
 
 import datetime
-from src.utils import reloadjsonfiles
+from src.utils import loadjsonfiles
 from loguru import logger
 #TODO: Rewrite Logging
 def scrapeRecentPatch() -> str:
@@ -21,7 +21,7 @@ def scrapeRecentPatch() -> str:
     data_file_path = f"src/scraping/dictionaries/EUW_{date}.json"
 
     logger.debug("Reload of the recent Patchnumber.")
-    data_dict = reloadjsonfiles(data_file_path, link)
+    data_dict = loadjsonfiles(data_file_path, link)
     logger.trace("Finished scrapeRecentPatch function.")
     return data_dict["v"]
 
@@ -85,7 +85,7 @@ def loadDatabase(dataRequested: str, patch: str | None = None) -> dict:
     logger.debug("Reload of the %s data.",dataRequested)
 
     scrape_link = returnScrapeLink(dataRequested)
-    data_output = reloadjsonfiles(data_file_path, scrape_link)
+    data_output = loadjsonfiles(data_file_path, scrape_link)
     logger.trace( "Finished loadDatabase Function with output: " + str(data_output) ) 
     return data_output
 

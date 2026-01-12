@@ -1,0 +1,1 @@
+SELECT minions_killed FROM playerdata WHERE playerid='Emperor';
