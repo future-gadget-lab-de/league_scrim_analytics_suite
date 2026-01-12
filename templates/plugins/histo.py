@@ -38,7 +38,7 @@ def simpleHistoLSAS(data: list[pd.DataFrame], color = "blue", dim = (400,400)) -
     print("saved")
     plt.close()
 
-def simpleAggregateFunction(data_list: list[pd.DataFrame]) -> pd.DataFrame:
+def simpleAggregateFunction(data_list: list[pd.DataFrame]) -> list[pd.DataFrame]:
 
     while len(data_list) > 1:
         data_list.pop(-1)
