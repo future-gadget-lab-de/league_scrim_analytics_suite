@@ -54,8 +54,8 @@ sphinx:
     - source venv/bin/activate
     - pip install -r requirements.txt
     - python ./src/visuals/ui/compile_ui.py
-    - python ./docs/markdown_setup.py
     - sphinx-apidoc -f -o docs/source/api src --separate --templatedir=docs/source/_templates
+    - python ./docs/markdown_setup.py
     - sphinx-build -b html docs/source public
     - echo "El Psy Kongroo"
   artifacts:

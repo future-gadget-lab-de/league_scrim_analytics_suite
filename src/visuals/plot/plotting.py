@@ -1,11 +1,13 @@
 import sys, os
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../../..")))
 import numpy as np 
 import matplotlib.pyplot as plt 
 import pandas as pd 
 
 from src.database.wrapper import executeSelectQuery
 from src.database.queries import returnSelectQuery
+from src.database.mariadb.sqltemplates.template import importSQLQueries
+from src.utils import transformPathtoFileList, import_from_path, iter_defined_members, param_names, loadjsonfiles
 
 
 def buildAnalyticsFigure(player: str, feature: str, dim: tuple[int], diagram: str = "line") -> None:
@@ -50,4 +52,6 @@ def buildAnalyticsFigure(player: str, feature: str, dim: tuple[int], diagram: st
     os.makedirs(os.path.dirname(f"gamefiles/{feature}_{player}_{diagram}.png"), exist_ok=True)
     plt.savefig(f"gamefiles/{feature}_{player}_{diagram}.png")
     plt.close()
+
+
 

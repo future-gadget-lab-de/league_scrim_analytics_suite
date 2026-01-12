@@ -3,6 +3,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")
 
 from src.database.mariadb.execution import updateConnectionState, executeSQLFiles
 from src.visuals.gui import runAdvancedFrontend
+from src.visuals.plot.plugin import ApplyTemplate
 from src.core.ops import importMatchfileData
 from src.config import enrollSettings, locPath_c
 from src.args import initiliazeParser
@@ -63,3 +64,6 @@ if __name__ == "__main__":
     if args.gui:
         logger.info("Starting GUI")
         runAdvancedFrontend()
+
+    if args.template_file is not None:
+        ApplyTemplate(args.template_file)
