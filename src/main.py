@@ -8,6 +8,7 @@ from src.config import enrollSettings, locPath_c
 from src.args import initiliazeParser
 from src.log_config import setup_logging
 from loguru import logger
+from src.visuals.plotting import ApplyJson
 
 if __name__ == "__main__":
 
@@ -19,6 +20,7 @@ if __name__ == "__main__":
     
 
     if not len(sys.argv) > 1:
+        ApplyJson("templates/sample.json")
         parser.print_help()
         sys.exit(0)
 
