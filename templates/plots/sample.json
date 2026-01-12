@@ -1,0 +1,10 @@
+{
+    "modulenames": {
+        "histo": {
+            "color": "red"
+        }
+    },
+    "SQL_files_location": [
+        "templates/SQL/get_date_of_games.sql"
+    ]
+}

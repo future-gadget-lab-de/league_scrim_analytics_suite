@@ -7,7 +7,7 @@ from src.visuals.ui.generated.ui_mainwindow import Ui_MainWindow
 from src.visuals.windows.settings import SettingsDialog
 from src.visuals.windows.maria_dialog import MariaDialog
 from src.visuals.windows.analytics_space import AnalyticsSpace
-
+from src.visuals.windows.loading_dialog import LoadingDialog
 
 from src.database.queries import returnSelectQuery
 from src.database.wrapper import executeSelectQuery
@@ -59,10 +59,13 @@ class MainWindow(QMainWindow):
         dialog.setNameFilter("Matchfiles (*.json)")
         dialog.setViewMode(QFileDialog.Detail)
         dialog.selectFile("./")
+        fileNames = None
         if dialog.exec_():
             fileNames = dialog.selectedFiles()
-            for file in fileNames:
-                importMatchfileData(file)
+        if fileNames is not None:
+            ldlg = LoadingDialog(self, importMatchfileData, fileNames)
+            if ldlg.exec():
+                pass
         self._init_window()
 
     def _update_files(self) -> None:

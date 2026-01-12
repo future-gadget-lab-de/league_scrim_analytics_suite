@@ -24,7 +24,6 @@ def runAdvancedFrontend() -> None:
                     binary = "./.venv/bin/python"
 
             cmd = [binary, str(COMPILE_UI) + "/compile_ui.py"]
-            print(" ".join(cmd))
             subprocess.run(cmd, check=True)
 
             from src.visuals.windows.main_window import MainWindow

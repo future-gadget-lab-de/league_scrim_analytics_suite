@@ -15,5 +15,4 @@ lsas_build
 config
 data
 *.png
-gamefiles
 public

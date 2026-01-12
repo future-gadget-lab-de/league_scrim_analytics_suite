@@ -32,6 +32,7 @@ def initiliazeParser() -> argparse.ArgumentParser:
     group.add_argument("-c", "--config",    type=str,             help="adjusts the config folder with a passed relative path")
     group.add_argument("-e", "--execute",   type=str,             help="execute a .sql file on the connected MariaDB Server (folder & file support)")
     group.add_argument("-f", "--matchfile", type=str,             help="imports the matchfiles passed into the arg via absolute path (folder & file support)")
+    group.add_argument('-p',"--template-file", type=str, help='executes the template according to the plugin support')
 
     return parser
 

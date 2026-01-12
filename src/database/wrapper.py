@@ -58,6 +58,8 @@ def executeSelectQuery(query: str) -> pd.DataFrame:
     """
     settings_lsas = readSettings(settings_list_c[0])
 
+    logger.info(f"executing the .sql query: {query}")
+
     match settings_lsas["mariadb"]:
         case "1":
             conn, cur = buildConnection()
