@@ -135,4 +135,3 @@ def ApplyTemplate(pathToTemplateFile: str, customLocation: str = ""):
 
             plotfunction(DF_list, **template_dict["modulenames"][module])
 
-ApplyTemplate("templates/plots/sample.json", "gg/My.png")
