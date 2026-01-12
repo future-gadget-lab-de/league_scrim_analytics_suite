@@ -8,6 +8,8 @@ based on fixed SQL files and a short python script (in order to define the plot)
 There are sample files provided in our repository. If you encounter errors, don't hesitate
 to look into our examples.
 
+The support is experimental and only tested under Debian 13.
+
 ## Structure
 
 This plugin structure is partitioned into two parts
