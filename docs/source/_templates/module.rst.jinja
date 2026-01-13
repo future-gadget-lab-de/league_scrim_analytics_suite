@@ -19,7 +19,7 @@
 
 {%- for i in range(1,6) %}
          .. tab:: Range {{ i }}
-{%- set string_f = qualname.replace(".", "_")~"_False_"~mode~"_"~i|string~"_.dot" %}
+{%- set string_f = qualname.replace(".", "_")~"_False_"~mode~"_"~i|string~"_.svg" %}
             .. graphviz:: /../source/_generated/{{string_f}}
                :caption: Import dependencies (collapsed)
                :align: center
@@ -37,7 +37,7 @@
 
 {%- for i in range(1,6) %}
          .. tab:: Range {{ i }}
-{%- set string_f = qualname.replace(".", "_")~"_True_"~mode~"_"~i|string~"_.dot" %}
+{%- set string_f = qualname.replace(".", "_")~"_True_"~mode~"_"~i|string~"_.svg" %}
             .. graphviz:: /../source/_generated/{{string_f}}
                :caption: Import dependencies (collapsed)
                :align: center
