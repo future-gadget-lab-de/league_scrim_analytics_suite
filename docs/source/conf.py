@@ -76,7 +76,7 @@ html_theme_options = {
     "titles_only": False,
 }
 
-graphviz_output_format = "dot"
+graphviz_output_format = "png"
 
 # Optional: Markdown support (wenn myst-parser installiert ist)
 # extensions.append("myst_parser")
