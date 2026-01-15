@@ -1,6 +1,6 @@
 
 
-from src.core.match import loadMatchData
+from src.core.match import loadDumpMatchData
 from src.database.wrapper import importData
 from src.utils import transformPathtoFileList
 from loguru import logger
@@ -21,7 +21,7 @@ def importMatchfileData(PathToFolder: str) -> None:
 
     for file in files:
         
-        metadata, playerdata, blueteamdata, redteamdata = loadMatchData(file)
+        metadata, playerdata, blueteamdata, redteamdata = loadDumpMatchData(file)
         importData([metadata], [blueteamdata, redteamdata], playerdata)
 
 

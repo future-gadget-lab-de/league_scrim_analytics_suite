@@ -6,7 +6,7 @@ from src.core.team import playerTeamCheck
 from src.config import readSettings, settings_list_c
 
 from loguru import logger
-def loadMatchData(relPath: str):
+def loadDumpMatchData(relPath: str):
     """
     Wrapper method for the full data extraction of the first file found.
     
