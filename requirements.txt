@@ -6,7 +6,7 @@ networkx>=3.6,<4
 grimp>=3.14,<4
 
 
-# Sphinx selbst (liefert alle sphinx.ext.* Module)
+# Sphinx (comes with all spinx.ext.* modules)
 sphinx>=8
 
 # Theme
@@ -21,7 +21,7 @@ sphinx-tabs>=3.4.0
 # UML: 'sphinx_uml'
 sphinx-uml
 
-# von sphinx-uml für pyreverse (praktisch oft nötig, je nach Installation)
+# from spinx-uml for pyreverse
 pylint
 
 pyinstaller
