@@ -56,6 +56,7 @@ sphinx:
     - python ./src/visuals/ui/compile_ui.py
     - sphinx-apidoc -f -o docs/source/api src --separate --templatedir=docs/source/_templates
     - python ./docs/markdown_setup.py
+    - rm -rf public
     - sphinx-build -b html docs/source public
     - echo "El Psy Kongroo"
   artifacts:
