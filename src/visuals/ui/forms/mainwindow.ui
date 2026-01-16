@@ -106,8 +106,8 @@
   <widget class="QDockWidget" name="left_dock">
    <property name="minimumSize">
     <size>
-     <width>130</width>
-     <height>208</height>
+     <width>253</width>
+     <height>262</height>
     </size>
    </property>
    <attribute name="dockWidgetArea">
@@ -130,21 +130,137 @@
      <item>
       <layout class="QVBoxLayout" name="left_dock_layout">
        <item>
-        <widget class="QRadioButton" name="radio_db_create">
-         <property name="text">
-          <string>init db</string>
-         </property>
+        <layout class="QHBoxLayout" name="rank_layout">
+         <item>
+          <widget class="QComboBox" name="comboBox_rank">
+           <item>
+            <property name="text">
+             <string>IRON</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>BRONZE</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>SILVER</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>GOLD</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>PLATINUM</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>EMERALD</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>DIAMOND</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>MASTER</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>GRANDMASTER</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>CHALLENGER</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="comboBox_division">
+           <property name="maximumSize">
+            <size>
+             <width>50</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <item>
+            <property name="text">
+             <string>I</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>II</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>III</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>IV</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <widget class="QComboBox" name="comboBox_queue">
+         <item>
+          <property name="text">
+           <string>RANKED_SOLO_5x5</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>RANKED_FLEX_SR</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>RANKED_FLEX_TT</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>RANKED_TFT</string>
+          </property>
+         </item>
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="button_execute">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="text">
-          <string>Ausführen</string>
-         </property>
-        </widget>
+        <layout class="QHBoxLayout" name="sample_layout">
+         <item>
+          <widget class="QSpinBox" name="spin_sample">
+           <property name="minimum">
+            <number>1</number>
+           </property>
+           <property name="maximum">
+            <number>10000</number>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="button_sample">
+           <property name="text">
+            <string>sample</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </item>
        <item>
         <widget class="QLabel" name="import_head">
@@ -163,8 +279,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>126</width>
-            <height>331</height>
+            <width>249</width>
+            <height>292</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_3">

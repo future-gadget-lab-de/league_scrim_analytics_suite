@@ -38,8 +38,13 @@ def loadV5MatchData(relPath: str):
 
     patch = None
 
+    if data_dict["info"]["endOfGameResult"] != "GameComplete":
+        return dict(), dict(), dict(), dict()
+
     if settings_lsas["old_patch_support"] == "1":
-        raw_version = data_dict["gameVersion"]
+        raw_version = data_dict["info"]["gameVersion"]
+        print(relPath)
+        print(raw_version)
         raw_version_list = raw_version.split(".")
         patch = ".".join([raw_version_list[0],raw_version_list[1],"1"])
 
@@ -110,6 +115,9 @@ def loadTeamData(data: dict, patch: str | None = None) -> dict:
                     banarr.append("placeholder")
                     continue
                 cId     = bans[j]['championId']
+                if cId == -1:
+                    banarr.append("placeholder")
+                    continue
                 cName   = mapId(cId, 'champion', patch)
                 banarr.append(cName)
         except:
@@ -135,6 +143,8 @@ def loadTeamData(data: dict, patch: str | None = None) -> dict:
         teamdata["firstto"] = obj["tower"]["first"]
         teamdata["win"] = tData["win"]
         
+        print(teamdata)
+
         if i == 0:
             teamdata_red = teamdata
         else:
@@ -173,7 +183,7 @@ def loadPlayerData(data: dict, patch: str | None = None) -> list[dict]:
         # pID     = pData['participantId']
         # pStats  = pData['stats']
         
-        player_dict["playerid"]         = data["metadata"]["participants"][i]
+        player_dict["playerid"]         = str(player_dict["gameid"])+"_"+str(i)
         player_dict["teamid"]           = pData['teamId']
         player_dict["cwards_bought"]    = pData['visionWardsBoughtInGame']
         player_dict["wards_placed"]     = pData['wardsPlaced']

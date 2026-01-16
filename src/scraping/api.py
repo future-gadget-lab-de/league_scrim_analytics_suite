@@ -1,11 +1,13 @@
 import os,sys
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
-import datetime
+import datetime, time
+import numpy as np
 from src.utils import loadjsonfiles
 from src.config import readSettings, settings_list_c
 from loguru import logger
+import math
 
-def getPUIDbySummAndTagline(summonername: str, tagline: str) -> str:
+def getPUIDbySummAndTagline(summonername: str, tagline: str, devKEY = False) -> str:
     """loads the metadata of a league account by summ and tagline
     
     Parameters
@@ -26,12 +28,14 @@ def getPUIDbySummAndTagline(summonername: str, tagline: str) -> str:
     settings_lsas = readSettings(settings_list_c[0])
     api_key = settings_lsas["API_key"]
     # scraping summonerdata
+    if not devKEY:
+        time.sleep(1)
     resource_link = f"https://europe.api.riotgames.com/riot/account/v1/accounts/by-riot-id/{summonername}/{tagline}?api_key={api_key}"
     data_of_user = loadjsonfiles(f"src/scraping/dictionaries/player/{summonername}_{tagline}.json", resource_link)
 
     return data_of_user["puuid"]
 
-def getSummonerSample(rank: str, queue: str, division: str, samplesize: int = 1) -> None:
+def getSummonerSample(rank: str, queue: str, division: str, page: int = 1, devKEY = False) -> list[dict]:
     """
     loads a sample of players according to the passed arguments.
 
@@ -43,7 +47,7 @@ def getSummonerSample(rank: str, queue: str, division: str, samplesize: int = 1)
         the queue in which the rank is aqquiered. Supports: RANKED_SOLO_5x5, RANKED_TFT, RANKED_FLEX_SR, RANKED_FLEX_TT (really?)
     division : str
         Accepts: I, II, III, IV
-    samplesize : int
+    page : int
         the amount of samples, downloaded
 
     """
@@ -52,14 +56,15 @@ def getSummonerSample(rank: str, queue: str, division: str, samplesize: int = 1)
     settings_lsas = readSettings(settings_list_c[0])
     api_key = settings_lsas["API_key"]
     # scraping
-    for i in range(samplesize):
-        resource_link = f"https://euw1.api.riotgames.com/lol/league-exp/v4/entries/{queue}/{rank}/{division}?page={i+1}&api_key={api_key}"
-        data_of_user: list = loadjsonfiles(f"src/scraping/dictionaries/player/sample/{rank}_{queue}_{division}_{i+1}.json", resource_link)
-        
-        if not data_of_user:
-            break
+    if not devKEY:
+        time.sleep(1)
+    resource_link = f"https://euw1.api.riotgames.com/lol/league-exp/v4/entries/{queue}/{rank}/{division}?page={page}&api_key={api_key}"
+    data_of_user: list = loadjsonfiles(f"src/scraping/dictionaries/player/sample/{rank}_{queue}_{division}_{page}.json", resource_link)
+    
+    return data_of_user
 
-def getGameIdsByPuuid(puuid: str) -> dict:
+
+def getGameIdsByPuuid(puuid: str, devKEY = False) -> list:
     """loads a list of match ids
     
     Parameters
@@ -78,12 +83,16 @@ def getGameIdsByPuuid(puuid: str) -> dict:
     settings_lsas = readSettings(settings_list_c[0])
     api_key = settings_lsas["API_key"]
     # scraping
+    if not devKEY:
+        time.sleep(1)
     start = 0
     count = 100
     resource_link = f"https://europe.api.riotgames.com/lol/match/v5/matches/by-puuid/{puuid}/ids?type=ranked&start={start}&count={count}&api_key={api_key}"
-    data_of_user: list = loadjsonfiles(f"src/scraping/matches/{puuid}.json", resource_link)
+    data_of_user: list = loadjsonfiles(f"src/scraping/dictionaries/player/{puuid}.json", resource_link)
+
+    return data_of_user
     
-def getGameById(gameid: str) -> tuple[dict]:
+def getGameById(gameid: str, saveLocation: str, devKEY = False) -> tuple[dict]:
     """loads the matchdata of a gameid
     
     Parameters
@@ -102,15 +111,89 @@ def getGameById(gameid: str) -> tuple[dict]:
     settings_lsas = readSettings(settings_list_c[0])
     api_key = settings_lsas["API_key"]
     # scraping
+    if not devKEY:
+        time.sleep(1)
     resource_link_static = f"https://europe.api.riotgames.com/lol/match/v5/matches/{gameid}?api_key={api_key}"
     resource_link_timeline = f"https://europe.api.riotgames.com/lol/match/v5/matches/{gameid}/timeline?api_key={api_key}"
-    data_of_match: list = loadjsonfiles(f"src/scraping/matches/{gameid}_static.json", resource_link_static)
-    data_of_time: list = loadjsonfiles(f"src/scraping/matches/{gameid}_time.json", resource_link_timeline)
+    data_of_match: list = loadjsonfiles(f"{saveLocation}/matches/{gameid}_static.json", resource_link_static)
+    data_of_time: list = loadjsonfiles(f"{saveLocation}/timelines/{gameid}_time.json", resource_link_timeline)
 
     return (data_of_match, data_of_time)
 
+def getMaxPageNumber(rank: str, queue: str, division: str) -> int:
+    
+    maxPage = 1
+
+    while len(getSummonerSample(rank, queue, division, maxPage)) > 0:
+        
+        maxPage *= 2
+
+    empty_side = maxPage
+    full_side = 1
+    maxPage = math.floor((maxPage + full_side) / 2)
+
+    while True:
+
+        length_of_list = len(getSummonerSample(rank, queue, division, maxPage))
+
+        # if pivot empty, go left
+        if length_of_list == 0:
+            tmp = maxPage
+            maxPage = math.floor((full_side + maxPage) / 2)
+            empty_side = tmp
+
+        #if pivot full, go right
+        elif length_of_list > 0:
+            tmp = maxPage
+            maxPage = math.floor((maxPage + empty_side) / 2)
+            full_side = tmp
+
+        if (empty_side - full_side) <= 1:
+            return full_side
+
+def getEqualDistGameSamples(
+        rank: str, 
+        queue: str, 
+        division: str, 
+        maxPageNumber: int,
+        samplesize: int = 10, 
+        saveLocation: str = "src/scraping"
+    ) -> None:
+    
+    pages_of_data = maxPageNumber
+    player_per_page = 205
+    last_games = 100
+
+    sample_game = np.random.uniform(0, last_games, samplesize)
+    sample_player = np.random.uniform(0, player_per_page, samplesize)
+    sample_page = np.random.uniform(0, pages_of_data, samplesize)
+    sample_list = list()
+
+    for page, player, game in zip(*(sample_page, sample_player, sample_game)):
+        page_index = math.floor(page + 1)
+        player_index = math.floor(player)
+        game_index = math.floor(game)
+
+        try:
+            puuid = getSummonerSample(rank, queue, division, page_index)[player_index]["puuid"]
+        except: 
+            player_index = math.floor(np.random.uniform(0, len(getSummonerSample(rank, queue, division, page_index))))
+            puuid = getSummonerSample(rank, queue, division, page_index)[player_index]["puuid"]
+
+        try:
+            gameid = getGameIdsByPuuid(puuid)[game_index]
+        except:
+            games = getGameIdsByPuuid(puuid)
+            cus_number_of_games = len(games)
+            if cus_number_of_games == 0:
+                continue
+
+            game_index = math.floor(np.random.uniform(0, cus_number_of_games))
+            gameid = getGameIdsByPuuid(puuid)[game_index]
+
+        sample_list.append(getGameById(gameid, saveLocation))
+
+    return sample_list
 
 
-getGameById("EUW1_7682915481")
-#getSummonerSample("DIAMOND", "RANKED_SOLO_5x5", "IV", 3)
-getPUIDbySummAndTagline("Emperor", "AGS")
+#print(getEqualDistGameSamples("SILVER", "RANKED_SOLO_5x5", "II", 100))

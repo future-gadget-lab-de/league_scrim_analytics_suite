@@ -127,7 +127,7 @@ def databaseSetup() -> None:
     """
     Setups the connected database with the correct datatypes 
     """
-    create_queries = importSQLQueries("src/database/sqltemplates/db_creation_dump.sql")
+    create_queries = importSQLQueries("src/database/mariadb/sqltemplates/db_creation_dump.sql")
 
     logger.debug("Creating DB Format.")
 

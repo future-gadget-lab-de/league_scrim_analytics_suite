@@ -16,7 +16,8 @@ template_dict_c: dict[str] = {
         "csv_directory": "data",
         "mariadb": "0",
         "API_key": "",
-        "import_label": "gameid"
+        "import_label": "gameid",
+        "V5": "0"
     },
     "mariadb": {
         "host": "",

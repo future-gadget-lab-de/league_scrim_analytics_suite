@@ -35,7 +35,6 @@ def simpleHistoLSAS(data: list[pd.DataFrame], color = "blue", dim = (400,400)) -
     plt.grid()
     os.makedirs(os.path.dirname(location_c), exist_ok=True)
     plt.savefig(location_c)
-    print("saved")
     plt.close()
 
 def simpleAggregateFunction(data_list: list[pd.DataFrame]) -> list[pd.DataFrame]:

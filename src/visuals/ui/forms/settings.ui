@@ -7,19 +7,19 @@
     <x>0</x>
     <y>0</y>
     <width>389</width>
-    <height>180</height>
+    <height>220</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
     <width>389</width>
-    <height>180</height>
+    <height>220</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
     <width>389</width>
-    <height>180</height>
+    <height>220</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -46,55 +46,62 @@
      <property name="leftMargin">
       <number>0</number>
      </property>
-     <item row="0" column="0">
+     <item row="1" column="0">
       <widget class="QLabel" name="label_old_patch">
        <property name="text">
         <string>activate old patch support</string>
        </property>
       </widget>
      </item>
-     <item row="1" column="0">
+     <item row="1" column="1">
+      <widget class="QCheckBox" name="checkBox_old_patch">
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
       <widget class="QLabel" name="label_mariadb_activated">
        <property name="text">
         <string>activate MariaDB integration</string>
        </property>
       </widget>
      </item>
-     <item row="1" column="1">
+     <item row="2" column="1">
       <widget class="QCheckBox" name="checkbox_mariadb_activated">
        <property name="text">
         <string notr="true"/>
        </property>
       </widget>
      </item>
-     <item row="2" column="0">
+     <item row="3" column="0">
       <widget class="QLabel" name="label_csv_path">
        <property name="text">
         <string>.csv directory (fallback to DB)</string>
        </property>
       </widget>
      </item>
-     <item row="2" column="1">
+     <item row="3" column="1">
       <widget class="QLineEdit" name="lineEdit_csv_path"/>
      </item>
-     <item row="3" column="0">
+     <item row="4" column="0">
       <widget class="QLabel" name="label_API">
        <property name="text">
         <string>API KEY for riot games API</string>
        </property>
       </widget>
      </item>
-     <item row="3" column="1">
+     <item row="4" column="1">
       <widget class="QLineEdit" name="lineEdit_API"/>
      </item>
-     <item row="4" column="0">
+     <item row="5" column="0">
       <widget class="QLabel" name="label_imported">
        <property name="text">
         <string>Imported label</string>
        </property>
       </widget>
      </item>
-     <item row="4" column="1">
+     <item row="5" column="1">
       <widget class="QComboBox" name="comboBox_imported">
        <item>
         <property name="text">
@@ -108,8 +115,15 @@
        </item>
       </widget>
      </item>
+     <item row="0" column="0">
+      <widget class="QLabel" name="label_V5">
+       <property name="text">
+        <string>Use V5 (instead of client)</string>
+       </property>
+      </widget>
+     </item>
      <item row="0" column="1">
-      <widget class="QCheckBox" name="checkBox_old_patch">
+      <widget class="QCheckBox" name="checkBox_V5">
        <property name="text">
         <string/>
        </property>
