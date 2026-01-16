@@ -1,5 +1,4 @@
 import sys, os
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../../..")))
 import numpy as np 
 import matplotlib.pyplot as plt 
 import pandas as pd 
@@ -25,8 +24,11 @@ def buildAnalyticsFigure(player: str, feature: str, dim: tuple[int], diagram: st
         a specifier for a diagram. supported: line, histo
         
     """
-
+    
     query_player = returnSelectQuery("playerdata",[feature],f"playerid='{player}'")
+    if player == "":
+        query_player = returnSelectQuery("playerdata",[feature])
+
     query_date = returnSelectQuery("metadata",["date","gameid"])
 
     data_player = executeSelectQuery(query_player)
@@ -45,7 +47,7 @@ def buildAnalyticsFigure(player: str, feature: str, dim: tuple[int], diagram: st
 
     elif diagram == "histo":
         data = data.sort_values(["gameid"])
-        plt.bar([str(gameid) for gameid in data["gameid"].values.tolist()], data[feature].values.tolist())
+        plt.hist(data[feature], color="grey", edgecolor="black")
 
     plt.ylabel(feature)
     plt.grid()

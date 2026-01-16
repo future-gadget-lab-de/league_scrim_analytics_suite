@@ -26,6 +26,7 @@ class SettingsDialog(QDialog):
         self.ui.lineEdit_API.textChanged.connect(self._change_line_setting)
         self.ui.checkbox_mariadb_activated.stateChanged.connect(self._change_maria_setting)
         self.ui.checkBox_old_patch.stateChanged.connect(self._change_legacy_support)
+        self.ui.checkBox_V5.stateChanged.connect(self._change_V5_support)
         self.ui.comboBox_imported.currentIndexChanged.connect(self._change_label)
 
     def _init_fields(self) -> None:
@@ -37,6 +38,8 @@ class SettingsDialog(QDialog):
         if self.lsas_settings["mariadb"] == "1":
             self.ui.checkbox_mariadb_activated.setChecked(True)
             self.ui.lineEdit_csv_path.setDisabled(True)
+        if self.lsas_settings["V5"] == "1":
+            self.ui.checkBox_V5.setChecked(True)
         if self.lsas_settings["old_patch_support"] == "1":
             self.ui.checkBox_old_patch.setChecked(True)
         if self.int_settings["_connected"] == "0":
@@ -49,6 +52,17 @@ class SettingsDialog(QDialog):
         """returns the settings, for later use in mainWindow"""
         logger.trace("Started get_settings for " + str(self))
         return self.lsas_settings
+
+    def _change_V5_support(self) -> None:
+        """Update the settings/window according to changed settings"""
+        logger.trace("Started V5_change function for object: " + str(self))
+        if self.ui.checkBox_V5.isChecked():
+            self.lsas_settings["V5"] = "1"
+            logger.debug("Set V5 to true")
+        else:
+            self.lsas_settings["V5"] = "0"
+            logger.debug("Set V5 to false")
+        logger.trace("Finished V5_change function.")
 
     def _change_maria_setting(self) -> None:
         """Update the settings/window according to changed settings"""
@@ -76,9 +90,10 @@ class SettingsDialog(QDialog):
 
     def _change_line_setting(self) -> None:
         """Update the settings/window according to changed settings"""
-        logger.trace("Started change_line_setting function for object" + self)
+        logger.trace("Started change_line_setting function for object" + str(self))
         self.lsas_settings["csv_directory"] = self.ui.lineEdit_csv_path.text()
         self.lsas_settings["API_key"] = self.ui.lineEdit_API.text()
+        self.ui.checkBox_V5.setDisabled(self.lsas_settings["API_key"] == "")
         logger.debug("Changed csv_directory setting to" +str(self.ui.lineEdit_csv_path) )
         logger.debug("Changed API_key setting to " + str(self.ui.lineEdit_API) )
         logger.trace("Finished change_line_setting function.")

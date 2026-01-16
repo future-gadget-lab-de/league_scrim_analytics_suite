@@ -1,7 +1,8 @@
 from __future__ import annotations
 from loguru import logger
+import numpy as np
 
-
+from src.utils import transformPathtoFileList
 from PySide6.QtWidgets import QMainWindow, QFileDialog, QLabel
 from src.visuals.ui.generated.ui_mainwindow import Ui_MainWindow
 from src.visuals.windows.settings import SettingsDialog
@@ -13,6 +14,7 @@ from src.database.queries import returnSelectQuery
 from src.database.wrapper import executeSelectQuery
 from src.database.mariadb.execution import databaseSetup
 from src.core.ops import importMatchfileData
+from src.scraping.api import getEqualDistGameSamples, getMaxPageNumber
 
 from src.config import writeSettings, readSettings, writeInternalSettings, readInternalSettings, settings_list_c
 #TODO: Rewrite Logging
@@ -36,21 +38,54 @@ class MainWindow(QMainWindow):
         # hooks for buttons/interaction
         self.ui.actionAdd_AnalyticsSpace.triggered.connect(self.space._add_instance)
         self.ui.actionRemove_AnalyticsSpace.triggered.connect(self.space._remove_instance)
-        self.ui.button_execute.clicked.connect(self._execute_radio)
+        self.ui.button_sample.clicked.connect(self._execute_sample)
         self.ui.actionSettings_2.triggered.connect(self._open_settings)
         self.ui.actionMariaDB.triggered.connect(self._open_mariadb_config)
         self.ui.actionImport_Matchfile.triggered.connect(self._filedialog_opener)
 
     def _init_window(self) -> None:
         """initialize the ui"""
-        if self.settings_lsas["mariadb"] == "0":
-            self.ui.radio_db_create.setDisabled(True)
+        isV5Disabled = self.settings_lsas["V5"] == "0"
+        self.ui.comboBox_division.setDisabled(isV5Disabled)
+        self.ui.comboBox_queue.setDisabled(isV5Disabled)
+        self.ui.comboBox_rank.setDisabled(isV5Disabled)
+        self.ui.spin_sample.setDisabled(isV5Disabled)
+        self.ui.button_sample.setDisabled(isV5Disabled)
         # load all included matches
         self._update_files()
 
-    def _execute_radio(self) -> None:
-        if self.ui.radio_db_create.isChecked():
-            databaseSetup() 
+    def _execute_sample(self) -> None:
+        samplesize = self.ui.spin_sample.value()
+        sample_vec = np.arange(samplesize)
+        sample_list = list()
+        pages_of_data = getMaxPageNumber(
+            rank = self.ui.comboBox_rank.currentText(), 
+            queue = self.ui.comboBox_queue.currentText(), 
+            division = self.ui.comboBox_division.currentText()
+        )
+        for sample in sample_vec:
+            sample_list.append(
+                {
+                    "rank": self.ui.comboBox_rank.currentText(),
+                    "queue": self.ui.comboBox_queue.currentText(), 
+                    "division": self.ui.comboBox_division.currentText(), 
+                    "maxPageNumber": pages_of_data,
+                    "samplesize": 1
+                }
+            )
+        ldlg = LoadingDialog(self, getEqualDistGameSamples, sample_list)
+        if ldlg.exec():
+            pass
+
+        matchList = transformPathtoFileList("src/scraping/matches")
+
+        ldlg = LoadingDialog(self, importMatchfileData, [{"PathToFolder": path} for path in matchList])
+        
+        if ldlg.exec():
+            pass
+
+        self._init_window()
+    
 
     def _filedialog_opener(self) -> None:
         """method which controlls the fileopener window"""
@@ -63,7 +98,7 @@ class MainWindow(QMainWindow):
         if dialog.exec_():
             fileNames = dialog.selectedFiles()
         if fileNames is not None:
-            ldlg = LoadingDialog(self, importMatchfileData, fileNames)
+            ldlg = LoadingDialog(self, importMatchfileData, [{"PathToFolder": path} for path in fileNames])
             if ldlg.exec():
                 pass
         self._init_window()
@@ -71,6 +106,12 @@ class MainWindow(QMainWindow):
     def _update_files(self) -> None:
         """method, which downstreams the gameids of imported files"""
         logger.info("updated imported stuff")
+
+        if self.settings_lsas["mariadb"] == "1":
+            try: 
+                databaseSetup()
+            except:
+                logger.debug("Database structure already initialized")
 
         # delete old labels
         for label in self.label_list:

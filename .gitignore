@@ -1,5 +1,7 @@
 *.pyc
-src/*/*/*.json
+src/scraping/dictionaries/
+src/scraping/matches/
+src/scraping/timelines/
 *.conf
 src/visuals/ui/generated/*
 *.csv

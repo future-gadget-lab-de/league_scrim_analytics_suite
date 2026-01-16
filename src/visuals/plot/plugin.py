@@ -1,5 +1,4 @@
 import sys, os
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../../..")))
 import numpy as np 
 import matplotlib.pyplot as plt 
 import pandas as pd 
@@ -72,8 +71,6 @@ def isLayoutApplicable(data: list[pd.DataFrame], plug_module):
 
     # check for compatibility
     while layout:
-        print(layout)
-        print(DF_ident)
         if layout == DF_ident:
             return True
 
@@ -118,9 +115,7 @@ def ApplyTemplate(pathToTemplateFile: str, customLocation: str = ""):
     instance_of_plugins = getPlugins(list(template_dict["modulenames"].keys()))
 
     for module in template_dict["modulenames"].keys():
-        print("check if:")
         if isLayoutApplicable(DF_list, instance_of_plugins[module]):
-            print("Checked!")
             plugin_dictl = getData(instance_of_plugins[module])
 
             plotfunction = plugin_dictl[0][list(plugin_dictl[0].keys())[0]]

@@ -27,16 +27,21 @@ class LoadingDialog(QDialog):
         for arg in list_of_args:
 
             start = time.time()
-            loaded_func(arg)
+            loaded_func(**arg)
             self.done_i += 1
             self.loading_state = int(100*(self.done_i / self.abs))
             self.ui.progressBar.setValue(self.loading_state)
             end = time.time()
             time_s_full = (end - start)*self.abs
             done_procent = 1 - (self.done_i / self.abs)
-            time_remaining = round(time_s_full*done_procent, 2)
+            time_left_in_s = round(time_s_full*done_procent)
+            time_remaining = f"{time_left_in_s} s"
+            if time_left_in_s > 60:
+                time_left_in_min = round((time_left_in_s - (time_left_in_s % 60))/60)
+                time_left_in_s = time_left_in_s - (time_left_in_min*60)
+                time_remaining = f"{time_left_in_min} minutes and {time_left_in_s} seconds"
             
-            self.ui.label_time.setText(f"{self.done_i}/{self.abs} - remaining time: {time_remaining} s\n Attention: Do not close the window!")
+            self.ui.label_time.setText(f"{self.done_i}/{self.abs} - remaining time: {time_remaining}\n Attention: Do not close the window!")
             QApplication.processEvents()  # erzwingt UI-Updates
         self.ui.label_time.setText(f"done!")
         QTimer.singleShot(2000,lambda: self.close())

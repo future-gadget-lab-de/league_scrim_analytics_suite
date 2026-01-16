@@ -33,6 +33,7 @@ def importData(metadata: list[dict], teamdata: list[dict], playerdata: list[dict
                 
                 queries = returnMatchfileQuery(metadata, teamdata, playerdata)
 
+
                 # build connection
                 conn, cur = buildConnection()
                 # execute the queries
