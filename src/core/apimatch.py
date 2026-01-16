@@ -94,7 +94,7 @@ def loadTeamData(data: dict, patch: str | None = None) -> dict:
     """
 
     # Create helper variable
-    tlData      = data['teams'] 
+    tlData      = data["info"]['teams'] 
 
     for i in range(2):
 
@@ -120,7 +120,7 @@ def loadTeamData(data: dict, patch: str | None = None) -> dict:
         for j in range(5):
             teamdata["ban"+str(j+1)] = bans[j]
         
-        teamdata["gameid"] = data['gameId']
+        teamdata["gameid"] = data['info']['gameId']
         teamdata["teamid"] = tData['teamId']
 
         obj = tData["objectives"]
@@ -166,14 +166,14 @@ def loadPlayerData(data: dict, patch: str | None = None) -> list[dict]:
     for i in range(0,10):
 
         player_dict = dict()
-        player_dict["gameid"] = data["gameId"]
+        player_dict["gameid"] = data['info']['gameId']
 
         #helper
         pData   = data["info"]['participants'][i]
         # pID     = pData['participantId']
         # pStats  = pData['stats']
         
-        player_dict["playerid"]         = data["metadata"]["participants"][pID][0]
+        player_dict["playerid"]         = data["metadata"]["participants"][i]
         player_dict["teamid"]           = pData['teamId']
         player_dict["cwards_bought"]    = pData['visionWardsBoughtInGame']
         player_dict["wards_placed"]     = pData['wardsPlaced']
@@ -197,7 +197,7 @@ def loadPlayerData(data: dict, patch: str | None = None) -> list[dict]:
             itemnr="item"+str(j)
             player_dict["item"+str(j+1)] = mapId(pData[itemnr],'item', patch)
         for j in range(4):
-            player_dict["rune"+str(j+1)] = mapId(pData["perks"]["styles"][0]["selections"][i]["perk"], 'perk', patch)
+            player_dict["rune"+str(j+1)] = mapId(pData["perks"]["styles"][0]["selections"][j]["perk"], 'perk', patch)
 
         player_dict["rune"+str(5)] = mapId(pData["perks"]["styles"][1]["selections"][0]["perk"], 'perk', patch)
         player_dict["rune"+str(6)] = mapId(pData["perks"]["styles"][1]["selections"][1]["perk"], 'perk', patch)

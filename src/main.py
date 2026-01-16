@@ -54,7 +54,7 @@ if __name__ == "__main__":
     # import of matchfiles
     if args.matchfile is not None:
         logger.trace("Starting Import Routine")
-        importMatchfileData(args.matchfile)
+        importMatchfileData(args.matchfile, V5=True)
         logger.trace("Finished Import Routine")
 
     if args.execute is not None:

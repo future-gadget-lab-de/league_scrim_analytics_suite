@@ -105,12 +105,12 @@ def getGameById(gameid: str) -> tuple[dict]:
     resource_link_static = f"https://europe.api.riotgames.com/lol/match/v5/matches/{gameid}?api_key={api_key}"
     resource_link_timeline = f"https://europe.api.riotgames.com/lol/match/v5/matches/{gameid}/timeline?api_key={api_key}"
     data_of_match: list = loadjsonfiles(f"src/scraping/matches/{gameid}_static.json", resource_link_static)
-    data_of_time: list = loadjsonfiles(f"src/scraping/matches/{gameid}_static.json", resource_link_timeline)
+    data_of_time: list = loadjsonfiles(f"src/scraping/matches/{gameid}_time.json", resource_link_timeline)
 
     return (data_of_match, data_of_time)
 
 
 
-getGameIdsByPuuid("CNGd7ZLl6TLvw_9TjUfByAprEVM2En1PvLT6c3wLsu-vXPMplOebXmCrU7ANWDwbAe_o2bQXntA9EA")
+getGameById("EUW1_7682915481")
 #getSummonerSample("DIAMOND", "RANKED_SOLO_5x5", "IV", 3)
 getPUIDbySummAndTagline("Emperor", "AGS")
