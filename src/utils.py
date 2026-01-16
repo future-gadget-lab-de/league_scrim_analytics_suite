@@ -275,7 +275,7 @@ def list_relative_filepaths(path: str) -> list[str]:
     logger.trace("Finished list_relative_filepaths Function with output: " + str(filepaths))
     return filepaths
 
-def loadjsonfiles(relPathToJson: str, linkToJson: str | None = None) -> dict:
+def loadjsonfiles(relPathToJson: str, linkToJson: str | None = None, forcereload: bool = False) -> dict:
     """loads (or reloads) a specified .json
 
     this method checks, if a json is existens and returns it. if it doesnt
@@ -295,7 +295,7 @@ def loadjsonfiles(relPathToJson: str, linkToJson: str | None = None) -> dict:
     """
     
     # check if the file is already dumped
-    if os.path.isfile(relPathToJson):
+    if os.path.isfile(relPathToJson) and not forcereload:
         logger.trace("Started loadjsonfiles function with inputs path: " +relPathToJson)
         with open(relPathToJson, encoding="utf-8") as data:
             logger.debug("Read Json: " + relPathToJson)
