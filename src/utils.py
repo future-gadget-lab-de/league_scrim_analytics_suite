@@ -328,7 +328,7 @@ def loadjsonfiles(
         logger.debug("You got a "+str(data_response.status_code) +" reponse with the body:\n"+data_response.__str__())
         if data_response.status_code != 200:
             logger.error("the requested .json body said no! "+ str(data_response.status_code)+": "+data_response.reason) 
-            raise FileNotFoundError("The requested .json body said no!")
+            raise FileNotFoundError("The requested .json body said no! "+ str(data_response.status_code)+": "+data_response.reason)
         data_dict = data_response.json()
         if relPathToJson is not None:
             os.makedirs(os.path.dirname(relPathToJson), exist_ok=True)

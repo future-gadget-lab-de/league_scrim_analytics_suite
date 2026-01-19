@@ -16,6 +16,8 @@ def getPUIDbySummAndTagline(summonername: str, tagline: str, devKEY = False) -> 
         the summonername, which the puid bases of
     tagline : str
         the tagline aswell
+    devKey : bool
+        if true, releases the wait time of 1 second
         
     Returns
     -------
@@ -49,6 +51,8 @@ def getSummonerSample(rank: str, queue: str, division: str, page: int = 1, devKE
         Accepts: I, II, III, IV
     page : int
         the amount of samples, downloaded
+    devKey : bool
+        if true, releases the wait time of 1 second
 
     """
 
@@ -71,6 +75,8 @@ def getGameIdsByPuuid(puuid: str, devKEY = False) -> list:
     ----------
     puuid : str
         the puuid the last 100 matches will get from
+    devKey : bool
+        if true, releases the wait time of 1 second
         
     Returns
     -------
@@ -99,6 +105,10 @@ def getGameById(gameid: str, saveLocation: str, devKEY = False) -> tuple[dict]:
     ----------
     gameid : str
         the gameid of the match, we load
+    devKey : bool
+        if true, releases the wait time of 1 second
+    saveLocation : str
+        the location of the saved matchfiles
         
     Returns
     -------
@@ -121,7 +131,23 @@ def getGameById(gameid: str, saveLocation: str, devKEY = False) -> tuple[dict]:
     return (data_of_match, data_of_time)
 
 def getMaxPageNumber(rank: str, queue: str, division: str) -> int:
+    """a binary search for the last filled page in the summoner sample request
     
+    Parameters
+    ----------
+    rank : str
+        the competetive rank in lol. Needs to be capslock, f.ex.: DIAMOND
+    queue : str
+        the queue in which the rank is aqquiered. Supports: RANKED_SOLO_5x5, RANKED_TFT, RANKED_FLEX_SR, RANKED_FLEX_TT (really?)
+    division : str
+        Accepts: I, II, III, IV
+
+    Returns
+    -------
+    maxPage : int
+        the maximum filled page
+
+    """
     maxPage = 1
 
     while len(getSummonerSample(rank, queue, division, maxPage)) > 0:
@@ -159,6 +185,25 @@ def getEqualDistGameSamples(
         samplesize: int = 10, 
         saveLocation: str = "src/scraping"
     ) -> None:
+
+    """generates a sample of matchfiles, based on rank, queue and division
+
+    Parameters
+    ----------
+    rank : str
+        the competetive rank in lol. Needs to be capslock, f.ex.: DIAMOND
+    queue : str
+        the queue in which the rank is aqquiered. Supports: RANKED_SOLO_5x5, RANKED_TFT, RANKED_FLEX_SR, RANKED_FLEX_TT (really?)
+    division : str
+        Accepts: I, II, III, IV
+    maxPageNumber : int
+        the maximum pagenumber of this sample
+    samplesize : int, optional
+        the number of matches that gets streamed
+    saveLocation : str, optional
+        a custom location, where the data gets saved. standard is: "src/scraping"
+    
+    """
     
     pages_of_data = maxPageNumber
     player_per_page = 205
