@@ -18,3 +18,4 @@ config
 data
 *.png
 public
+scrim_tests/*
