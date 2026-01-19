@@ -8,6 +8,7 @@ from src.database.mariadb.sqltemplates.template import importSQLQueries
 from src.utils import transformPathtoFileList, import_from_path, iter_defined_members, param_names, loadjsonfiles
 
 mod_location_c = "templates/plugins"
+"""a constant for the path, where the program will check for plugins"""
 
 # function only useful, if GUI is used --> simpler GUI 
 def getPossiblePlots(queries: str) -> list[list[dict]]: # [ all mods [ their funcs : their args ]]
