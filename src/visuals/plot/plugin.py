@@ -11,7 +11,19 @@ mod_location_c = "templates/plugins"
 
 # function only useful, if GUI is used --> simpler GUI 
 def getPossiblePlots(queries: str) -> list[list[dict]]: # [ all mods [ their funcs : their args ]]
+    """calculates dependant on a sql query, which possible plots there are
+    
+    Parameters
+    ----------
+    queries : str
+        a sql query as a string
 
+    Returns
+    -------
+    data : list[list[str]]
+        a list of all modules with their funcs
+
+    """
     DF_list: list[pd.DataFrame] = list()
     for query in queries:
         DF_list += [executeSelectQuery(query)]
@@ -31,6 +43,19 @@ def getPossiblePlots(queries: str) -> list[list[dict]]: # [ all mods [ their fun
     return result_list
 
 def getPlugins(specific: list[str] = []) -> dict:
+    """returns a dict of all modules in plugins, with name as key and module as value.
+    
+    Parameters
+    ----------
+    specific : list[str], optional
+        a list of modules we want to check only for
+        
+    Returns
+    -------
+    modules : dict
+        name as keys, modules as values of the plugins folder
+        
+    """
 
     template_paths = transformPathtoFileList(mod_location_c)
     module_dict = dict()
@@ -49,6 +74,19 @@ def getPlugins(specific: list[str] = []) -> dict:
     return module_dict
 
 def getDataFrameIdent(data: list[pd.DataFrame]) -> list[tuple]:
+    """returns the identification list-tuple of a dataframe
+
+    Parameters
+    ----------
+    data : list[pd.DataFrame]
+        any list of pandas dataframe
+
+    Returns
+    -------
+    ident : list[tuple]
+        the ident of the passed dataframe
+    
+    """
     # init the header for the dataframe: DF IDENT
     DF_ident = list()
     for DF in data:
@@ -59,7 +97,21 @@ def getDataFrameIdent(data: list[pd.DataFrame]) -> list[tuple]:
         DF_ident.append(tuple(dtype_list))
     return DF_ident
 
-def isLayoutApplicable(data: list[pd.DataFrame], plug_module):
+def isLayoutApplicable(data: list[pd.DataFrame], plug_module) -> bool:
+    """checks if a module is applicable for a certain dataframe
+    
+    Parameters
+    ----------
+    data : list[pd.DataFrame]
+        any list of pandas dataframes
+    plug_module
+        any module of the plugins folder
+
+    Returns
+    -------
+    isApplicable : bool
+
+    """
     # iterate over all modules
     
     # get members of that module
@@ -82,6 +134,19 @@ def isLayoutApplicable(data: list[pd.DataFrame], plug_module):
     return False
 
 def getData(plug_module) -> list[dict]:
+    """returns a dict with the members of a module for further use
+    
+    Parameters
+    ----------
+    plug_module
+        a module, which is located in the plugins folder
+        
+    Returns
+    -------
+    use_dict : dict
+        a dict containing name and member as key/value
+        
+    """
 
     member = iter_defined_members(plug_module)
 
@@ -99,7 +164,20 @@ def getData(plug_module) -> list[dict]:
 
     
 def ApplyTemplate(pathToTemplateFile: str, customLocation: str = ""):
+    """
+    this method applys certain modules in the plugin folder as expressed 
+    in the procedure .json file.
+
+    Parameters
+    ----------
+    pathToTemplateFile : str
+        the path to the .json procedure
+    customLocation : str, optional
+        if passed, saves the picture generated into the passed path, 
+        instead of the location specified in the plugin file.
     
+    """
+
     template_dict = loadjsonfiles(pathToTemplateFile)
     queries_final = list()
 
