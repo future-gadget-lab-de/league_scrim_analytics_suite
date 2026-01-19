@@ -13,18 +13,16 @@ accept_less_c = False
 location_c = "gamefiles/test.png"
 
 def simpleHistoLSAS(data: list[pd.DataFrame], color = "blue", dim = (400,400)) -> None:
-    """builds a diagram for a given player/feature relation. uses the internal data
+    """first easy template. this builds a simple histogram
     
     Parameters
     ----------
-    player : str
-        the player, of which the diagram is wanted
-    feature : str
-        a numerical feature
-    dim : tuple[int]
+    data : list[pd.DataFrame]
+        the necessary DataFrame parameter
+    color : str, optional
+        a color
+    dim : tuple[int,int], optional
         the dimensions of the diagram in int x int
-    diagram : str, optional
-        a specifier for a diagram. supported: line, histo
         
     """
     data = data[0]
