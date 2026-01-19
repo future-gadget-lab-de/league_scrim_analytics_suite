@@ -10,7 +10,7 @@ from loguru import logger
 locPath_c: str = ".internal/location.conf"
 """location for the **internal** config file"""
 
-template_dict_c: dict[str] = {
+template_dict_c: dict[str, str] = {
     "lsas": {
         "old_patch_support":"0",
         "csv_directory": "data",
@@ -80,7 +80,7 @@ def enrollSettings(relPathToConf: str = "config")  -> list[str]:
         writeSettings(str(key), settings_dict[key])
 
 
-def readInternalSettings() -> dict[str]:
+def readInternalSettings() -> dict[str,str]:
     """returns the internal config file as a dict
     
     Returns
@@ -91,7 +91,7 @@ def readInternalSettings() -> dict[str]:
     """
     return readSettingsFile(locPath_c)
 
-def writeInternalSettings(new_internals: dict[str]) -> None:
+def writeInternalSettings(new_internals: dict[str,str]) -> None:
     """writes to the internal config file
     
     Parameters
@@ -102,7 +102,7 @@ def writeInternalSettings(new_internals: dict[str]) -> None:
     """
     writeSettingsFile(new_internals, locPath_c)
 
-def readSettings(mode: str) -> dict[str]:
+def readSettings(mode: str) -> dict[str,str]:
     """returns the data of a config file, given by mode
     
     Parameters
@@ -120,7 +120,7 @@ def readSettings(mode: str) -> dict[str]:
     settings_loc = internals[mode]
     return readSettingsFile(settings_loc)
 
-def writeSettings(mode: str, new_settings: dict[str]) -> None:
+def writeSettings(mode: str, new_settings: dict[str,str]) -> None:
     """writes data to a config file, specified by mode
     
     Parameters
