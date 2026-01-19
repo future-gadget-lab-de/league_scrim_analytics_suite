@@ -3,10 +3,36 @@ from loguru import logger
 import importlib.util
 import inspect
 
-def param_names(fn):
+def param_names(fn) -> list[str]:
+    """returns the names of a functions parameters as a list of strings
+    
+    Parameters
+    ----------
+    fn
+        the name of a any python function
+    
+    Returns
+    -------
+    arglist : list[str]
+        a list with all args of fn
+
+    """
     return [p.name for p in inspect.signature(fn).parameters.values()]
 
 def iter_defined_members(module) -> list[tuple]:
+    """returns a list of all non builtin or imported members of a module
+    
+    Parameters
+    ----------
+    module
+        any python module
+        
+    Returns
+    -------
+    member : list[tuple]
+        a list of all members seperated in (nameOfMember,member)
+    """
+
     stuff = list()
     mod = module
     for name, obj in vars(mod).items():
@@ -22,7 +48,23 @@ def iter_defined_members(module) -> list[tuple]:
     
     return stuff
 
-def import_from_path(module_name, file_path):
+def import_from_path(module_name: str, file_path: str):
+    """imports a specific module by path and name and returns it
+    
+    Parameters
+    ----------
+    module_name : str
+        the name of the module
+    file_path : str
+        the path to the named module
+
+    Returns
+    -------
+    module
+        the imported module
+    
+    """
+
     spec = importlib.util.spec_from_file_location(module_name, file_path)
     module = importlib.util.module_from_spec(spec)
     sys.modules[module_name] = module
@@ -61,7 +103,6 @@ def transformPathtoFileList(PathToFolder: str) -> list[str]:
 
     return files
 
-
 def getRelPath(absPath: str) -> str:
     """
     returns the relative path for some absolute path
@@ -84,6 +125,7 @@ def getRelPath(absPath: str) -> str:
 
     logger.trace("Finished getRelPath function with Output: " + relPath)
     return relPath
+
 
 def addDictToCsv(data: dict, path_to_csv: str) -> None:
     """
@@ -160,33 +202,7 @@ def writeSettingsFile(settings: dict, rel_path_with_name: str) -> None:
         conf_file.write("\n".join(lines))
         logger.debug("Written config file: " + full_path)
         logger.trace("Finished writeSettingsFile function")
-def findFile(path: str) -> str:
-    """
-    Finds the first file in the folder given by path.
-   
-    Parameters
-    ----------
-    path : str               
-        the relative path, to a folder
 
-    Returns
-    -------
-    matchfile : str          
-        relative path for the file
-
-    """
-    logger.trace("Starting findFile function with Input: " + path)
-    filelist = []
-    with os.scandir(path) as ents:
-        for e in ents:
-            if e.is_dir() or "invalid" in e.name:
-                continue
-            else:
-                filelist.append(e.name)
-    filename=filelist[0]
-    file = path + filename
-    logger.trace("Finished findFile function with Output: " + file)
-    return file
 #NOTE Continue here
 def readFileByLine(relPathToFile) -> list[str]:
     """
@@ -212,8 +228,6 @@ def readFileByLine(relPathToFile) -> list[str]:
     except:
         logger.critical("file: " +relPathToFile + "cannot be read.")
         exit(1)
-
-
 
 def moveFile(file, dest: str) -> None:
     """
@@ -275,18 +289,22 @@ def list_relative_filepaths(path: str) -> list[str]:
     logger.trace("Finished list_relative_filepaths Function with output: " + str(filepaths))
     return filepaths
 
-def loadjsonfiles(relPathToJson: str, linkToJson: str | None = None, forcereload: bool = False) -> dict:
+def loadjsonfiles(
+    relPathToJson:  str | None  = None, 
+    linkToJson:     str | None  = None, 
+    preferRead:     bool        = True
+) -> dict:
     """loads (or reloads) a specified .json
 
-    this method checks, if a json is existens and returns it. if it doesnt
+    this method checks, if a json is existent and returns it. if it doesnt
     exist, it gets scraped.
 
     Parameters
     ----------
-    relPathToJson : str
+    relPathToJson : str, optional
         relative path to the .json file, which is checked for
     linkToJson : str, optional
-        link to the corresponding online source
+        link to a .json body, to check
     
     Returns
     -------
@@ -295,7 +313,7 @@ def loadjsonfiles(relPathToJson: str, linkToJson: str | None = None, forcereload
     """
     
     # check if the file is already dumped
-    if os.path.isfile(relPathToJson) and not forcereload:
+    if relPathToJson is not None and os.path.isfile(relPathToJson) and preferRead:
         logger.trace("Started loadjsonfiles function with inputs path: " +relPathToJson)
         with open(relPathToJson, encoding="utf-8") as data:
             logger.debug("Read Json: " + relPathToJson)
@@ -303,17 +321,23 @@ def loadjsonfiles(relPathToJson: str, linkToJson: str | None = None, forcereload
             return json.load(data)
     
     if linkToJson is not None:
-
-        logger.trace("Started loadjsonfiles function with inputs path: " +relPathToJson + "and link: " + linkToJson)
-        logger.debug("Json file is not present. Downstreaming a new one.")
+        logger.trace("Started loadjsonfiles function with link: " + linkToJson)
+        logger.debug("Json file gets downstreamed.")
         data_url = linkToJson
         data_response = requests.get(data_url)
+        logger.debug("You got a "+str(data_response.status_code) +" reponse with the body:\n"+data_response.__str__())
+        if data_response.status_code != 200:
+            logger.error("the requested .json body said no!")
+            raise FileNotFoundError("The requested .json body said no!")
         data_dict = data_response.json()
-        os.makedirs(os.path.dirname(relPathToJson), exist_ok=True)
-
-        with open(relPathToJson, 'w', encoding="utf-8") as data:
-            json.dump(data_dict, data)
-        logger.debug("Written json to dict")
+        if relPathToJson is not None:
+            os.makedirs(os.path.dirname(relPathToJson), exist_ok=True)
+            with open(relPathToJson, 'w', encoding="utf-8") as data:
+                json.dump(data_dict, data)
+            logger.debug("Written json to dict")
         logger.trace("Finished rejoadjsonfiles function with output: " + str(data_dict))
         return data_dict
+
+    logger.error("There is no proper .json file found.")
+    raise FileNotFoundError("There is no proper .json file found")
 

@@ -43,8 +43,6 @@ def loadV5MatchData(relPath: str):
 
     if settings_lsas["old_patch_support"] == "1":
         raw_version = data_dict["info"]["gameVersion"]
-        print(relPath)
-        print(raw_version)
         raw_version_list = raw_version.split(".")
         patch = ".".join([raw_version_list[0],raw_version_list[1],"1"])
 
@@ -121,8 +119,8 @@ def loadTeamData(data: dict, patch: str | None = None) -> dict:
                 cName   = mapId(cId, 'champion', patch)
                 banarr.append(cName)
         except:
-            print("ERROR: The bans aren't proper in the given matchfile.")
-            exit(1)
+            logger.error("ERROR: The bans aren't proper in the given matchfile.")
+            raise ValueError("die bans sind shit")
         bans = banarr
 
         for j in range(5):
@@ -142,8 +140,6 @@ def loadTeamData(data: dict, patch: str | None = None) -> dict:
         # Yes riot actually fucked this up... # not TODO: not here
         teamdata["firstto"] = obj["tower"]["first"]
         teamdata["win"] = tData["win"]
-        
-        print(teamdata)
 
         if i == 0:
             teamdata_red = teamdata

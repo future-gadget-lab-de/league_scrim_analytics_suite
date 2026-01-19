@@ -48,8 +48,9 @@ def buildAnalyticsFigure(player: str, feature: str, dim: tuple[int], diagram: st
     elif diagram == "histo":
         data = data.sort_values(["gameid"])
         plt.hist(data[feature], color="grey", edgecolor="black")
+        plt.xlabel(feature)
+        plt.ylabel("amount of player")
 
-    plt.ylabel(feature)
     plt.grid()
     os.makedirs(os.path.dirname(f"gamefiles/{feature}_{player}_{diagram}.png"), exist_ok=True)
     plt.savefig(f"gamefiles/{feature}_{player}_{diagram}.png")

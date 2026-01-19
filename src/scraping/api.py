@@ -31,7 +31,7 @@ def getPUIDbySummAndTagline(summonername: str, tagline: str, devKEY = False) -> 
     if not devKEY:
         time.sleep(1)
     resource_link = f"https://europe.api.riotgames.com/riot/account/v1/accounts/by-riot-id/{summonername}/{tagline}?api_key={api_key}"
-    data_of_user = loadjsonfiles(f"src/scraping/dictionaries/player/{summonername}_{tagline}.json", resource_link)
+    data_of_user = loadjsonfiles(linkToJson=resource_link)
 
     return data_of_user["puuid"]
 
@@ -59,7 +59,7 @@ def getSummonerSample(rank: str, queue: str, division: str, page: int = 1, devKE
     if not devKEY:
         time.sleep(1)
     resource_link = f"https://euw1.api.riotgames.com/lol/league-exp/v4/entries/{queue}/{rank}/{division}?page={page}&api_key={api_key}"
-    data_of_user: list = loadjsonfiles(f"src/scraping/dictionaries/player/sample/{rank}_{queue}_{division}_{page}.json", resource_link)
+    data_of_user: list = loadjsonfiles(linkToJson=resource_link)
     
     return data_of_user
 
@@ -88,7 +88,7 @@ def getGameIdsByPuuid(puuid: str, devKEY = False) -> list:
     start = 0
     count = 100
     resource_link = f"https://europe.api.riotgames.com/lol/match/v5/matches/by-puuid/{puuid}/ids?type=ranked&start={start}&count={count}&api_key={api_key}"
-    data_of_user: list = loadjsonfiles(f"src/scraping/dictionaries/player/{puuid}.json", resource_link)
+    data_of_user: list = loadjsonfiles(linkToJson=resource_link)
 
     return data_of_user
     
@@ -195,5 +195,3 @@ def getEqualDistGameSamples(
 
     return sample_list
 
-
-#print(getEqualDistGameSamples("SILVER", "RANKED_SOLO_5x5", "II", 100))

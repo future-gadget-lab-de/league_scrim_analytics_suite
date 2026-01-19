@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 from src.core.map import mapId
 from src.core.team import playerTeamCheck
 from src.config import readSettings, settings_list_c
+from loguru import logger
 
 from loguru import logger
 def loadDumpMatchData(relPath: str):
@@ -113,8 +114,8 @@ def loadTeamData(data: dict, patch: str | None = None) -> dict:
                 cName   = mapId(cId, 'champion', patch)
                 banarr.append(cName)
         except:
-            print("ERROR: The bans aren't proper in the given matchfile.")
-            exit(1)
+            logger.error("ERROR: The bans aren't proper in the given matchfile.")
+            raise ValueError("Die Bans sind shit.")
         bans = banarr
 
         for j in range(5):
