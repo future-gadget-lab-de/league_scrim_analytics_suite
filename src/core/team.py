@@ -15,12 +15,13 @@ def playerTeamCheck(pUuid: str) -> str:
     team : str
         Known teamname or "enemyteam" as placeholder- Currently only supports ${Team_Name}
     """
+    logger.trace("Started playerTeamCheck function with input: " + pUuid)
     condition = "playerid='" + str(pUuid) + "'"
     query = returnSelectQuery("teamident", ["teamname"], where_cond= condition)
     team = executeSelectQuery(query)
     if team.empty:
         team = "randoms"
     else:
-        team = team.iloc[0,0]
-    return str(team)
-
+        team = str(team.iloc[0,0])
+    logger.trace("Finished playerTeamCheck function with input: " + team)
+    return team
