@@ -27,7 +27,7 @@ def mapId(id: int, dataRequested: str, patch: str | None = None) -> str:
 
     data_dict = loadDatabase(dataRequested, patch=patch)
 
-    logger.debug("Mapped the id %s to its corresponding %s equivalent.", str(id), dataRequested)
+    logger.debug("Mapped the id "+ str(id) + " to its corresponding  equivalent:" + "str(id), dataRequested")
     try:
         if dataRequested in ['champion', 'summoner']:
             data_dict = data_dict['data']
