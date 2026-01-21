@@ -4,6 +4,7 @@ from src.core.extracting.apiV5 import loadV5MatchData
 from src.database.wrapper import importData
 from src.utils import transformPathtoFileList
 from src.config import readSettings, settings_list_c
+
 from loguru import logger
 
 #TODO: Rewrite Logging

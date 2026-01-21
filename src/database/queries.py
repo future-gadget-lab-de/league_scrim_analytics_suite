@@ -1,8 +1,10 @@
 """this file contains code for generating .sql queries"""
-
 from loguru import logger
+import pandas as pd
+from src.core.extracting.scheme import GameData
+
 #TODO: Rewrite Logging
-def returnInsertQuery(table: str, data: dict) -> str:
+def returnInsertQuery(GameData: str, dataframe: pd.DataFrame) -> str:
     """returns a INSERT query
 
     For a passed dict, this method constructs a INSERT query, where the keys function as the table heads and the values, ofc as the values.
