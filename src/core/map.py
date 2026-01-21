@@ -1,7 +1,6 @@
 from loguru import logger
+from src.scraping.data import loadIdDataSet
 
-#TODO: Rewrite Logging
-# (id, dataRequested) --> explicit_name of given id
 def mapId(id: int, dataRequested: str, patch: str | None = None) -> str:
     """
     Maps the given id, to the corresponding name ingame.
@@ -23,24 +22,22 @@ def mapId(id: int, dataRequested: str, patch: str | None = None) -> str:
         The name, which corresponds to the id. if the mapping process fails, it inserts
         "placeholder" instead.
     """
-    from src.scraping.data import loadDatabase
-
-    data_dict = loadDatabase(dataRequested, patch=patch)
-
-    logger.debug("Mapped the id "+ str(id) + " to its corresponding  equivalent:" + "str(id), dataRequested")
+    logger.trace("Started mapId Function.")
+    data_dict = loadIdDataSet(dataRequested, patch=patch)
+    mapped_id = "placeholder"
     try:
         if dataRequested in ['champion', 'summoner']:
             data_dict = data_dict['data']
 
             for name in data_dict:
                 if data_dict[name]['key'] == str(id):
-                    return data_dict[name]['name'].replace("'","")
+                    mapped_id = data_dict[name]['name'].replace("'","") 
 
         if dataRequested == 'item':
             Items_dict = data_dict['data']
             if id == 0:
-                return "No Item"
-            return Items_dict[str(id)]['name'].replace("'","")
+                mapped_id = "No Item"
+            mapped_id = Items_dict[str(id)]['name'].replace("'","")
 
         if dataRequested == 'perk':
             #Precision (8000), Domination (8100),  Sorcery (8200), Inspiration (8300), Resolve (8400)
@@ -50,8 +47,13 @@ def mapId(id: int, dataRequested: str, patch: str | None = None) -> str:
                                                 for rune in slot["runes"]}
 
             if id in [8000, 8100, 8300 ,8200, 8400]:
-                return perk_dict[id]
-            return rune_dict[id]
+                mapped_id = perk_dict[id]
+            else: mapped_id = rune_dict[id]
+
+        if mapped_id != "placeholder": 
+            logger.trace("Mapped the id "+ str(id) + "to: " + mapped_id)
+            return mapped_id 
     except:
-        return "placeholder"
+        logger.info("Data requested was not found in Group: champion, summoner, item, perk! Input was: " + dataRequested)
+        return mapped_id
 

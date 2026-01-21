@@ -2,7 +2,6 @@
 import datetime
 from src.utils import loadjsonfiles
 from loguru import logger
-#TODO: Rewrite Logging
 def scrapeRecentPatch() -> str:
     """scrapes the recent patch
 
@@ -20,10 +19,14 @@ def scrapeRecentPatch() -> str:
     date = datetime.datetime.today().strftime('%Y-%m-%d')
     data_file_path = f"src/scraping/dictionaries/EUW_{date}.json"
 
-    logger.debug("Reload of the recent Patchnumber.")
+    logger.debug("Scraping recent Patch.")
     data_dict = loadjsonfiles(data_file_path, link)
+    patch = data_dict["v"]
+
     logger.trace("Finished scrapeRecentPatch function.")
-    return data_dict["v"]
+    logger.success("Scraped patch: " + patch)
+
+    return patch
 
 def returnScrapeLink(dataRequested: str, patch: str | None = None) -> str:
     """
@@ -32,7 +35,7 @@ def returnScrapeLink(dataRequested: str, patch: str | None = None) -> str:
     Parameters
     ----------
     dataRequested : str
-        Determines the dataBase, which the function will downstream.
+        Determines the data, which the function will pull.
         Currently supported: "summoner", "perk", "champion", "item"
     patch : str
         optional argument - specifies a custom patch
@@ -44,6 +47,7 @@ def returnScrapeLink(dataRequested: str, patch: str | None = None) -> str:
     """
     logger.trace("Started returnScrapeLink function for patch: " + str(patch))
     if patch is None:
+        logger.info("No patch specified, using latest.")
         patch = scrapeRecentPatch()
 
     link = 'https://ddragon.leagueoflegends.com/cdn/' + patch + '/data/en_US/'
@@ -60,14 +64,14 @@ def returnScrapeLink(dataRequested: str, patch: str | None = None) -> str:
     logger.trace("Finished returnScrapeLink function with output: " + link)
     return link
 
-def loadDatabase(dataRequested: str, patch: str | None = None) -> dict:
+def loadIdDataSet(dataRequested: str, patch: str | None = None) -> dict:
     """
-    Saves and loads the databases determined by dataRequested.
+    Saves and loads the IDs for data related to league games.
     
     Parameters
     ----------
     dataRequested : str 
-        Determines the dataBase, which the function will downstream.
+        Determines the dataSet, which the function will load.
         Currently supported: "summoner", "perk", "champion", "item",
     patch : str
         optional argument - specifies a patch
@@ -77,15 +81,17 @@ def loadDatabase(dataRequested: str, patch: str | None = None) -> dict:
     data_dict : dict
         The Dictionary, which has the wanted lol data
     """
+    logger.trace("Started function loadIdDataSet with dataRequested: " + dataRequested + ", for patch: " + str(patch))
+
     if patch is None:
+        logger.info("No patch specified, using latest.")
         patch = scrapeRecentPatch()
-    logger.trace("Started function loadDatabase with dataRequested: " + dataRequested + ", for patch: " + str(patch))
 
     data_file_path = f"src/scraping/dictionaries/{dataRequested}_{patch}.json"
-    logger.debug("Reload of the %s data.",dataRequested)
+    logger.debug("Reload of the data: " + dataRequested)
 
     scrape_link = returnScrapeLink(dataRequested)
     data_output = loadjsonfiles(data_file_path, scrape_link)
-    logger.trace( "Finished loadDatabase Function with output: " + str(data_output) ) 
+    logger.success("Loaded IdDataSet: " +dataRequested) 
     return data_output
 
