@@ -1,5 +1,5 @@
 pages:
-  stage: deploy
+  stage: deploy_doc
   tags:
     - doc
   image: alpine:3.20
