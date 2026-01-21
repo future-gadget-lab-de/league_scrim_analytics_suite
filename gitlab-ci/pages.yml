@@ -1,0 +1,11 @@
+pages:
+  stage: deploy
+  tags:
+    - doc
+  image: alpine:3.20
+  needs: ["sphinx"]
+  script:
+    - echo "Publishing Sphinx site from public/"
+  artifacts:
+    paths:
+      - public

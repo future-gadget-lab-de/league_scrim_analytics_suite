@@ -1,0 +1,15 @@
+binaries:
+  stage: build_binary
+  rules:
+    - if: $CI_COMMIT_TAG
+  tags:
+    - doc
+  image: ubuntu
+  script:
+    - apt-get update && apt-get install -y --no-install-recommends libgl1 libegl1 libopengl0 libglib2.0-0 libdbus-1-3 libx11-6 libx11-xcb1 libxcb1 libxcb-cursor0 libxcb-xinerama0 libxkbcommon0 libxkbcommon-x11-0 libxext6 libxrender1 libxi6 libxfixes3 libxrandr2 libsm6 libice6 libfontconfig1 libfreetype6 libharfbuzz0b libasound2 libnss3 xvfb && rm -rf /var/lib/apt/lists/*
+    - apt-get update && apt-get install -y graphviz make
+    - apt-get update && apt-get install -y gcc python3-dev python3-venv pkg-config libmariadb-dev
+    - apt-get update && apt-get install -y --no-install-recommends libegl1 libgl1 libxkbcommon0
+    - rm -rf /var/lib/apt/lists/*
+    - make build
+    - echo "successful"
