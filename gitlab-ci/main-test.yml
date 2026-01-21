@@ -1,5 +1,5 @@
 main-test:
-  stage: base-runnable
+  stage: base-test
   tags:
     - doc
   image: python:3.12
