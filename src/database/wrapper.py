@@ -1,13 +1,13 @@
 """this file serves as a entrypoint for operations, which are supported across .csv or mariadb option"""
 from loguru import logger
+from src.core.structure import GameTable
 from src.config import readSettings, settings_list_c
-from src.database.csv.execution import insertDataAsCsv, readCsvs, runSelectOnDfs
+from src.database.csv.execution import insertDataAsCsv, runSelectOnDfs, readCsvData
 from src.database.mariadb.execution import executeQuery, buildConnection, getCursorSelect
 from src.database.queries import returnMatchfileQuery
-from src.database.csv.manipulation import listOfDictsToDF
 import pandas as pd
 
-def importData(metadata: list[dict], teamdata: list[dict], playerdata: list[dict]) -> None:
+def importData(tabledict: dict[GameTable, pd.DataFrame]) -> None:
     """
     imports the three major datasets into the database
 
@@ -27,18 +27,20 @@ def importData(metadata: list[dict], teamdata: list[dict], playerdata: list[dict
 
             case "0":
                     
-                insertDataAsCsv(metadata, teamdata, playerdata)
+                insertDataAsCsv(tabledict)
                 
             case "1":
                 
-                queries = returnMatchfileQuery(metadata, teamdata, playerdata)
-
+                queries = returnMatchfileQuery(tabledict)
 
                 # build connection
                 conn, cur = buildConnection()
                 # execute the queries
-                executeQuery(queries, conn, cur)
+                for query in queries:
+                    executeQuery(query, conn, cur)
+
                 # close
+                conn.commit()
                 conn.close()
                 cur.close()
 
@@ -63,26 +65,21 @@ def executeSelectQuery(query: str) -> pd.DataFrame:
 
     match settings_lsas["mariadb"]:
         case "1":
-            conn, cur = buildConnection()
-            executeQuery([query], conn, cur)
 
+            conn, cur = buildConnection()
+            executeQuery(query, conn, cur)
+            conn.commit()
             output = getCursorSelect(cur)
-                        
             conn.close()
             cur.close()
 
-            return listOfDictsToDF(output)
+            return output
 
         case "0":
-            dframes = readCsvs()
+            dframeDict = readCsvData()
 
-            table_dict = {
-                "metadata": dframes[0],
-                "teamdata": dframes[1],
-                "playerdata": dframes[2]
-            }
+            for ttype in GameTable:
+                if dframeDict[ttype].empty:
+                    return pd.DataFrame()
 
-            if dframes[0].empty or dframes[1].empty or dframes[2].empty:
-                return pd.DataFrame()
-
-            return runSelectOnDfs(query, table_dict)
+            return runSelectOnDfs(query, dframeDict)

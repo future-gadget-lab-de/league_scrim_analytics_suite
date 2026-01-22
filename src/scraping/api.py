@@ -27,7 +27,7 @@ def getPUIDbySummAndTagline(summonername: str, tagline: str, devKEY = False) -> 
     """
 
     # reading api key
-    settings_lsas = readSettings(settings_list_c[0])
+    settings_lsas: dict[str, str] = readSettings(settings_list_c[0])
     api_key = settings_lsas["API_key"]
     # scraping summonerdata
     if not devKEY:
