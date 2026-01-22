@@ -46,15 +46,16 @@ class ConfigHandler:
 
         self.internal_settings: dict[str, str] = readSettingsFile(locPathInt_c)
         """rtfesafes"""
+        
+        if not self.internal_settings:
+            self.createInternals()
+            self.writeInternals()
 
         self.general_settings: dict[Configs, dict[str, str]] = {
             Configs.MAIN: readSettingsFile(self.internal_settings[Configs.MAIN.value]),
             Configs.DB: readSettingsFile(self.internal_settings[Configs.DB.value])
         }
 
-        if not self.internal_settings:
-            self.createInternals()
-            self.writeInternals()
             
         if not self.general_settings:
             self.general_settings = template_c
