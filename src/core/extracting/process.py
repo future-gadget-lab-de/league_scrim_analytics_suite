@@ -124,7 +124,6 @@ def extractRawTables(data: dict, pipe: ImportPipeline) -> dict[GameTable, pd.Dat
                 metaKey=metaKey,
                 agg=aggregation
         )
-        print(table)
 
         match classify(path):
             case GameTable.TEAM:

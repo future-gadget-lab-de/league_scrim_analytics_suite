@@ -26,3 +26,4 @@ def playerTeamCheck(pUuid: str) -> str:
         team = str(team.iloc[0,0])
     logger.trace("Finished playerTeamCheck function with input: " + team)
     return team
+
