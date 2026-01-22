@@ -5,6 +5,7 @@ This file contains code, which either
 """
 
 import mariadb, sys
+import pandas as pd
 from src.config import writeInternalSettings, readInternalSettings, readSettings, writeSettings, settings_list_c
 from src.utils import transformPathtoFileList
 from src.database.mariadb.sqltemplates.template import importSQLQueries
@@ -136,7 +137,7 @@ def databaseSetup() -> None:
     conn.close()
     cur.close()
 
-def getCursorSelect(cur) -> list[dict]:
+def getCursorSelect(cur) -> pd.DataFrame:
     """returns the content of the cursor, after a done SELECT query.
     
     Parameters
@@ -155,6 +156,7 @@ def getCursorSelect(cur) -> list[dict]:
 
     for row in cur:
         parsed_rows.append(dict(zip(cols, row)))
-    return parsed_rows
+
+    return pd.json_normalize(parsed_rows)
 
 

@@ -1,58 +1,56 @@
 import pandas as pd
-from src.core.extracting.client import ClientKeys
-from src.core.extracting.matchv5 import MatchV5Keys
-from src.core.extracting.scheme import GameData, importPipeline, needsAgg, classify
+import os, sys
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../../..")))
+from enum import Enum
+from src.core.team import playerTeamCheck
+from src.core.structure import GameTable
+from src.core.extracting.client import ClientKeys, tableTypeForClient, needsAggClient, needsMetaDataClient, translationClient
+from src.core.extracting.matchv5 import MatchV5Keys, tableTypeForMatchV5, needsAggMatchV5, needsMetaDataMatchV5
+from src.utilss.pandas import dropListEntries, mergeTables, indexByOneVariable
+from src.database.queries import returnInsertQuery
+from src.utils import loadjsonfiles
 
-def dropListEntries(dataframe: pd.DataFrame) -> pd.DataFrame:
-    """this method drops all columns of a dataframe, that contain a list.
+class ImportPipeline(Enum):
+    """possible pipelines, we use currently
     
-    Parameters
+    Attributes
     ----------
-    dataframe : pd.DataFrame
-        a dataframe to format
-        
-    Returns
-    -------
-    dataframe : pd.DataFrame
-        the resulting dataframe with dropped lists
-        
-    """
-
-    list_cols = [c for c in dataframe.columns if dataframe[c].apply(lambda x: isinstance(x, list)).any()]
-    return dataframe.drop(columns=list_cols)
-
-
-def indexByOneVariable(df: pd.DataFrame, var: str) -> pd.DataFrame:
-    """this method uses one variable/feature and sets it as the new index variable.
-
-    Parameters
-    ----------
-    df : pd.DataFrame
-        the dataframe, to change
-    var : str
-        the name of the feature/variable
-
-    Returns
-    -------
-    dataframe : pd.DataFrame
-        the new dataframe indexed by var
+    CLIENT : ClientKeys
+        the pipeline for the client dumped data
+    MATCHV5 : MatchV5Keys
+        the pipeline for the matchv5 gathered data
     
     """
-    dataframe = df.copy()
-    colsWithoutMetaKey = list(dataframe.columns).remove(var)
-    dataframe["cc"] = dataframe.groupby(var).cumcount()
+    CLIENT  = ClientKeys
+    MATCHV5 = MatchV5Keys
 
-    indexed_df = dataframe.set_index([var, "cc"])[colsWithoutMetaKey].unstack("cc")
-    indexed_df.columns = [f"{a}_{b}" for a, b in indexed_df.columns]
-    indexed_df.index = list(range(len(indexed_df.index)))
+pipeToTrans: dict[ImportPipeline, dict] = {
+    ImportPipeline.CLIENT: translationClient
 
-    return indexed_df
+}
 
+pipeToAgg: dict[ImportPipeline, dict] = {
+    ImportPipeline.CLIENT: needsAggClient,
+    ImportPipeline.MATCHV5: needsAggMatchV5
+}
+
+pipeToMeta: dict[ImportPipeline, dict] = {
+    ImportPipeline.CLIENT: needsMetaDataClient,
+    ImportPipeline.MATCHV5: needsMetaDataMatchV5
+}
+
+def classify(member: ClientKeys | MatchV5Keys) -> GameTable:
+    # the client case
+    if isinstance(member, ClientKeys):
+        return tableTypeForClient[member]
+    # the matchv5 case
+    return tableTypeForMatchV5[member]
 
 def getData(
     data:    dict, 
-    pathKey: MatchV5Keys | ClientKeys = ClientKeys.META, 
+    pathKey: MatchV5Keys | ClientKeys, 
     metaKey: list[list[str]] | None = None,
+    agg:      bool = False,
 ) -> pd.DataFrame:
     """parses the data according the passed pathKey
     
@@ -81,23 +79,13 @@ def getData(
 
     listlessDf = dropListEntries(normalizedDf)
     
-    if metaKey is not None:
+    if agg:
         return indexByOneVariable(listlessDf, "_".join(metaKey[0]))
         
     return listlessDf
 
 
-def mergeTables(tables: list[pd.DataFrame]) -> pd.DataFrame:
-    """merges tables along the rows"""
-
-    dataset = tables.copy()
-    for i in range(len(dataset) - 1):
-        dataset[0] = dataset[0].join(dataset[i+1])
-    
-    return dataset[0]
-
-
-def extractTables(data: dict, pipe: importPipeline) -> dict[str, pd.DataFrame]:
+def extractRawTables(data: dict, pipe: ImportPipeline) -> dict[GameTable, pd.DataFrame]:
     """Collects all member of a enum class (see head of this file) and 
     executes these onto a data dict, to extract the data and format it into
     three outcomes: PLAYER-, META- and TEAMDATA
@@ -106,7 +94,7 @@ def extractTables(data: dict, pipe: importPipeline) -> dict[str, pd.DataFrame]:
     ----------
     data : dict
         the raw data, extracted from a .json gamefile
-    className : importPipeline
+    className : ImportPipeline
         one of the two classnames above
         
     Returns
@@ -120,28 +108,67 @@ def extractTables(data: dict, pipe: importPipeline) -> dict[str, pd.DataFrame]:
     PLAYERDATA: list[pd.DataFrame] = []
     TEAMDATA: list[pd.DataFrame]   = []
 
-    for member in pipe:
+    for path in pipe.value:
 
         metaKey = None
-        if member in needsAgg:
-            metaKey: list[list[str]] = [needsAgg[member]]
-
+        aggregation: bool = (path in pipeToAgg[pipe])
+        if aggregation:
+            metaKey: list[list[str]] = [pipeToAgg[pipe][path]]
+        if path in pipeToMeta[pipe]:
+            metaKey: list[list[str]] = [pipeToMeta[pipe][path]]
         table: pd.DataFrame = getData(
                 data=data,
-                pathKey=member,
-                metaKey=metaKey
+                pathKey=path,
+                metaKey=metaKey,
+                agg=aggregation
         )
+        print(table)
 
-        match classify(member):
-            case GameData.TEAM:
+        match classify(path):
+            case GameTable.TEAM:
                 TEAMDATA.append(table)
-            case GameData.PLAYER:
+            case GameTable.PLAYER:
                 PLAYERDATA.append(table)
-            case GameData.META:
+            case GameTable.META:
                 METADATA.append(table)
 
     return {
-        GameData.META:   mergeTables(METADATA), 
-        GameData.TEAM:   mergeTables(TEAMDATA), 
-        GameData.PLAYER: mergeTables(PLAYERDATA)
+        GameTable.META:   mergeTables(METADATA), 
+        GameTable.TEAM:   mergeTables(TEAMDATA), 
+        GameTable.PLAYER: mergeTables(PLAYERDATA)
     }
+
+def translateTables(rawTables: dict[GameTable, pd.DataFrame], pipe: ImportPipeline) -> None:
+    """adjusts the passed rawTables according to the translation dict
+    
+    Parameters
+    ----------
+    rawTables : dict[GameTable, pd.DataFrame]
+        the raw table, we will adjust in this method
+    pipe : ImportPipeline
+        the pipeline we used in the extraction
+        
+    """
+    translateDict: dict[str,str] = pipeToTrans[pipe]
+
+    for tableType in GameTable:
+        # translate into the old layout
+        tablecols = list(translateDict[tableType].keys())
+        rawTables[tableType] = rawTables[tableType][tablecols]
+        rawTables[tableType] = rawTables[tableType].rename(translateDict[tableType], axis="columns")
+
+        # aggregate further
+        match tableType:
+
+            case GameTable.META:
+                patch_list = rawTables[tableType].loc[0,"patch"].split(".")
+                rawTables[tableType].loc[0,"patch"] = ".".join(patch_list[0:2]) + ".1"
+
+            case GameTable.TEAM:
+                for i in range(2):
+                    rawTables[tableType].loc[i,"win"] = True if (rawTables[tableType].loc[i,"win"] == "Win") else False
+
+            case GameTable.PLAYER:
+                for i in range(10):
+                    rawTables[tableType].loc[i,"team"] = playerTeamCheck(rawTables[tableType].loc[i,"team"])
+

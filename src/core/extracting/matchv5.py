@@ -1,4 +1,5 @@
 from enum import Enum
+from src.core.structure import GameTable
 
 class MatchV5Keys(Enum):
     """current paths to data, for pandas json_normalize
@@ -29,3 +30,48 @@ class MatchV5Keys(Enum):
     # teamdata
     TEAM_1:         list[str]   = ["info","teams"]
     TEAM_2:         list[str]   = ["info","teams", "bans"]
+
+
+tableTypeForMatchV5: dict[MatchV5Keys, str] = {
+    MatchV5Keys.META:     GameTable.META,
+    MatchV5Keys.PLAYER_1: GameTable.PLAYER,
+    MatchV5Keys.PLAYER_2: GameTable.PLAYER,
+    MatchV5Keys.PLAYER_3: GameTable.PLAYER,
+    MatchV5Keys.TEAM_1:   GameTable.TEAM,
+    MatchV5Keys.TEAM_2:   GameTable.TEAM,
+}
+"""classification of each resulting table
+
+    MatchV5Keys.META:    -> GameTable.META,
+    MatchV5Keys.PLAYER_1 -> GameTable.PLAYER,
+    MatchV5Keys.PLAYER_2 -> GameTable.PLAYER,
+    MatchV5Keys.PLAYER_3 -> GameTable.PLAYER,
+    MatchV5Keys.TEAM_1   -> GameTable.TEAM,
+    MatchV5Keys.TEAM_2   -> GameTable.TEAM,
+
+"""
+
+needsMetaDataMatchV5: dict[MatchV5Keys, str] = {
+    MatchV5Keys.PLAYER_1: "gameId",
+    MatchV5Keys.TEAM_1:   "gameId"
+}
+"""the tables produced by these keys, need metadata, to be assignable
+
+Matchv5keys.PLAYER_1 -> "gameId"
+MatchV5Keys.TEAM_1   -> "gameId"
+
+"""
+
+needsAggMatchV5: dict[MatchV5Keys, list[str]] = {
+    MatchV5Keys.PLAYER_2: ["info","participants","participantId"],
+    MatchV5Keys.PLAYER_3: ["info","participants","participantId"],
+    MatchV5Keys.TEAM_2:   ["info", "teams","teamId"]
+}
+"""The tables produced by this keys, need further aggregation into the right table format.
+
+ClientKeys.TEAM2        -> ["teams","teamId"]
+MatchV5Keys.PLAYER_2:   -> ["info","participants","participantId"],
+MatchV5Keys.PLAYER_3:   -> ["info","participants","participantId"],
+
+"""
+

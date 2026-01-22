@@ -1,8 +1,7 @@
 
-from src.core.extracting.client import loadDumpMatchData
-from src.core.extracting.apiV5 import loadV5MatchData
+from src.core.extracting.process import ImportPipeline, extractRawTables, translateTables
 from src.database.wrapper import importData
-from src.utils import transformPathtoFileList
+from src.utils import transformPathtoFileList, loadjsonfiles
 from src.config import readSettings, settings_list_c
 
 from loguru import logger
@@ -24,13 +23,16 @@ def importMatchfileData(PathToFolder: str) -> None:
 
     for file in files:
 
-        if settings_lsas["V5"] == "1":
-            metadata, playerdata, blueteamdata, redteamdata = loadV5MatchData(file)
+        rawdict: dict = loadjsonfiles(file)
 
-        else:
-            metadata, playerdata, blueteamdata, redteamdata = loadDumpMatchData(file)
+        match settings_lsas["V5"]:
 
-        if len(metadata) == 0:
-            continue
+            case "1":
+                exit(1) # unsupported right now
+                tabledict: dict[GameTable, pd.DataFrame] = extractRawTables(rawdict, ImportPipeline.MATCHV5)
 
-        importData([metadata], [blueteamdata, redteamdata], playerdata)
+            case "0":
+                tabledict: dict[GameTable, pd.DataFrame] = extractRawTables(rawdict, ImportPipeline.CLIENT)
+                translateTables(tabledict, ImportPipeline.CLIENT)
+
+        importData(tabledict)
