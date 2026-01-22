@@ -3,7 +3,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../.
 import datetime, time
 import numpy as np
 from src.utils import loadjsonfiles
-from src.config import readSettings, settings_list_c
+from src.config import config, Configs
 from loguru import logger
 import math
 
@@ -27,8 +27,7 @@ def getPUIDbySummAndTagline(summonername: str, tagline: str, devKEY = False) -> 
     """
 
     # reading api key
-    settings_lsas: dict[str, str] = readSettings(settings_list_c[0])
-    api_key = settings_lsas["API_key"]
+    api_key = config.general_settings[Configs.MAIN]["API_key"]
     # scraping summonerdata
     if not devKEY:
         time.sleep(1)
@@ -57,8 +56,7 @@ def getSummonerSample(rank: str, queue: str, division: str, page: int = 1, devKE
     """
 
     # reading apikey
-    settings_lsas = readSettings(settings_list_c[0])
-    api_key = settings_lsas["API_key"]
+    api_key = config.general_settings[Configs.MAIN]["API_key"]
     # scraping
     if not devKEY:
         time.sleep(1)
@@ -86,8 +84,7 @@ def getGameIdsByPuuid(puuid: str, devKEY = False) -> list:
     """
 
     # reading apikey
-    settings_lsas = readSettings(settings_list_c[0])
-    api_key = settings_lsas["API_key"]
+    api_key = config.general_settings[Configs.MAIN]["API_key"]
     # scraping
     if not devKEY:
         time.sleep(1)
@@ -118,8 +115,7 @@ def getGameById(gameid: str, saveLocation: str, devKEY = False) -> tuple[dict]:
     """
 
     # reading apikey
-    settings_lsas = readSettings(settings_list_c[0])
-    api_key = settings_lsas["API_key"]
+    api_key = config.general_settings[Configs.MAIN]["API_key"]
     # scraping
     if not devKEY:
         time.sleep(1)

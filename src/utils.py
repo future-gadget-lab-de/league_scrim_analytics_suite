@@ -156,7 +156,7 @@ def addDictToCsv(data: dict, path_to_csv: str) -> None:
     logger.success("Written file: " + path_to_csv)
     logger.trace("Finished addDictToCsv function")
     
-def readSettingsFile(rel_path_with_name: str) -> dict:
+def readSettingsFile(rel_path_with_name: str) -> dict[str, str]:
     """
     Reads a passed .conf file
 
@@ -182,7 +182,7 @@ def readSettingsFile(rel_path_with_name: str) -> dict:
     logger.trace("Finished readSettingsFile Function with Output: "+ str(config))
     return config
 
-def writeSettingsFile(settings: dict, rel_path_with_name: str) -> None:
+def writeSettingsFile(settings: dict[str, str], rel_path_with_name: str) -> None:
     """
     Writes the given lines to a .conf file at the provided relative path.
 
@@ -222,6 +222,9 @@ def readFileByLine(relPathToFile) -> list[str]:
         A list, containing each line per entry in the list.   
     
     """
+    if not os.path.isfile(relPathToFile):
+        return list()
+
     logger.trace("Started readFileByLine function with Input: " + relPathToFile)
     try:    
         with open(relPathToFile, encoding="utf-8") as file:

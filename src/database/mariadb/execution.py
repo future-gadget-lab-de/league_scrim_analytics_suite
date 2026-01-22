@@ -6,12 +6,12 @@ This file contains code, which either
 
 import mariadb, sys
 import pandas as pd
-from src.config import writeInternalSettings, readInternalSettings, readSettings, writeSettings, settings_list_c
+from src.config import config, Configs
 from src.utils import transformPathtoFileList
 from src.database.mariadb.sqltemplates.template import importSQLQueries
 from loguru import logger
 
-def updateConnectionState() -> str:
+def updateConnectionState() -> None:
     """
     updates the the connection status of lsas and writes it into the config files.
 
@@ -21,22 +21,17 @@ def updateConnectionState() -> str:
         either a '1' for connected or a '0' for disconnected
     
     """
-    settings_int = readInternalSettings()
-    settings_lsas = readSettings(settings_list_c[0])
 
     try:
         buildConnection()
-        settings_int["_connected"] = "1"
-
-        writeInternalSettings(settings_int)
+        config.volatile_settings["_connected"] = "1"
+        config.writeSettings()
     except:
-        settings_int["_connected"] = "0"
-        settings_lsas["mariadb"] = "0"
+        config.volatile_settings["_connected"] = "0"
+        config.general_settings[Configs.MAIN]["mariadb"] = "0"
+        config.writeSettings()
 
-        writeSettings(settings_list_c[0], settings_lsas)
-        writeInternalSettings(settings_int)
     
-    return settings_int["_connected"]
 
 #TODO: Rewrite Logging
 def buildConnection() -> tuple:
@@ -52,7 +47,7 @@ def buildConnection() -> tuple:
         Executes SQL statements and procedures, and manages fetching results.
     """
 
-    conn_params: dict[str] = readSettings(settings_list_c[1])
+    conn_params: dict[str, str] = config.general_settings[Configs.DB].copy()
     conn_params['port'] = int(conn_params['port']) 
 
     conn = mariadb.connect(**conn_params)
@@ -97,8 +92,6 @@ def executeSQLFiles(pathToFile: str) -> None:
         the relative (or absolute) path to a .sql file
 
     """
-
-    settings_lsas = readSettings(settings_list_c[0])
     
     files = transformPathtoFileList(pathToFile)
 
@@ -107,7 +100,8 @@ def executeSQLFiles(pathToFile: str) -> None:
     for file in files:
         queries_of_file.append(importSQLQueries(file))
 
-    match settings_lsas["mariadb"]:
+    match config.general_settings[Configs.MAIN]["mariadb"]:
+        
         case "1":
 
             conn, cur = buildConnection()
@@ -129,17 +123,24 @@ def databaseSetup() -> None:
     """
     Setups the connected database with the correct datatypes 
     """
-    create_queries = importSQLQueries("src/database/mariadb/sqltemplates/db_creation_dump.sql")
+    match config.general_settings[Configs.MAIN]["mariadb"]:
+        case "1":
+            try:
+                create_queries = importSQLQueries("src/database/mariadb/sqltemplates/db_creation_dump.sql")
 
-    logger.debug("Creating DB Format.")
+                logger.debug("Creating DB Format.")
 
-    conn, cur = buildConnection()
-    for query in create_queries:
-        executeQuery(query, conn, cur)
-    
-    conn.commit()
-    conn.close()
-    cur.close()
+                conn, cur = buildConnection()
+                for query in create_queries:
+                    executeQuery(query, conn, cur)
+                
+                conn.commit()
+                conn.close()
+                cur.close()
+            except:
+                logger.debug("Database structure already initialized")
+        case "0":
+            logger.debug("CSV Mode, therefore no structure creation.")
 
 def getCursorSelect(cur) -> pd.DataFrame:
     """returns the content of the cursor, after a done SELECT query.

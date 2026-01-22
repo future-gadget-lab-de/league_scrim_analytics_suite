@@ -5,7 +5,6 @@ from PySide6.QtCore import QTimer
 from PySide6.QtWidgets import QDialog, QApplication
 from src.visuals.ui.generated.ui_loading import Ui_LoadingDialog
 
-from src.config import readSettings,readInternalSettings, settings_list_c
 from loguru import logger
 
 class LoadingDialog(QDialog):

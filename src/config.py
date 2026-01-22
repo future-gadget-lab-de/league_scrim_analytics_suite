@@ -3,15 +3,23 @@ This file contains multiple functionalities
 
 """
 import  os
+from enum import StrEnum
 from src.utils import readSettingsFile, writeSettingsFile
 from loguru import logger
+from src.core.structure import version_c
 
-
-locPath_c: str = ".internal/location.conf"
+locPathInt_c: str = ".internal/location.conf"
 """location for the **internal** config file"""
 
-template_dict_c: dict[str, str] = {
-    "lsas": {
+locPathSet_c: str = "config"
+"""location for **general** settings"""
+
+class Configs(StrEnum):
+    MAIN = "lsas"
+    DB = "mariadb"
+
+template_c: dict[Configs, dict[str, str]] = {
+    Configs.MAIN: {
         "old_patch_support":"0",
         "csv_directory": "data",
         "mariadb": "0",
@@ -19,7 +27,7 @@ template_dict_c: dict[str, str] = {
         "import_label": "gameid",
         "V5": "0"
     },
-    "mariadb": {
+    Configs.DB: {
         "host": "",
         "user": "",
         "password": "",
@@ -29,130 +37,60 @@ template_dict_c: dict[str, str] = {
 }
 """the template for config files in lsas"""
 
+class ConfigHandler:
 
-def enrollSettings(relPathToConf: str = "config")  -> list[str]:
-    """
-    Enrolls settings files for the user and uses the "settings_dict" as a template
+    def __init__(self):
+        self.volatile_settings: dict[str, str] = {
+            "_connected": "0"
+        }
 
-    Parameters
-    ----------
-    relPathToConf : str, optional
-        the relative path to the config folder
+        self.internal_settings: dict[str, str] = readSettingsFile(locPathInt_c)
+        """rtfesafes"""
 
-    Returns
-    -------
-    settings_list : list[str]
-        returns a list of all settings (non internal)
-    
-    """
-    logger.trace("Checking if path to Config is relative")
-    if os.path.isabs(relPathToConf):
-        error_msg: str ="Path must be relative"
-        logger.error(error_msg)
-        raise ValueError(error_msg)
-    else:
-        logger.trace("Check successful")
+        self.general_settings: dict[Configs, dict[str, str]] = {
+            Configs.MAIN: readSettingsFile(self.internal_settings[Configs.MAIN.value]),
+            Configs.DB: readSettingsFile(self.internal_settings[Configs.DB.value])
+        }
 
-    # init variables
-    settings_dict: dict[str] = template_dict_c
-    internal_dict: dict[str] = dict()
-    # writing hidden features, if not already present
-    internal_dict["_connected"] = "0"
-    settings_key_list: list[str] = list()
+        if not self.internal_settings:
+            self.createInternals()
+            self.writeInternals()
+            
+        if not self.general_settings:
+            self.general_settings = template_c
+            self.writeSettings()
 
-    # if the config directory has changed
-    if os.path.isfile(locPath_c):
-        internal_dict = readInternalSettings()
-        # copy the current lsas configs
-        for key in settings_dict.keys():
-            settings_dict[key] = readSettings(str(key))
+    def reconfigure(self):
+        self.createInternals()
+        self.writeInternals()
 
-    # setup the internal dict
-    for key in settings_dict.keys():
-        # write file location into internal dict
-        internal_dict[key] = relPathToConf + "/" + str(key) + ".conf"
+        for conf in Configs:
+            keys = set(self.general_settings[conf].keys())
+            temp_keys = set(template_c[conf].keys())
+            keys_miss = temp_keys.difference(keys)
 
-    # write the internal .conf
-    writeInternalSettings(internal_dict)
+            for key in keys_miss:
+                self.general_settings[conf][key] = template_c[conf][key]
+        self.writeSettings()
 
-    # write all the other configs
-    for key in settings_dict.keys():
-        writeSettings(str(key), settings_dict[key])
+    def createInternals(self):
+        for conf in Configs:
+            self.internal_settings[conf.value] = locPathSet_c + "/" + conf.value + ".conf"
+        self.internal_settings["last_noticed_version"] = version_c
 
+    def writeSettings(self):
+        for config in Configs:
+            writeSettingsFile(self.general_settings[config], self.internal_settings[config.value])
 
-def readInternalSettings() -> dict[str,str]:
-    """returns the internal config file as a dict
-    
-    Returns
-    -------
-    internal_settings : dict[str]
-        the internal settings in dict format
-    
-    """
-    return readSettingsFile(locPath_c)
+    def writeInternals(self):
+        writeSettingsFile(self.internal_settings, locPathInt_c)
 
-def writeInternalSettings(new_internals: dict[str,str]) -> None:
-    """writes to the internal config file
-    
-    Parameters
-    ----------
-    new_internals : dict[str]
-        the new settings to be written
-        
-    """
-    writeSettingsFile(new_internals, locPath_c)
+    @property
+    def needsReconfigure(self) -> bool:
+        if not "last_noticed_version" in list(self.internal_settings.keys()):
+            return True
+        if self.internal_settings["last_noticed_version"] != version_c:
+            return True
+        return False
 
-def readSettings(mode: str) -> dict[str,str]:
-    """returns the data of a config file, given by mode
-    
-    Parameters
-    ----------
-    mode : str
-        a string, which describes the name of the wanted .conf file
-        
-    Returns
-    -------
-    settings : dict[str]
-        the settings wanted
-        
-    """
-    internals = readInternalSettings()
-    settings_loc = internals[mode]
-    return readSettingsFile(settings_loc)
-
-def writeSettings(mode: str, new_settings: dict[str,str]) -> None:
-    """writes data to a config file, specified by mode
-    
-    Parameters
-    ----------
-    mode : str
-        a string, which describes the name of the wanted .conf file
-    new_settings : dict[str]
-        the data, which will get written into the file
-        
-    """
-    internals = readInternalSettings()
-    settings_loc = internals[mode]
-    writeSettingsFile(new_settings, settings_loc)
-
-def initSettingsList() -> list[str]:
-    if os.path.isfile(locPath_c):
-        internal_dict = readInternalSettings()
-        settings_list = list[str]()
-        for key in internal_dict:
-            # excluding hidden settings
-            if not str(key).startswith("_"):
-                settings_list.append(str(key))
-        return settings_list
-    else:
-        return None
-
-settings_list_c: list[str] = initSettingsList()
-"""list, containing the settings 'keys'. 
-
-'0'
-    lsas    - the standard settings
-'1'
-    mariadb - the mariadb database settings
-
-"""
+config: ConfigHandler = ConfigHandler()

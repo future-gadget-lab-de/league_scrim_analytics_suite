@@ -1,10 +1,10 @@
 """this file serves as a entrypoint for operations, which are supported across .csv or mariadb option"""
 from loguru import logger
 from src.core.structure import GameTable
-from src.config import readSettings, settings_list_c
+from src.config import config, Configs
 from src.database.csv.execution import insertDataAsCsv, runSelectOnDfs, readCsvData
 from src.database.mariadb.execution import executeQuery, buildConnection, getCursorSelect
-from src.database.queries import returnMatchfileQuery
+from src.database.queries import returnMatchfileQuery, returnSelectQuery
 import pandas as pd
 
 def importData(tabledict: dict[GameTable, pd.DataFrame]) -> None:
@@ -21,9 +21,8 @@ def importData(tabledict: dict[GameTable, pd.DataFrame]) -> None:
         the data of all 10 players of a game
     
     """
-    settings_lsas = readSettings(settings_list_c[0])
 
-    match settings_lsas["mariadb"]:
+    match config.general_settings[Configs.MAIN]["mariadb"]:
 
             case "0":
                     
@@ -44,6 +43,18 @@ def importData(tabledict: dict[GameTable, pd.DataFrame]) -> None:
                 conn.close()
                 cur.close()
 
+def getListOfStoredData() -> list[str]:
+    """method, which downstreams the gameids of imported files"""
+
+    importlabel = config.general_settings[Configs.MAIN]["import_label"]
+    query = returnSelectQuery(GameTable.META.value,[importlabel])
+    data = executeSelectQuery(query)
+
+    if data.empty:
+        return []
+
+    return [str(label) for label in data[importlabel].values.tolist()]
+
 def executeSelectQuery(query: str) -> pd.DataFrame:
     """
     executes a sql query on the database
@@ -59,11 +70,9 @@ def executeSelectQuery(query: str) -> pd.DataFrame:
         the resulting dataframe
         
     """
-    settings_lsas = readSettings(settings_list_c[0])
-
     logger.info(f"executing the .sql query: {query}")
 
-    match settings_lsas["mariadb"]:
+    match config.general_settings[Configs.MAIN]["mariadb"]:
         case "1":
 
             conn, cur = buildConnection()

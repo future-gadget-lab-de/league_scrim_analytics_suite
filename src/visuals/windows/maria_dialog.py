@@ -7,7 +7,7 @@ from PySide6.QtCore import QTimer
 from src.visuals.ui.generated.ui_maria_dialog import Ui_Dialog
 
 from src.database.mariadb.execution import updateConnectionState
-from src.config import readSettings, writeSettings, readInternalSettings, settings_list_c
+from src.config import config, Configs
 
 class MariaDialog(QDialog):
     def __init__(self, parent=None) -> None:
@@ -17,16 +17,7 @@ class MariaDialog(QDialog):
         self.timer = QTimer(self)
 
         # init settings
-        self.db_settings = readSettings(settings_list_c[1])
-        self.int_settings = readInternalSettings()
         self._init_fields()
-
-        # change callbacks
-        self.ui.lineEdit_adress.textChanged.connect(self._change_setting)
-        self.ui.lineEdit_db.textChanged.connect(self._change_setting)
-        self.ui.lineEdit_port.textChanged.connect(self._change_setting)
-        self.ui.lineEdit_pw.textChanged.connect(self._change_setting)
-        self.ui.lineEdit_un.textChanged.connect(self._change_setting)
 
         # try a connection
         self.timer.timeout.connect(self._restore_button)
@@ -34,24 +25,25 @@ class MariaDialog(QDialog):
 
     def _init_fields(self) -> None:
         """initializes the current fields with values of mariadb.conf"""
-        if self.int_settings["_connected"] == "1":
+        if config.volatile_settings["_connected"] == "1":
             self.ui.pushButton_connection.setText("connected!")
             self.ui.pushButton_connection.setDisabled(True)
 
-        self.ui.lineEdit_adress.setText(self.db_settings["host"])
-        self.ui.lineEdit_db.setText(self.db_settings["database"])
-        self.ui.lineEdit_port.setText(self.db_settings["port"])
-        self.ui.lineEdit_pw.setText(self.db_settings["password"])
-        self.ui.lineEdit_un.setText(self.db_settings["user"])
+        self.ui.lineEdit_adress.setText(config.general_settings[Configs.DB]["host"])
+        self.ui.lineEdit_db.setText(config.general_settings[Configs.DB]["database"])
+        self.ui.lineEdit_port.setText(config.general_settings[Configs.DB]["port"])
+        self.ui.lineEdit_pw.setText(config.general_settings[Configs.DB]["password"])
+        self.ui.lineEdit_un.setText(config.general_settings[Configs.DB]["user"])
 
     def _try_connection(self) -> None:
         """connection test, which also writes settings according to the outcome"""
-        writeSettings(settings_list_c[1], self.db_settings)
-        self.int_settings["_connected"] = updateConnectionState()
+        self.saveSettings()
+        updateConnectionState()
 
-        if self.int_settings["_connected"] == "1":
+        if config.volatile_settings["_connected"] == "1":
             self.ui.pushButton_connection.setText("connected!")
             self.ui.pushButton_connection.setDisabled(True)
+
         else:
             self.ui.pushButton_connection.setText("connection failed...")
             self.ui.pushButton_connection.setDisabled(True)
@@ -63,14 +55,9 @@ class MariaDialog(QDialog):
         self.ui.pushButton_connection.setText("connect")
         self.ui.pushButton_connection.setDisabled(False)
 
-    def _get_settings(self) -> dict:
-        return self.db_settings
-
-    def _change_setting(self) -> None:
-        """update window/settings according to the changed settings"""
-        self._restore_button()
-        self.db_settings["host"] = self.ui.lineEdit_adress.text()
-        self.db_settings["database"] = self.ui.lineEdit_db.text()
-        self.db_settings["port"] = self.ui.lineEdit_port.text()
-        self.db_settings["password"] = self.ui.lineEdit_pw.text()
-        self.db_settings["user"] = self.ui.lineEdit_un.text()
+    def saveSettings(self) -> None:
+        config.general_settings[Configs.DB]["host"]      = self.ui.lineEdit_adress.text()
+        config.general_settings[Configs.DB]["user"]      = self.ui.lineEdit_un.text()
+        config.general_settings[Configs.DB]["password"]  = self.ui.lineEdit_pw.text()
+        config.general_settings[Configs.DB]["port"]      = self.ui.lineEdit_port.text()
+        config.general_settings[Configs.DB]["database"]  = self.ui.lineEdit_db.text()

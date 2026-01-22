@@ -2,7 +2,7 @@
 from src.core.extracting.process import ImportPipeline, extractRawTables, translateTables
 from src.database.wrapper import importData
 from src.utils import transformPathtoFileList, loadjsonfiles
-from src.config import readSettings, settings_list_c
+from src.config import config, Configs
 
 from loguru import logger
 
@@ -17,7 +17,6 @@ def importMatchfileData(PathToFolder: str) -> None:
         the relative (or absolute) path to a matchfile or folder of matchfiles
     
     """
-    settings_lsas = readSettings(settings_list_c[0])
 
     files = transformPathtoFileList(PathToFolder)
 
@@ -25,7 +24,7 @@ def importMatchfileData(PathToFolder: str) -> None:
 
         rawdict: dict = loadjsonfiles(file)
 
-        match settings_lsas["V5"]:
+        match config.general_settings[Configs.MAIN]["V5"]:
 
             case "1":
                 exit(1) # unsupported right now

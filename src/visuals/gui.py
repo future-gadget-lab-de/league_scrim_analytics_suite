@@ -6,6 +6,7 @@ from PySide6.QtWidgets import QApplication
 LSAS = pathlib.Path(__file__).resolve().parents[3]
 COMPILE_UI = LSAS / "LSAS" / "src" / "visuals" / "ui" 
 from loguru import logger
+from src.config import config
 
 def runAdvancedFrontend() -> None:
     """entrypoint method for all GUI applications"""
@@ -34,4 +35,5 @@ def runAdvancedFrontend() -> None:
     app = QApplication(sys.argv)
     window = MainWindow()
     window.show()
-    sys.exit(app.exec())
+    if app.exec():
+        config.writeSettings()

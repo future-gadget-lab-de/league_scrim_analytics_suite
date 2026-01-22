@@ -2,7 +2,7 @@
 import duckdb, os
 import pandas as pd
 from src.core.structure import GameTable
-from src.config import readSettings, settings_list_c
+from src.config import config, Configs
 
 def readCsv(csvdir: str) -> pd.DataFrame:
     if not os.path.isfile(csvdir):
@@ -20,8 +20,7 @@ def readCsvData() -> dict[GameTable, pd.DataFrame]:
         contains a list of data, namely meta-, team- and playerdata
         
     """
-    settings_lsas = readSettings(settings_list_c[0])
-    csv_dir = settings_lsas["csv_directory"]
+    csv_dir = config.general_settings[Configs.MAIN]["csv_directory"]
 
     return {
         GameTable.META: readCsv(csv_dir + "/" + GameTable.META.value + ".csv"),
@@ -43,8 +42,7 @@ def insertDataAsCsv(tabledict: dict[GameTable, pd.DataFrame]) -> None:
         the data of all ten players of a game
         
     """
-    settings_lsas = readSettings(settings_list_c[0])
-    csv_dir = settings_lsas["csv_directory"]
+    csv_dir = config.general_settings[Configs.MAIN]["csv_directory"]
     oldTabledict = readCsvData()
 
     os.makedirs(os.path.dirname(csv_dir+"/"), exist_ok=True)

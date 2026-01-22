@@ -1,4 +1,6 @@
-from enum import StrEnum
+from enum import StrEnum, Enum
+
+version_c = "0.0.1"
 
 class GameTable(StrEnum):
     """the three tablenames of this project 

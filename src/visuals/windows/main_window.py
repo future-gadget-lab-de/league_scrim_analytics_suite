@@ -11,25 +11,23 @@ from src.visuals.windows.analytics_space import AnalyticsSpace
 from src.visuals.windows.loading_dialog import LoadingDialog
 
 from src.database.queries import returnSelectQuery
-from src.database.wrapper import executeSelectQuery
+from src.database.wrapper import executeSelectQuery, getListOfStoredData
 from src.database.mariadb.execution import databaseSetup
 from src.core.ops import importMatchfileData
 from src.scraping.api import getEqualDistGameSamples, getMaxPageNumber
 
-from src.config import writeSettings, readSettings, writeInternalSettings, readInternalSettings, settings_list_c
+from src.config import config, Configs
 #TODO: Rewrite Logging
 class MainWindow(QMainWindow):
     def __init__(self) -> None:
         super().__init__()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
-        
-        self.settings_int = readInternalSettings()
-        self.settings_lsas = readSettings(settings_list_c[0])
+
         self.label_list: list[Qlabel] = []
 
         # setup the window
-        self._init_window()
+        self._update_window()
 
         # setup the analyticsworkspace
         self.space = AnalyticsSpace(self)
@@ -43,9 +41,25 @@ class MainWindow(QMainWindow):
         self.ui.actionMariaDB.triggered.connect(self._open_mariadb_config)
         self.ui.actionImport_Matchfile.triggered.connect(self._filedialog_opener)
 
-    def _init_window(self) -> None:
+    def _update_files(self) -> None:
+        """method, which downstreams the gameids of imported files"""
+        logger.info("updated imported stuff")
+
+        # delete old labels
+        for label in self.label_list:
+            label.deleteLater()
+        self.label_list = list[QLabel]()
+
+        labels = getListOfStoredData()
+
+        for lab in labels:
+            label = QLabel(text=lab)
+            self.label_list.append(label)
+            self.ui.scroll_sub_content.addWidget(label)
+
+    def _update_window(self) -> None:
         """initialize the ui"""
-        isV5Disabled = self.settings_lsas["V5"] == "0"
+        isV5Disabled = config.general_settings[Configs.MAIN]["V5"] == "0"
         self.ui.comboBox_division.setDisabled(isV5Disabled)
         self.ui.comboBox_queue.setDisabled(isV5Disabled)
         self.ui.comboBox_rank.setDisabled(isV5Disabled)
@@ -84,7 +98,7 @@ class MainWindow(QMainWindow):
         if ldlg.exec():
             pass
 
-        self._init_window()
+        self._update_window()
     
 
     def _filedialog_opener(self) -> None:
@@ -101,51 +115,22 @@ class MainWindow(QMainWindow):
             ldlg = LoadingDialog(self, importMatchfileData, [{"PathToFolder": path} for path in fileNames])
             if ldlg.exec():
                 pass
-        self._init_window()
-
-    def _update_files(self) -> None:
-        """method, which downstreams the gameids of imported files"""
-        logger.info("updated imported stuff")
-
-        if self.settings_lsas["mariadb"] == "1":
-            try: 
-                databaseSetup()
-            except:
-                logger.debug("Database structure already initialized")
-
-        # delete old labels
-        for label in self.label_list:
-            label.deleteLater()
-        self.label_list = list[QLabel]()
-
-        query = returnSelectQuery("metadata",[self.settings_lsas["import_label"]])
-        data = executeSelectQuery(query)
-        if data.empty:
-            return 
-
-        for gameid in [str(gameid) for gameid in data[self.settings_lsas["import_label"]].values.tolist()]:
-            label = QLabel(text=gameid)
-            self.label_list.append(label)
-            self.ui.scroll_sub_content.addWidget(label)
+        self._update_window()
 
     def _open_settings(self) -> None:
         """helpermethod for handling settingsdialog"""
         dlg = SettingsDialog(self)
         if dlg.exec():  # True wenn accepted
-            settings = dlg._get_settings()
-            self.settings_lsas = settings
-            # update window
-            writeSettings(settings_list_c[0], settings)
+            dlg.saveSettings()
             logger.info("general settings saved")
-        self._init_window()
+            
+        self._update_window()
 
     def _open_mariadb_config(self) -> None:
         """helpermethod for handling mariadbdialog"""
         mdlg = MariaDialog(self)
         if mdlg.exec():
-            settings = mdlg._get_settings()
-            # update window
-            writeSettings(settings_list_c[1], settings)
             mdlg._try_connection()
             logger.info("mariadb settings saved")
-        self._init_window()
+
+        self._update_window()
