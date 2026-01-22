@@ -1,9 +1,10 @@
-from src.globals import k_teamname, k_roster
+from src.database.queries import returnSelectQuery
+from src.database.wrapper import executeSelectQuery
 from loguru import logger
-def playerTeamCheck(pUuid: int) -> str:
+def playerTeamCheck(pUuid: str) -> str:
     """
     Uses a Players identifier to check if he's on a known Team.
-
+    This only works with scrim data , as the pUuid there and riots pUuid are not indentical.
     Parameters
     ----------
     pUuid : int         
@@ -13,16 +14,14 @@ def playerTeamCheck(pUuid: int) -> str:
     -------
     team : str
         Known teamname or "enemyteam" as placeholder- Currently only supports ${Team_Name}
-
     """
-    #TODO:
-    #WIP Querying the DB for teams so we don't use a globals file + easy support for multi-team
-    #query = queries.returnSelectQuery(teams, [TeamName, PlayerID])
-    #conn_params = loadDatabaseConfig()
-    #executeQuery(query, conn_params)
-    if pUuid in k_roster:
-        team = k_teamname
+    logger.trace("Started playerTeamCheck function with input: " + pUuid)
+    condition = "playerid='" + str(pUuid) + "'"
+    query = returnSelectQuery("teamident", ["teamname"], where_cond= condition)
+    team = executeSelectQuery(query)
+    if team.empty:
+        team = "randoms"
     else:
-        team = "Random" #Enemy nicht zwangsläufig korrekt, wenn wir Daten anderer Teams betrachten.
+        team = str(team.iloc[0,0])
+    logger.trace("Finished playerTeamCheck function with input: " + team)
     return team
-

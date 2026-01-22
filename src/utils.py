@@ -33,7 +33,8 @@ def iter_defined_members(module) -> list[tuple]:
         a list of all members seperated in (nameOfMember,member)
     """
 
-    stuff = list()
+    logger.trace("Started iter_defined_members function with Input:" + str(module) )
+    members = list()
     mod = module
     for name, obj in vars(mod).items():
         if name.startswith("_"):
@@ -43,10 +44,10 @@ def iter_defined_members(module) -> list[tuple]:
         if inspect.isfunction(obj) or inspect.isclass(obj):
             if getattr(obj, "__module__", None) != mod.__name__:
                 continue
-        
-        stuff.append((name,obj))
-    
-    return stuff
+
+        members.append((name,obj))
+    logger.trace("Finished iter_defined_members function with Output: "+ str(members))
+    return members
 
 def import_from_path(module_name: str, file_path: str):
     """imports a specific module by path and name and returns it
@@ -88,6 +89,8 @@ def transformPathtoFileList(PathToFolder: str) -> list[str]:
         a list of rel paths to the files
     
     """
+    logger.trace("Finished transformPathtoFileList function with output: " + str(PathToFolder))
+
     relPathToFolder = PathToFolder
     if os.path.isabs(PathToFolder):
         relPathToFolder = getRelPath(PathToFolder)
@@ -98,9 +101,10 @@ def transformPathtoFileList(PathToFolder: str) -> list[str]:
         files = list_relative_filepaths(relPathToFolder)
 
     if len(files) == 0:
-        raise Exception("There are no files provided through args. Adjust the Path!")
-        sys.exit(1)
-
+        err_msg = "There are no files provided through args. Adjust the Path!"
+        logger.error(err_msg)
+        raise Exception(err_msg)
+    logger.trace("Finished transformPathtoFileList function with output: " + str(files))
     return files
 
 def getRelPath(absPath: str) -> str:
@@ -149,7 +153,7 @@ def addDictToCsv(data: dict, path_to_csv: str) -> None:
         writer = csv.DictWriter(file, fieldnames=fields)
         writer.writerows([data])  # Write data rows
 
-    logger.info("Written file: " + path_to_csv)
+    logger.success("Written file: " + path_to_csv)
     logger.trace("Finished addDictToCsv function")
     
 def readSettingsFile(rel_path_with_name: str) -> dict:
@@ -173,8 +177,8 @@ def readSettingsFile(rel_path_with_name: str) -> dict:
     
     for line in config_by_line:
         setting = line.replace(" ", "").split("=")   # remove whitespace and split
-        config[setting[0]] = setting[1]    # build dict 
-        logger.trace("Add the following value to config-dict.: "+ str(setting[1]))
+        config[setting[0]] = setting[1]    # build dict
+    #FIX: This prints the Password, that is not good.
     logger.trace("Finished readSettingsFile Function with Output: "+ str(config))
     return config
 
@@ -203,7 +207,6 @@ def writeSettingsFile(settings: dict, rel_path_with_name: str) -> None:
         logger.debug("Written config file: " + full_path)
         logger.trace("Finished writeSettingsFile function")
 
-#NOTE Continue here
 def readFileByLine(relPathToFile) -> list[str]:
     """
     Read a file as an array of string lines.
@@ -337,7 +340,7 @@ def loadjsonfiles(
             logger.debug("Written json to dict")
         logger.trace("Finished rejoadjsonfiles function with output: " + str(data_dict))
         return data_dict
-
-    logger.error("There is no proper .json file found.")
-    raise FileNotFoundError("There is no proper .json file found")
+    err_msg="There is no proper .json file found."
+    logger.error(err_msg)
+    raise FileNotFoundError(err_msg)
 
