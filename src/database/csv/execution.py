@@ -50,8 +50,9 @@ def insertDataAsCsv(tabledict: dict[GameTable, pd.DataFrame]) -> None:
     os.makedirs(os.path.dirname(csv_dir+"/"), exist_ok=True)
 
     for tabletype in GameTable:
-        pd.concat(oldTabledict[tabletype], tabledict[tabletype]).drop_duplicates().to_csv(csv_dir + "/" + tabletype.value + ".csv")
-
+        df = pd.concat([oldTabledict[tabletype], tabledict[tabletype]], ignore_index=True)
+        df = df.drop_duplicates()
+        df.to_csv(csv_dir + "/" + tabletype.value + ".csv", index=False)
 
 def runSelectOnDfs(query: str, tables: dict[GameTable, pd.DataFrame]) -> pd.DataFrame:
     """a helper method, which makes pd.Dataframes compatible with SELECT queries

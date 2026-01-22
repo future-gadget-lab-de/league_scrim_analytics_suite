@@ -60,34 +60,32 @@ def buildConnection() -> tuple:
     cur = conn.cursor()
     return conn, cur
 
-def executeQuery(queries: list[str], conn, cur):
+def executeQuery(query: str, conn, cur):
     """executes a list of queries.
 
     This method takes a conn, cur from a established mariadb connection and executes a list of passed queries.
 
     Parameters
     ----------
-    queries : list[str]
-        a list of sql queries
+    query : str
+        a sql query
     conn : connection
         connection to a mariadb server instance
     cur : cursor
         cursor of a mariadb server instance
     """
-    for query in queries:
-        try:
-            logger.debug(f"will execute the sql query: {query}", )
-            cur.execute(query)
-            if len(query) > 100:
-                logger.info("Executed a sql query. For Detail, adjust loglevel to DEBUG.")
-            else:
-                logger.info(f"Executed the sql query: {query}")
-            conn.commit()
-            #TODO: Log query here.
-        except mariadb.Error as e:
-            cur.close()
-            logger.error(f"Error connecting to MariaDB Platform: {e}")
-            sys.exit(1)
+    try:
+        logger.debug(f"will execute the sql query: {query}", )
+        cur.execute(query)
+        if len(query) > 100:
+            logger.info("Executed a sql query. For Detail, adjust loglevel to DEBUG.")
+        else:
+            logger.info(f"Executed the sql query: {query}")
+        #TODO: Log query here.
+    except mariadb.Error as e:
+        cur.close()
+        logger.error(f"Error connecting to MariaDB Platform: {e}")
+        sys.exit(1)
     
 def executeSQLFiles(pathToFile: str) -> None:
     """
@@ -115,7 +113,10 @@ def executeSQLFiles(pathToFile: str) -> None:
             conn, cur = buildConnection()
             
             for queries in queries_of_file:
-                executeQuery(queries, conn, cur)
+                for query in queries:
+                    executeQuery(query, conn, cur)
+
+                conn.commit()
 
             conn.close()
             cur.close()
@@ -133,7 +134,10 @@ def databaseSetup() -> None:
     logger.debug("Creating DB Format.")
 
     conn, cur = buildConnection()
-    executeQuery(create_queries, conn, cur)
+    for query in create_queries:
+        executeQuery(query, conn, cur)
+    
+    conn.commit()
     conn.close()
     cur.close()
 

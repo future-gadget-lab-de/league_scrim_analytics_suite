@@ -36,8 +36,11 @@ def importData(tabledict: dict[GameTable, pd.DataFrame]) -> None:
                 # build connection
                 conn, cur = buildConnection()
                 # execute the queries
-                executeQuery(queries, conn, cur)
+                for query in queries:
+                    executeQuery(query, conn, cur)
+
                 # close
+                conn.commit()
                 conn.close()
                 cur.close()
 
@@ -64,8 +67,8 @@ def executeSelectQuery(query: str) -> pd.DataFrame:
         case "1":
 
             conn, cur = buildConnection()
-            executeQuery([query], conn, cur)
-
+            executeQuery(query, conn, cur)
+            conn.commit()
             output = getCursorSelect(cur)
             conn.close()
             cur.close()

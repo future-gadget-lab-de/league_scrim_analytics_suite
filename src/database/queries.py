@@ -3,8 +3,8 @@ from loguru import logger
 import pandas as pd
 from src.core.structure import GameTable
 
-#TODO: Rewrite Logging
-def returnInsertQuery(table: GameTable, df: pd.DataFrame) -> str:
+#TODO: Rewrite Logging HACK: little bit messy
+def returnInsertQuery(table: GameTable, df: pd.DataFrame, ignoreDuplicateOn: str | None = None) -> str:
     """returns a INSERT query
 
     For a passed dict, this method constructs a INSERT query, where the keys function as the table heads and the values, ofc as the values.
@@ -15,6 +15,8 @@ def returnInsertQuery(table: GameTable, df: pd.DataFrame) -> str:
         the name of the table
     df : pd.DataFrame
         the dataframe, you want to get a query for
+    deleteDuplicates : bool, optional
+        this arg is very hacky, since it assumes the unique key, to be the gameid. ignores duplicate errors such
     
     Returns
     -------
@@ -28,8 +30,8 @@ def returnInsertQuery(table: GameTable, df: pd.DataFrame) -> str:
     query += " ("
     for colname in list(df.columns):
         query += str(colname)
-        query += ","
-    query = query.removesuffix(",")
+        query += ", "
+    query = query.removesuffix(", ")
     query += ")"
     # values
     query += " VALUES "
@@ -37,10 +39,18 @@ def returnInsertQuery(table: GameTable, df: pd.DataFrame) -> str:
     for r in range(rows):
         query += "("
         for c in range(cols):
-            query += str(df.iloc[r,c]) + ","
-        query = query.removesuffix(",")
-        query += "),"
-    query = query.removesuffix(",")
+            if f"{df.iloc[r,c]}" == "True":
+                query += f"'{1}'" + ", "
+                continue
+            if f"{df.iloc[r,c]}" == "False":
+                query += f"'{0}'" + ", "
+                continue
+            query += f"'{df.iloc[r,c]}'" + ", "
+        query = query.removesuffix(", ")
+        query += "), "
+    query = query.removesuffix(", ")
+    if ignoreDuplicateOn is not None:
+        query += f"ON DUPLICATE KEY UPDATE {ignoreDuplicateOn}={ignoreDuplicateOn}"
     query += ";"
 
     logger.trace("Finished returnInsertQuery with query: " + query)
@@ -64,7 +74,7 @@ def returnMatchfileQuery(tabledict: dict[GameTable, pd.DataFrame])-> list[str]:
 
     queries = list()
     for tabletype in GameTable:
-        queries.append(returnInsertQuery(tabletype, tabledict))
+        queries.append(returnInsertQuery(tabletype, tabledict[tabletype], ignoreDuplicateOn="gameid"))
 
     logger.trace("Finished returnMatchfileQuery.")
     return queries

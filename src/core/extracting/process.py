@@ -39,6 +39,8 @@ pipeToMeta: dict[ImportPipeline, dict] = {
     ImportPipeline.MATCHV5: needsMetaDataMatchV5
 }
 
+subTestSet: set[str] = {'championId_0', 'championId_1', 'championId_2', 'championId_3', 'championId_4'}
+
 def classify(member: ClientKeys | MatchV5Keys) -> GameTable:
     # the client case
     if isinstance(member, ClientKeys):
@@ -153,8 +155,13 @@ def translateTables(rawTables: dict[GameTable, pd.DataFrame], pipe: ImportPipeli
 
     for tableType in GameTable:
         # translate into the old layout
-        tablecols = list(translateDict[tableType].keys())
-        rawTables[tableType] = rawTables[tableType][tablecols]
+        transTablecols = list(translateDict[tableType].keys())
+        tablecols = set(rawTables[tableType].columns)
+        # insert empty columns, for all missing ones
+        if not subTestSet.issubset(tablecols):
+            for lostEntry in subTestSet: 
+                rawTables[tableType][lostEntry] = "-"
+        rawTables[tableType] = rawTables[tableType][transTablecols]
         rawTables[tableType] = rawTables[tableType].rename(translateDict[tableType], axis="columns")
 
         # aggregate further
@@ -163,6 +170,7 @@ def translateTables(rawTables: dict[GameTable, pd.DataFrame], pipe: ImportPipeli
             case GameTable.META:
                 patch_list = rawTables[tableType].loc[0,"patch"].split(".")
                 rawTables[tableType].loc[0,"patch"] = ".".join(patch_list[0:2]) + ".1"
+                rawTables[tableType].loc[0,"date"] = rawTables[tableType].loc[0,"date"][0:10]
 
             case GameTable.TEAM:
                 for i in range(2):
