@@ -11,7 +11,7 @@ sys.path.insert(0, os.path.abspath("_ext"))
 
 project = "lsas"
 author = "Future Gadget Lab"
-copyright = f"{datetime.now().year}, {author}"
+copyright = f"{datetime.now().year}"
 #NOTE: Release Version auch im Footer
 
 extensions = ['sphinx.ext.autodoc',
