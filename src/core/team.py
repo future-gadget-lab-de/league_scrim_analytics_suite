@@ -15,6 +15,7 @@ def playerTeamCheck(pUuid: str) -> str:
     team : str
         Known teamname or "enemyteam" as placeholder- Currently only supports ${Team_Name}
     """
+    return "-" # FIXME:
     logger.trace("Started playerTeamCheck function with input: " + pUuid)
     condition = "playerid='" + str(pUuid) + "'"
     query = returnSelectQuery("teamident", ["teamname"], where_cond= condition)
