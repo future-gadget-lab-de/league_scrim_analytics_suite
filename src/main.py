@@ -1,14 +1,15 @@
-import logging, sys, os, platform
+import sys, os, platform
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from src.config import config
-from src.database.mariadb.execution import updateConnectionState, executeSQLFiles, databaseSetup
-from src.visuals.gui import runAdvancedFrontend
-from src.visuals.plot.plugin import ApplyTemplate
-from src.core.ops import importMatchfileData
-from src.args import initiliazeParser
-from src.log_config import setup_logging
 from loguru import logger
+
+from src.core.config import config, Configs
+from src.core.io.mariadb import updateConnectionState, databaseSetup
+from src.visuals.gui import runAdvancedFrontend
+from src.core.analyse.plugin import ApplyTemplate
+from src.core.macros import importPipeline, executeSQLFiles
+from src.core.logs import setup_logging
+from src.args import initiliazeParser
 
 if __name__ == "__main__":
 
@@ -55,7 +56,7 @@ if __name__ == "__main__":
     # import of matchfiles
     if args.matchfile is not None:
         logger.trace("Starting Import Routine")
-        importMatchfileData(args.matchfile)
+        importPipeline(args.matchfile)
         logger.trace("Finished Import Routine")
 
     if args.execute is not None:

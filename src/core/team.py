@@ -1,6 +1,7 @@
-from src.database.queries import returnSelectQuery
-from src.database.wrapper import executeSelectQuery
+from src.core.io.wrapper import executeSelectQuery
+from src.utils.sqlquery import returnSelectQuery
 from loguru import logger
+
 def playerTeamCheck(pUuid: str) -> str:
     """
     Uses a Players identifier to check if he's on a known Team.

@@ -6,9 +6,8 @@ This file contains code, which either
 
 import mariadb, sys
 import pandas as pd
-from src.config import config, Configs
-from src.utils import transformPathtoFileList
-from src.database.mariadb.sqltemplates.template import importSQLQueries
+from src.core.config import config, Configs
+from src.utils.io import readSQLFile
 from loguru import logger
 
 def updateConnectionState() -> None:
@@ -82,36 +81,28 @@ def executeQuery(query: str, conn, cur):
         logger.error(f"Error connecting to MariaDB Platform: {e}")
         sys.exit(1)
     
-def executeSQLFiles(pathToFile: str) -> None:
+def executeSQLFile(pathToFile: str) -> None:
     """
     executes a .sql file. if only one file is given and the last command is a SELECT, it also outputs a dict
 
     Parameters
     ----------
-    PathToFolder : str
-        the relative (or absolute) path to a .sql file
+    PathToFile: str
+        the relative path to a .sql file
 
     """
-    
-    files = transformPathtoFileList(pathToFile)
-
-    queries_of_file = list[list[str]]()
-
-    for file in files:
-        queries_of_file.append(importSQLQueries(file))
 
     match config.general_settings[Configs.MAIN]["mariadb"]:
         
         case "1":
 
             conn, cur = buildConnection()
-            
-            for queries in queries_of_file:
-                for query in queries:
-                    executeQuery(query, conn, cur)
+            queries = readSQLFile(pathToFile)
 
-                conn.commit()
+            for query in queries:
+                executeQuery(query, conn, cur)
 
+            conn.commit()
             conn.close()
             cur.close()
 
@@ -126,7 +117,7 @@ def databaseSetup() -> None:
     match config.general_settings[Configs.MAIN]["mariadb"]:
         case "1":
             try:
-                create_queries = importSQLQueries("src/database/mariadb/sqltemplates/db_creation_dump.sql")
+                create_queries = importSQLQueries("src/core/io/sqlfiles/db_creation_dump.sql")
 
                 logger.debug("Creating DB Format.")
 
@@ -163,5 +154,3 @@ def getCursorSelect(cur) -> pd.DataFrame:
         parsed_rows.append(dict(zip(cols, row)))
 
     return pd.json_normalize(parsed_rows)
-
-

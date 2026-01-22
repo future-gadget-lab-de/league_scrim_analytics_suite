@@ -3,9 +3,12 @@ import numpy as np
 import matplotlib.pyplot as plt 
 import pandas as pd 
 
-from src.database.wrapper import executeSelectQuery
-from src.database.mariadb.sqltemplates.template import importSQLQueries
-from src.utils import transformPathtoFileList, import_from_path, iter_defined_members, param_names, loadjsonfiles
+from loguru import logger
+from src.core.io.wrapper import executeSelectQuery
+from src.utils.io import readSQLFile, readJsonFile
+from src.utils.path import transformPathtoFileList
+from src.utils.module import import_from_path, iter_defined_members
+from src.utils.func import param_names
 
 mod_location_c = "templates/plugins"
 """a constant for the path, where the program will check for plugins"""
@@ -179,11 +182,14 @@ def ApplyTemplate(pathToTemplateFile: str, customLocation: str = ""):
     
     """
 
-    template_dict = loadjsonfiles(pathToTemplateFile)
+    template_dict = readJsonFile(pathToTemplateFile)
+    if not template_dict:
+        logger.error("no template file found.")
+        raise FileNotFoundError("no template file found.")
     queries_final = list()
 
     for sql_file in template_dict["SQL_files_location"]:
-        queries = importSQLQueries(sql_file)
+        queries = readSQLFile(sql_file)
         queries_final += queries
 
     DF_list: list[pd.DataFrame] = list()

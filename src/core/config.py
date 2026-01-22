@@ -2,11 +2,10 @@
 This file contains multiple functionalities
 
 """
-import  os
-from enum import StrEnum
-from src.utils import readSettingsFile, writeSettingsFile
 from loguru import logger
-from src.core.structure import version_c
+from enum import StrEnum
+from src.utils.io import readSettingsFile, writeSettingsFile
+from src.core.meta import version_c
 
 locPathInt_c: str = ".internal/location.conf"
 """location for the **internal** config file"""
@@ -22,6 +21,7 @@ template_c: dict[Configs, dict[str, str]] = {
     Configs.MAIN: {
         "old_patch_support":"0",
         "csv_directory": "data",
+        "metadata_directory": "meta",
         "mariadb": "0",
         "API_key": "",
         "import_label": "gameid",

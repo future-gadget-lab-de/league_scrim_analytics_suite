@@ -1,7 +1,9 @@
 
 import datetime
-from src.utils import loadjsonfiles
 from loguru import logger
+from src.core.config import config, Configs
+from src.utils.io import readJsonFile, requestJsonFile
+
 def scrapeRecentPatch() -> str:
     """scrapes the recent patch
 
@@ -17,10 +19,12 @@ def scrapeRecentPatch() -> str:
 
     link = "https://ddragon.leagueoflegends.com/realms/euw.json"
     date = datetime.datetime.today().strftime('%Y-%m-%d')
-    data_file_path = f"src/scraping/dictionaries/EUW_{date}.json"
+    data_file_path = f"{config.general_settings[Configs.MAIN]["metadata_directory"]}/dictionaries/EUW_{date}.json"
 
     logger.debug("Scraping recent Patch.")
-    data_dict = loadjsonfiles(data_file_path, link)
+    data_dict = readJsonFile(data_file_path)
+    if not data_dict:
+        data_dict = requestJsonFile(link, data_file_path)
     patch = data_dict["v"]
 
     logger.trace("Finished scrapeRecentPatch function.")
@@ -87,11 +91,14 @@ def loadIdDataSet(dataRequested: str, patch: str | None = None) -> dict:
         logger.info("No patch specified, using latest.")
         patch = scrapeRecentPatch()
 
-    data_file_path = f"src/scraping/dictionaries/{dataRequested}_{patch}.json"
+    data_file_path = f"{config.general_settings[Configs.MAIN]["metadata_directory"]}/dictionaries/{dataRequested}_{patch}.json"
     logger.debug("Reload of the data: " + dataRequested)
 
-    scrape_link = returnScrapeLink(dataRequested)
-    data_output = loadjsonfiles(data_file_path, scrape_link)
+    data_output = readJsonFile(data_file_path)
+    if not data_output:
+        scrape_link = returnScrapeLink(dataRequested)
+        data_output = requestJsonFile(scrape_link, data_file_path)
+        
     logger.success("Loaded IdDataSet: " +dataRequested) 
     return data_output
 

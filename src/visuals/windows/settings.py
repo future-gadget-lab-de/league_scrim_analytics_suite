@@ -3,7 +3,7 @@ from __future__ import annotations
 from PySide6.QtWidgets import QDialog
 from src.visuals.ui.generated.ui_settings import Ui_settings_dialog
 
-from src.config import config, Configs
+from src.core.config import config, Configs
 from loguru import logger
 
 #NOTE: Wiso sind manche methods lower_lower_lower und manche lower_Upper...

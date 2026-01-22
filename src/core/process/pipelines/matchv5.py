@@ -1,5 +1,5 @@
 from enum import Enum
-from src.core.structure import GameTable
+from src.core.meta import GameTable
 
 class MatchV5Keys(Enum):
     """current paths to data, for pandas json_normalize

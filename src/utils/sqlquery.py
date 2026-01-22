@@ -1,10 +1,10 @@
 """this file contains code for generating .sql queries"""
 from loguru import logger
+from src.core.meta import GameTable
 import pandas as pd
-from src.core.structure import GameTable
 
 #TODO: Rewrite Logging HACK: little bit messy
-def returnInsertQuery(table: GameTable, df: pd.DataFrame, ignoreDuplicateOn: str | None = None) -> str:
+def returnInsertQuery(table: str, df: pd.DataFrame, ignoreDuplicateOn: str | None = None) -> str:
     """returns a INSERT query
 
     For a passed dict, this method constructs a INSERT query, where the keys function as the table heads and the values, ofc as the values.
@@ -15,16 +15,16 @@ def returnInsertQuery(table: GameTable, df: pd.DataFrame, ignoreDuplicateOn: str
         the name of the table
     df : pd.DataFrame
         the dataframe, you want to get a query for
-    deleteDuplicates : bool, optional
-        this arg is very hacky, since it assumes the unique key, to be the gameid. ignores duplicate errors such
+    ignoreDuplicateOn : str, optional
+        if passed, ignores duplicates on the passed key
     
     Returns
     -------
     query : str
         the final INSERT query
     """
-    logger.trace("Started returnInsertQuery for table: " + table.value + ", with data: " + str(df) )
-    query = "INSERT INTO " + table.value 
+    logger.trace("Started returnInsertQuery for table: " + table + ", with data: " + str(df) )
+    query = "INSERT INTO " + table 
     logger.info("Generating Insert Queries")
     # insertion
     query += " ("
@@ -56,28 +56,6 @@ def returnInsertQuery(table: GameTable, df: pd.DataFrame, ignoreDuplicateOn: str
     logger.trace("Finished returnInsertQuery with query: " + query)
     return query
 
-def returnMatchfileQuery(tabledict: dict[GameTable, pd.DataFrame])-> list[str]:
-    """query for matchfile importing.
-
-    Returns a list of queries, which can be used to import a passed matchfile
-
-    Parameters
-    ----------
-    tabledict : tabledict: dict[GameTable, pd.DataFrame]
-        the result of the data extraction
-
-    Returns
-    -------
-    queries : list[str]
-        a list of queries to import the given matchfile
-    """
-
-    queries = list()
-    for tabletype in GameTable:
-        queries.append(returnInsertQuery(tabletype, tabledict[tabletype], ignoreDuplicateOn="gameid"))
-
-    logger.trace("Finished returnMatchfileQuery.")
-    return queries
 
 def returnSelectQuery(table: str, columns: list[str], where_cond: str | None = None) -> str:
     """generates a SELECT query

@@ -1,8 +1,8 @@
 """this file contains code, that does I/O functionality between .csv files and DataFrames"""
 import duckdb, os
 import pandas as pd
-from src.core.structure import GameTable
-from src.config import config, Configs
+from src.core.meta import GameTable
+from src.core.config import config, Configs
 
 def readCsv(csvdir: str) -> pd.DataFrame:
     if not os.path.isfile(csvdir):
@@ -11,7 +11,7 @@ def readCsv(csvdir: str) -> pd.DataFrame:
     return pd.read_csv(csvdir)
 
 
-def readCsvData() -> dict[GameTable, pd.DataFrame]:
+def csvToData() -> dict[GameTable, pd.DataFrame]:
     """reads the internal database .csv files
     
     Returns
@@ -29,7 +29,7 @@ def readCsvData() -> dict[GameTable, pd.DataFrame]:
     }
 
 
-def insertDataAsCsv(tabledict: dict[GameTable, pd.DataFrame]) -> None:
+def DataToCsv(tabledict: dict[GameTable, pd.DataFrame]) -> None:
     """A method, which adds the passed data to the .csv database
     
     Parameters
@@ -43,7 +43,7 @@ def insertDataAsCsv(tabledict: dict[GameTable, pd.DataFrame]) -> None:
         
     """
     csv_dir = config.general_settings[Configs.MAIN]["csv_directory"]
-    oldTabledict = readCsvData()
+    oldTabledict = csvToData()
 
     os.makedirs(os.path.dirname(csv_dir+"/"), exist_ok=True)
 
@@ -52,7 +52,7 @@ def insertDataAsCsv(tabledict: dict[GameTable, pd.DataFrame]) -> None:
         df = df.drop_duplicates()
         df.to_csv(csv_dir + "/" + tabletype.value + ".csv", index=False)
 
-def runSelectOnDfs(query: str, tables: dict[GameTable, pd.DataFrame]) -> pd.DataFrame:
+def runSelectOnCsv(query: str, tables: dict[GameTable, pd.DataFrame]) -> pd.DataFrame:
     """a helper method, which makes pd.Dataframes compatible with SELECT queries
     
     Parameters

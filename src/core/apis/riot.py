@@ -1,11 +1,9 @@
-import os,sys
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
-import datetime, time
+
+import datetime, time, math
 import numpy as np
-from src.utils import loadjsonfiles
-from src.config import config, Configs
 from loguru import logger
-import math
+from src.core.config import config, Configs
+from src.utils.io import readJsonFile, requestJsonFile
 
 def getPUIDbySummAndTagline(summonername: str, tagline: str, devKEY = False) -> str:
     """loads the metadata of a league account by summ and tagline
@@ -32,7 +30,7 @@ def getPUIDbySummAndTagline(summonername: str, tagline: str, devKEY = False) -> 
     if not devKEY:
         time.sleep(1)
     resource_link = f"https://europe.api.riotgames.com/riot/account/v1/accounts/by-riot-id/{summonername}/{tagline}?api_key={api_key}"
-    data_of_user = loadjsonfiles(linkToJson=resource_link)
+    data_of_user = requestJsonFile(resource_link)
 
     return data_of_user["puuid"]
 
@@ -61,7 +59,7 @@ def getSummonerSample(rank: str, queue: str, division: str, page: int = 1, devKE
     if not devKEY:
         time.sleep(1)
     resource_link = f"https://euw1.api.riotgames.com/lol/league-exp/v4/entries/{queue}/{rank}/{division}?page={page}&api_key={api_key}"
-    data_of_user: list = loadjsonfiles(linkToJson=resource_link)
+    data_of_user: list = requestJsonFile(resource_link)
     
     return data_of_user
 
@@ -91,7 +89,7 @@ def getGameIdsByPuuid(puuid: str, devKEY = False) -> list:
     start = 0
     count = 100
     resource_link = f"https://europe.api.riotgames.com/lol/match/v5/matches/by-puuid/{puuid}/ids?type=ranked&start={start}&count={count}&api_key={api_key}"
-    data_of_user: list = loadjsonfiles(linkToJson=resource_link)
+    data_of_user: list = requestJsonFile(resource_link)
 
     return data_of_user
     
@@ -121,8 +119,8 @@ def getGameById(gameid: str, saveLocation: str, devKEY = False) -> tuple[dict]:
         time.sleep(1)
     resource_link_static = f"https://europe.api.riotgames.com/lol/match/v5/matches/{gameid}?api_key={api_key}"
     resource_link_timeline = f"https://europe.api.riotgames.com/lol/match/v5/matches/{gameid}/timeline?api_key={api_key}"
-    data_of_match: list = loadjsonfiles(f"{saveLocation}/matches/{gameid}_static.json", resource_link_static)
-    data_of_time: list = loadjsonfiles(f"{saveLocation}/timelines/{gameid}_time.json", resource_link_timeline)
+    data_of_match: list = requestJsonFile(resource_link_static, f"{saveLocation}/matches/{gameid}_static.json")
+    data_of_time: list = requestJsonFile(resource_link_timeline, f"{saveLocation}/timelines/{gameid}_time.json")
 
     return (data_of_match, data_of_time)
 
@@ -179,7 +177,7 @@ def getEqualDistGameSamples(
         division: str, 
         maxPageNumber: int,
         samplesize: int = 10, 
-        saveLocation: str = "src/scraping"
+        saveLocation: str = config.general_settings[Configs.MAIN]["metadata_directory"]
     ) -> None:
 
     """generates a sample of matchfiles, based on rank, queue and division

@@ -5,7 +5,8 @@ import time
 from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import QWidget
 from src.visuals.ui.generated.ui_diagram_generator import Ui_DiagramGenerator
-from src.visuals.plot.plotting import buildAnalyticsFigure
+
+from src.core.analyse.plotting import buildAnalyticsFigure
 
 class AnalyticsSingleton(QWidget):
     def __init__(self, parent=None) -> None:

@@ -1,14 +1,11 @@
 import pandas as pd
-import os, sys
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../../..")))
 from enum import Enum
 from src.core.team import playerTeamCheck
-from src.core.structure import GameTable
-from src.core.extracting.client import ClientKeys, tableTypeForClient, needsAggClient, needsMetaDataClient, translationClient
-from src.core.extracting.matchv5 import MatchV5Keys, tableTypeForMatchV5, needsAggMatchV5, needsMetaDataMatchV5
-from src.utilss.pandas import dropListEntries, mergeTables, indexByOneVariable
-from src.database.queries import returnInsertQuery
-from src.utils import loadjsonfiles
+from src.core.meta import GameTable
+from src.core.process.pipelines.client import ClientKeys, tableTypeForClient, needsAggClient, needsMetaDataClient, translationClient
+from src.core.process.pipelines.matchv5 import MatchV5Keys, tableTypeForMatchV5, needsAggMatchV5, needsMetaDataMatchV5
+from src.utils.pandas import dropListEntries, mergeTables, indexByOneVariable
+from src.utils.sqlquery import returnInsertQuery
 
 class ImportPipeline(Enum):
     """possible pipelines, we use currently

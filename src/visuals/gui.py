@@ -3,10 +3,11 @@ entrypoint for all GUI Applications
 """
 import subprocess, pathlib, sys, logging, platform
 from PySide6.QtWidgets import QApplication
+from loguru import logger
+from src.core.config import config
+
 LSAS = pathlib.Path(__file__).resolve().parents[3]
 COMPILE_UI = LSAS / "LSAS" / "src" / "visuals" / "ui" 
-from loguru import logger
-from src.config import config
 
 def runAdvancedFrontend() -> None:
     """entrypoint method for all GUI applications"""

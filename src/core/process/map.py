@@ -1,5 +1,5 @@
 from loguru import logger
-from src.scraping.data import loadIdDataSet
+from src.core.apis.ddragon import loadIdDataSet
 
 def mapId(id: int, dataRequested: str, patch: str | None = None) -> str:
     """

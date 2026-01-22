@@ -6,8 +6,8 @@ from PySide6.QtWidgets import QDialog
 from PySide6.QtCore import QTimer
 from src.visuals.ui.generated.ui_maria_dialog import Ui_Dialog
 
-from src.database.mariadb.execution import updateConnectionState
-from src.config import config, Configs
+from src.core.io.mariadb import updateConnectionState
+from src.core.config import config, Configs
 
 class MariaDialog(QDialog):
     def __init__(self, parent=None) -> None:

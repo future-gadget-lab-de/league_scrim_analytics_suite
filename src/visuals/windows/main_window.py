@@ -2,7 +2,6 @@ from __future__ import annotations
 from loguru import logger
 import numpy as np
 
-from src.utils import transformPathtoFileList
 from PySide6.QtWidgets import QMainWindow, QFileDialog, QLabel
 from src.visuals.ui.generated.ui_mainwindow import Ui_MainWindow
 from src.visuals.windows.settings import SettingsDialog
@@ -10,13 +9,15 @@ from src.visuals.windows.maria_dialog import MariaDialog
 from src.visuals.windows.analytics_space import AnalyticsSpace
 from src.visuals.windows.loading_dialog import LoadingDialog
 
-from src.database.queries import returnSelectQuery
-from src.database.wrapper import executeSelectQuery, getListOfStoredData
-from src.database.mariadb.execution import databaseSetup
-from src.core.ops import importMatchfileData
-from src.scraping.api import getEqualDistGameSamples, getMaxPageNumber
+from src.core.process.reading import listImportedMatchfiles
+from src.core.io.wrapper import executeSelectQuery
+from src.core.io.mariadb import databaseSetup
+from src.core.macros import importPipeline
+from src.core.apis.riot import getEqualDistGameSamples, getMaxPageNumber
+from src.utils.path import transformPathtoFileList
+from src.utils.sqlquery import returnSelectQuery
 
-from src.config import config, Configs
+from src.core.config import config, Configs
 #TODO: Rewrite Logging
 class MainWindow(QMainWindow):
     def __init__(self) -> None:
@@ -43,19 +44,19 @@ class MainWindow(QMainWindow):
 
     def _update_files(self) -> None:
         """method, which downstreams the gameids of imported files"""
-        logger.info("updated imported stuff")
 
         # delete old labels
         for label in self.label_list:
             label.deleteLater()
         self.label_list = list[QLabel]()
 
-        labels = getListOfStoredData()
+        labels = listImportedMatchfiles()
 
         for lab in labels:
             label = QLabel(text=lab)
             self.label_list.append(label)
             self.ui.scroll_sub_content.addWidget(label)
+        logger.info("updated the list of imported Matchfiles.")
 
     def _update_window(self) -> None:
         """initialize the ui"""
@@ -91,13 +92,6 @@ class MainWindow(QMainWindow):
         if ldlg.exec():
             pass
 
-        matchList = transformPathtoFileList("src/scraping/matches")
-
-        ldlg = LoadingDialog(self, importMatchfileData, [{"PathToFolder": path} for path in matchList])
-        
-        if ldlg.exec():
-            pass
-
         self._update_window()
     
 
@@ -112,7 +106,7 @@ class MainWindow(QMainWindow):
         if dialog.exec_():
             fileNames = dialog.selectedFiles()
         if fileNames is not None:
-            ldlg = LoadingDialog(self, importMatchfileData, [{"PathToFolder": path} for path in fileNames])
+            ldlg = LoadingDialog(self, importPipeline, [{"pathToFolder": path} for path in fileNames])
             if ldlg.exec():
                 pass
         self._update_window()
