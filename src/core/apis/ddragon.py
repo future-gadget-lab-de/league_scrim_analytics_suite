@@ -1,6 +1,7 @@
 """api scaping for ddragon"""
 import datetime
 from loguru import logger
+import pandas
 from src.core.config import config, Configs
 from src.utils.io import readJsonFile, requestJsonFile
 
@@ -98,7 +99,7 @@ def loadIdDataSet(dataRequested: str, patch: str | None = None) -> dict:
     if not data_output:
         scrape_link = returnScrapeLink(dataRequested)
         data_output = requestJsonFile(scrape_link, data_file_path)
-        
+
     logger.success("Loaded IdDataSet: " +dataRequested) 
     return data_output
 

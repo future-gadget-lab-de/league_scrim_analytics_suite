@@ -5,7 +5,7 @@ from enum import Enum
 from loguru import logger
 from src.core.team import playerTeamCheck
 from src.core.meta import GameTable
-from src.core.process.map import mapId
+from src.core.process.map import lsasmapper
 from src.core.process.pipelines.client import ClientKeys, tableTypeForClient, needsAggClient, needsMetaDataClient, translationClient
 from src.core.process.pipelines.matchv5 import MatchV5Keys, tableTypeForMatchV5, needsAggMatchV5, needsMetaDataMatchV5
 from src.utils.pandas import dropListEntries, mergeTables, indexByOneVariable
@@ -223,6 +223,8 @@ def translateTables(rawTables: dict[GameTable, pd.DataFrame], pipe: ImportPipeli
     rawTables[GameTable.META].loc[0,"gameVersion"] = ".".join(patch_list[0:2]) + ".1"
     read_patch = rawTables[GameTable.META].loc[0,"gameVersion"]
 
+    lsasmapper.addPatchIfMissing(read_patch)
+
     for tableType in GameTable:
         # translate into the old layout
         transTablecols = list(translateDict[tableType].keys())
@@ -237,8 +239,9 @@ def translateTables(rawTables: dict[GameTable, pd.DataFrame], pipe: ImportPipeli
 
         for mapping in mappables_list:
             for feature in mappables[tableType][mapping]:
+                rawTables[tableType][feature] = rawTables[tableType][feature].astype('str')
                 for i in range(gameTableLength[tableType]):
-                    rawTables[tableType].loc[i, feature] = mapId(rawTables[tableType].loc[i, feature], mapping, read_patch)
+                    rawTables[tableType].loc[i, feature] = lsasmapper.map[(mapping, read_patch)][rawTables[tableType].loc[i, feature]]
 
 
         rawTables[tableType] = rawTables[tableType].rename(translateDict[tableType], axis="columns")
