@@ -2,12 +2,13 @@ import sys, os
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-import src.utils as ut
+from src.utils.io import readJsonFile
+from src.utils.path import list_relative_filepaths
 
-paths = ut.list_relative_filepaths("docs/source/markdown")
+paths = list_relative_filepaths("docs/source/markdown")
 
 if os.path.isfile("docs/source/order.json"):
-    order = ut.loadjsonfiles("docs/source/order.json")
+    order = readJsonFile("docs/source/order.json")
 
 if len(order) != len(paths) + 1:
     raise Exception("order not set, for all files provided")

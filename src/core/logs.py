@@ -46,7 +46,7 @@ def custom_format(record ):
 def setup_logging(
     level: str = "INFO",
     log_dir: str | None = None,
-    ) -> None:
+) -> None:
     # Clear definition
     logger.remove()
     logger.add(sys.stderr , level=level, format= custom_format)

@@ -1,3 +1,5 @@
+"""The Wrapper Class for handling the settingsdialog."""
+
 from __future__ import annotations
 
 from PySide6.QtWidgets import QDialog
@@ -6,16 +8,31 @@ from src.visuals.ui.generated.ui_settings import Ui_settings_dialog
 from src.core.config import config, Configs
 from loguru import logger
 
-#NOTE: Wiso sind manche methods lower_lower_lower und manche lower_Upper...
 class SettingsDialog(QDialog):
-    """Wrapper class for the general settings window"""
+    """Wrapper class for the general settings window
+    
+    Attributes
+    ----------
+    ui : Ui_settings_dialog
+        the raw SettingsDialog Class, produced by compilation
 
+    _init_fields : function
+        initializes all fields with the provided values through
+        the configs
+    _change_maria_setting : function
+        gets activated, whe the mariadb checkbox toggles. 
+        enables or disables the csv path option.
+    saveSettings : function
+        saves the current GUI Values to settings in RAM.
+    
+    """
     def __init__(self, parent) -> None:
+        """SettingsDialog Constructor"""
         super().__init__(parent)
         self.ui = Ui_settings_dialog()
         self.ui.setupUi(self)
-        
         self._init_fields()
+        logger.debug("Build the SettingsDialog Window")
 
         # hooks for functionality
         self.ui.checkbox_mariadb_activated.stateChanged.connect(self._change_maria_setting)
@@ -52,10 +69,12 @@ class SettingsDialog(QDialog):
 
 
     def saveSettings(self) -> None:
+        """saves values of GUI fields to RAM"""
         config.general_settings[Configs.MAIN]["V5"]                 = str(int(self.ui.checkBox_V5.isChecked()))
         config.general_settings[Configs.MAIN]["mariadb"]            = str(int(self.ui.checkbox_mariadb_activated.isChecked()))
         config.general_settings[Configs.MAIN]["old_patch_support"]  = str(int(self.ui.checkBox_old_patch.isChecked()))
         config.general_settings[Configs.MAIN]["import_label"]       = self.ui.comboBox_imported.currentText()
         config.general_settings[Configs.MAIN]["API_key"]            = self.ui.lineEdit_API.text()
         config.general_settings[Configs.MAIN]["csv_directory"]      = self.ui.lineEdit_csv_path.text()
+        logger.debug("Saved Settings via SettingsDialog to RAM.")
 

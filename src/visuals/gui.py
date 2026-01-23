@@ -1,5 +1,8 @@
 """
-entrypoint for all GUI Applications
+This module guides as an entrypoint for starting GUI functionality. (aka MainWindow)
+
+If the only function runAdvancedFrontend() shutdowns, due to closing all windows,
+it will finish the program with saving the current settings, to file.
 """
 import subprocess, pathlib, sys, logging, platform
 from PySide6.QtWidgets import QApplication
@@ -11,9 +14,8 @@ COMPILE_UI = LSAS / "LSAS" / "src" / "visuals" / "ui"
 
 def runAdvancedFrontend() -> None:
     """entrypoint method for all GUI applications"""
-    
+    logger.info("Starting GUI.")
     logger.trace("Started runAdvancedFrontend Function.")
-    from src.visuals.windows.main_window import MainWindow
     try:
         from src.visuals.windows.main_window import MainWindow
     except:
@@ -30,6 +32,7 @@ def runAdvancedFrontend() -> None:
 
             from src.visuals.windows.main_window import MainWindow
         except Exception as e:
+            logger.error("Something went off, while compiling the ui"+ str(e))
             raise Exception("Something went off, while compiling the ui"+ str(e))
             sys.exit(1)
 
