@@ -1,3 +1,5 @@
+"""constants and structural data of this project"""
+
 from enum import StrEnum, Enum
 
 version_c = "0.0.1"

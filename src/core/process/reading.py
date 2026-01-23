@@ -1,4 +1,6 @@
+"""contains methods for reading data, that will be processed"""
 import pandas as pd
+from loguru import logger
 from src.core.config import config, Configs
 from src.core.meta import GameTable
 from src.core.process.extract import extractRawTables, translateTables, ImportPipeline
@@ -15,10 +17,14 @@ def importMatchfiles(relPathToFile: str) -> dict[GameTable, pd.DataFrame]:
     relPathToFile : str
         the relative path to a matchfile
     
+    Returns
+    -------
+    tabledict : dict[GameTable, pd.DataFrame]
+        the table this program operates on
     """
 
     rawdict: dict = readJsonFile(relPathToFile)
-
+    logger.trace(f"Start importing a matchfile in {relPathToFile}.")
     match config.general_settings[Configs.MAIN]["V5"]:
 
         case "1":
@@ -28,12 +34,19 @@ def importMatchfiles(relPathToFile: str) -> dict[GameTable, pd.DataFrame]:
         case "0":
             tabledict: dict[GameTable, pd.DataFrame] = extractRawTables(rawdict, ImportPipeline.CLIENT)
             translateTables(tabledict, ImportPipeline.CLIENT)
-
+    logger.trace("Finished the import process for the file.")
     return tabledict
 
 
 def listImportedMatchfiles() -> list[str]:
-    """method, which downstreams the gameids of imported files"""
+    """method, which downstreams the gameids of imported files
+    
+    Returns
+    -------
+    games : list[str]
+        a list of all games imported
+        
+    """
 
     importlabel = config.general_settings[Configs.MAIN]["import_label"]
     query = returnSelectQuery(GameTable.META.value,[importlabel])

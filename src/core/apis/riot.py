@@ -1,4 +1,4 @@
-
+"""api scraping for riot api"""
 import datetime, time, math
 import numpy as np
 from loguru import logger

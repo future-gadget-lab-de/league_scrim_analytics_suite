@@ -1,3 +1,4 @@
+"""MatchV5 pipeline"""
 from enum import Enum
 from src.core.meta import GameTable
 

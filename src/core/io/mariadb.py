@@ -20,12 +20,14 @@ def updateConnectionState() -> None:
         either a '1' for connected or a '0' for disconnected
     
     """
-
+    logger.trace("Checking the Connectionstate.")
     try:
+        logger.debug("successfully established a connection to mariadb.")
         buildConnection()
         config.volatile_settings["_connected"] = "1"
         config.writeSettings()
     except:
+        logger.debug("connection failed.")
         config.volatile_settings["_connected"] = "0"
         config.general_settings[Configs.MAIN]["mariadb"] = "0"
         config.writeSettings()
@@ -91,11 +93,10 @@ def executeSQLFile(pathToFile: str) -> None:
         the relative path to a .sql file
 
     """
-
+    logger.trace(f"start executing the sql file: {pathToFile}.")
     match config.general_settings[Configs.MAIN]["mariadb"]:
         
         case "1":
-
             conn, cur = buildConnection()
             queries = readSQLFile(pathToFile)
 

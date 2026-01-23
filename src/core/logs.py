@@ -25,8 +25,8 @@ Log Level explanation
 
 import sys
 from loguru import logger
-
-def custom_format(record ):
+#TODO: doc pls, idk what this does
+def custom_format(record):
     lvl = record["level"].no
     if lvl == 50:
         return "<b><fg #b22222>{time:YYYY-MM-DD HH:mm:ss.SSSZZ} | {level:^8} | Proc: {process:^8} | Thread: {thread: ^16} | Mod: {module:^8} | Func: {function:^20} | Line: {line:^4} | Message: {message}</></>\n"

@@ -1,5 +1,8 @@
+"""the file, which mainly manages the data extraction process"""
+
 import pandas as pd
 from enum import Enum
+from loguru import logger
 from src.core.team import playerTeamCheck
 from src.core.meta import GameTable
 from src.core.process.pipelines.client import ClientKeys, tableTypeForClient, needsAggClient, needsMetaDataClient, translationClient
@@ -23,22 +26,38 @@ class ImportPipeline(Enum):
 
 pipeToTrans: dict[ImportPipeline, dict] = {
     ImportPipeline.CLIENT: translationClient
-
 }
+"""dict, which maps the pipeline to the translation helper"""
 
 pipeToAgg: dict[ImportPipeline, dict] = {
     ImportPipeline.CLIENT: needsAggClient,
     ImportPipeline.MATCHV5: needsAggMatchV5
 }
+"""dict, which maps the pipeline to the aggregation helper"""
 
 pipeToMeta: dict[ImportPipeline, dict] = {
     ImportPipeline.CLIENT: needsMetaDataClient,
     ImportPipeline.MATCHV5: needsMetaDataMatchV5
 }
+"""dict, which maps the pipeline to the metapath helper"""
 
 subTestSet: set[str] = {'championId_0', 'championId_1', 'championId_2', 'championId_3', 'championId_4'}
+"""a set of names to test if contained in the resulting table"""
 
 def classify(member: ClientKeys | MatchV5Keys) -> GameTable:
+    """classifys the GameTabletype for a Key
+    
+    Parameters
+    ----------
+    member : ClientKeys | matchV5Keys
+        the member of one of the enums
+        
+    Returns
+    -------
+        the table, which it belongs to
+        
+    """
+    logger.trace(f"classified the member {member.value}.")
     # the client case
     if isinstance(member, ClientKeys):
         return tableTypeForClient[member]
@@ -62,6 +81,8 @@ def getData(
     metaKey : list[list[str]] | None, optional
         the path to a meta variable. this is only used, if the jsontree contains deeper lists,
         that we have to parse in an extra step.
+    agg : bool, optional
+        if passed, the tables gets aggregated with indexbyoneVariable
     
     Returns
     -------
@@ -69,6 +90,7 @@ def getData(
         the resulting table
     
     """
+    logger.trace("Start normalizing the raw data dict via pandas.")
     normalizedDf = pd.json_normalize(
         data,
         record_path=pathKey.value,
@@ -79,6 +101,7 @@ def getData(
     listlessDf = dropListEntries(normalizedDf)
     
     if agg:
+        logger.debug("Start aggregating the resulting datatable.")
         return indexByOneVariable(listlessDf, "_".join(metaKey[0]))
         
     return listlessDf
@@ -102,13 +125,13 @@ def extractRawTables(data: dict, pipe: ImportPipeline) -> dict[GameTable, pd.Dat
         contains the three major tables: metadata, playerdata, teamdata
         
     """
-
+    logger.debug("Start the extraction process for the raw json dict.")
     METADATA: list[pd.DataFrame]   = []
     PLAYERDATA: list[pd.DataFrame] = []
     TEAMDATA: list[pd.DataFrame]   = []
 
     for path in pipe.value:
-
+        logger.debug(f"extracting the part of the json, according to {path.value}.")
         metaKey = None
         aggregation: bool = (path in pipeToAgg[pipe])
         if aggregation:
@@ -147,6 +170,7 @@ def translateTables(rawTables: dict[GameTable, pd.DataFrame], pipe: ImportPipeli
         the pipeline we used in the extraction
         
     """
+    logger.trace("Start translation process for the result dataframe.")
     translateDict: dict[str,str] = pipeToTrans[pipe]
 
     for tableType in GameTable:

@@ -1,4 +1,4 @@
-
+"""api scaping for ddragon"""
 import datetime
 from loguru import logger
 from src.core.config import config, Configs

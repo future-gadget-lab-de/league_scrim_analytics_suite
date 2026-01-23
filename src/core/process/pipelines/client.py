@@ -1,3 +1,4 @@
+"""Client pipeline."""
 from enum import Enum
 from src.core.meta import GameTable
 

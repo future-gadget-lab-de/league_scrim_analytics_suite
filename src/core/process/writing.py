@@ -1,4 +1,7 @@
+"""Contains methods, which are used for writing processed data into the persistant storage."""
+
 import pandas as pd
+from loguru import logger
 from src.core.config import config, Configs
 from src.core.meta import GameTable
 from src.core.io.csv import DataToCsv
@@ -11,22 +14,19 @@ def writeData(tabledict: dict[GameTable, pd.DataFrame]) -> None:
 
     Parameters
     ----------
-    metadata : list[dict]
-        the metadata of a provided game
-    teamdata : list[dict]
-        the red- and blueteamdata of a game
-    playerdata : list[dict]
-        the data of all 10 players of a game
+    tabledict : dict[GameTable, pd.DataFrame]
+        the main dataframe this program operates on
     
     """
-
+    logger.trace("Start writing data to persistant storage.")
     match config.general_settings[Configs.MAIN]["mariadb"]:
 
         case "0":
-                
+            logger.trace("Writing in CSV mode.")
             DataToCsv(tabledict)
             
         case "1":
+            logger.trace("Writing in DB mode.")
             
             conn, cur = buildConnection()
             try:

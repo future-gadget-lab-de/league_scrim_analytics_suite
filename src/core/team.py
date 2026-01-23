@@ -1,3 +1,5 @@
+"""helperfile for assigning a team to a group of playerdata"""
+
 from src.core.io.wrapper import executeSelectQuery
 from src.utils.sqlquery import returnSelectQuery
 from loguru import logger
@@ -16,7 +18,7 @@ def playerTeamCheck(pUuid: str) -> str:
     team : str
         Known teamname or "enemyteam" as placeholder- Currently only supports ${Team_Name}
     """
-    return "-" # FIXME:
+    return "-" # FIX:
     logger.trace("Started playerTeamCheck function with input: " + pUuid)
     condition = "playerid='" + str(pUuid) + "'"
     query = returnSelectQuery("teamident", ["teamname"], where_cond= condition)

@@ -20,6 +20,7 @@ def csvToData() -> dict[GameTable, pd.DataFrame]:
         contains a list of data, namely meta-, team- and playerdata
         
     """
+    logger.debug("reading the csv data.")
     csv_dir = config.general_settings[Configs.MAIN]["csv_directory"]
 
     return {
@@ -51,6 +52,8 @@ def DataToCsv(tabledict: dict[GameTable, pd.DataFrame]) -> None:
         df = pd.concat([oldTabledict[tabletype], tabledict[tabletype]], ignore_index=True)
         df = df.drop_duplicates()
         df.to_csv(csv_dir + "/" + tabletype.value + ".csv", index=False)
+    
+    logger.debug("writing the csv data.")
 
 def runSelectOnCsv(query: str, tables: dict[GameTable, pd.DataFrame]) -> pd.DataFrame:
     """a helper method, which makes pd.Dataframes compatible with SELECT queries
@@ -68,7 +71,7 @@ def runSelectOnCsv(query: str, tables: dict[GameTable, pd.DataFrame]) -> pd.Data
         the return of the SELECT query
         
     """
-
+    logger.debug("run a query on dataframes.")
     con = duckdb.connect()
     for name, df in tables.items():
         con.register(name.value, df)
