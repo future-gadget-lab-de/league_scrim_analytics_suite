@@ -1,6 +1,6 @@
 """constants and structural data of this project"""
 
-from enum import StrEnum, Enum
+from enum import StrEnum, Enum, IntEnum
 
 version_c = "0.0.1"
 
@@ -20,4 +20,3 @@ class GameTable(StrEnum):
     META = "metadata"
     TEAM = "teamdata"
     PLAYER = "playerdata"
-

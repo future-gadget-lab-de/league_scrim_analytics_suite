@@ -136,8 +136,8 @@ def requestJsonFile(linkToJson: str, saveLocation: str | None = None) -> dict:
         raise FileNotFoundError("The requested .json body said no! "+ str(data_response.status_code)+": "+data_response.reason)
     data_dict = data_response.json()
     if saveLocation is not None:
-        os.makedirs(os.path.dirname(relPathToJson), exist_ok=True)
-        with open(relPathToJson, 'w', encoding="utf-8") as data:
+        os.makedirs(os.path.dirname(saveLocation), exist_ok=True)
+        with open(saveLocation, 'w', encoding="utf-8") as data:
             json.dump(data_dict, data)
         logger.debug("Written json to dict")
     logger.trace("Finished rejoadjsonfiles function with output: " + str(data_dict))

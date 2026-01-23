@@ -33,6 +33,9 @@ def importMatchfiles(relPathToFile: str) -> dict[GameTable, pd.DataFrame]:
 
         case "0":
             tabledict: dict[GameTable, pd.DataFrame] = extractRawTables(rawdict, ImportPipeline.CLIENT)
+            for tabletype in GameTable:
+                tabledict[tabletype].to_csv(tabletype.value + ".csv")
+            logger.trace("constructed the dict: "+str(tabledict))
             translateTables(tabledict, ImportPipeline.CLIENT)
     logger.trace("Finished the import process for the file.")
     return tabledict
