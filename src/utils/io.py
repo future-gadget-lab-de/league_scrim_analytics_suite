@@ -1,3 +1,10 @@
+"""helperfile for input/output functionality. Currently has methods for reading/writing
+- raw
+- .conf
+- .json
+- .sql
+"""
+
 import os, pathlib, json, requests, csv, sys
 from loguru import logger
     

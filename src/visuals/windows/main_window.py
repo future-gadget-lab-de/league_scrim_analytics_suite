@@ -50,7 +50,7 @@ class MainWindow(QMainWindow):
     """
 
     def __init__(self) -> None:
-        """MainWindow Constructor"""
+
         super().__init__()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
@@ -74,7 +74,7 @@ class MainWindow(QMainWindow):
         self.ui.actionImport_Matchfile.triggered.connect(self._filedialog_opener)
 
     def _update_files(self) -> None:
-        """method, which downstreams the gameids of imported files"""
+
         logger.trace("Starting Updating the list of imported matchfiles.")
         # delete old labels
         for label in self.label_list:
@@ -91,7 +91,7 @@ class MainWindow(QMainWindow):
         logger.trace("updated the list of imported Matchfiles.")
 
     def _update_window(self) -> None:
-        """initialize the ui"""
+
         logger.trace("Starting updating the GUI objects.")
         isV5Disabled = config.general_settings[Configs.MAIN]["V5"] == "0"
         self.ui.comboBox_division.setDisabled(isV5Disabled)
@@ -103,7 +103,7 @@ class MainWindow(QMainWindow):
         self._update_files()
 
     def _execute_sample(self) -> None:
-        """creating gamefile samples"""
+
         samplesize = self.ui.spin_sample.value()
         logger.trace(f"Starting sampling {samplesize} gamefiles.")
         sample_vec = np.arange(samplesize)
@@ -132,7 +132,7 @@ class MainWindow(QMainWindow):
     
 
     def _filedialog_opener(self) -> None:
-        """method which controlls the fileopener window"""
+
         logger.trace("Starting setup the FileDialog.")
         dialog = QFileDialog(self)
         dialog.setFileMode(QFileDialog.FileMode.ExistingFiles)
@@ -151,7 +151,7 @@ class MainWindow(QMainWindow):
         self._update_window()
 
     def _open_settings(self) -> None:
-        """helpermethod for handling settingsdialog"""
+
         logger.trace("Start building the SettingsDialog.")
         dlg = SettingsDialog(self)
         if dlg.exec():  # True wenn accepted
@@ -161,7 +161,7 @@ class MainWindow(QMainWindow):
         self._update_window()
 
     def _open_mariadb_config(self) -> None:
-        """helpermethod for handling mariadbdialog"""
+        
         logger.trace("Start building the MariaDialog.")
         mdlg = MariaDialog(self)
         if mdlg.exec():

@@ -1,3 +1,8 @@
+"""helperfile for providing path managing methods.
+- conversion to rel path
+- listing of a filetree
+"""
+
 import os, sys, pathlib
 from loguru import logger
 

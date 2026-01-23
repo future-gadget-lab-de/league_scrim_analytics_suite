@@ -1,3 +1,4 @@
+"""all kinds of helper methods for managing modules as objects"""
 from loguru import logger
 import importlib.util
 import inspect, sys
@@ -49,9 +50,10 @@ def import_from_path(module_name: str, file_path: str):
         the imported module
     
     """
-
+    logger.trace("Starting the function import_from_path.")
     spec = importlib.util.spec_from_file_location(module_name, file_path)
     module = importlib.util.module_from_spec(spec)
     sys.modules[module_name] = module
     spec.loader.exec_module(module)
+    logger.debug(f"imported the module {module_name} per path {file_path}")
     return module

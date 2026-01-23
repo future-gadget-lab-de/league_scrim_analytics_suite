@@ -34,7 +34,7 @@ class MariaDialog(QDialog):
     
     """
     def __init__(self, parent=None) -> None:
-        """MariaDialog Constructor"""
+        
         super().__init__(parent)
         self.ui = Ui_Dialog()
         self.ui.setupUi(self)
@@ -50,7 +50,7 @@ class MariaDialog(QDialog):
         self.ui.pushButton_connection.clicked.connect(self._try_connection)
 
     def _init_fields(self) -> None:
-        """initializes the current fields with values of mariadb.conf"""
+
         logger.trace("Start init_fields function for object: "+str(self))
         if config.volatile_settings["_connected"] == "1":
             self.ui.pushButton_connection.setText("connected!")
@@ -64,7 +64,7 @@ class MariaDialog(QDialog):
         logger.trace("Finished init_fields function.")
 
     def _try_connection(self) -> None:
-        """connection test, which also writes settings according to the outcome"""
+
         self.saveSettings()
         updateConnectionState()
 
@@ -79,14 +79,14 @@ class MariaDialog(QDialog):
             logger.trace("Started the QTimer for disabling the connection button.")
 
     def _restore_button(self) -> None:
-        """restores pressability of the button after a fail"""
+
         self.timer.stop()
         self.ui.pushButton_connection.setText("connect")
         self.ui.pushButton_connection.setDisabled(False)
         logger.trace("Stopped the QTimer and Restored the Button to his original state.")
 
     def saveSettings(self) -> None:
-        """saves values of GUI fields to RAM"""
+
         config.general_settings[Configs.DB]["host"]      = self.ui.lineEdit_adress.text()
         config.general_settings[Configs.DB]["user"]      = self.ui.lineEdit_un.text()
         config.general_settings[Configs.DB]["password"]  = self.ui.lineEdit_pw.text()

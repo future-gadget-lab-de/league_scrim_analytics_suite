@@ -1,8 +1,14 @@
+"""helper methods for manipulation pandas dataframes. i.e.
+- merging tables
+- drop list entries
+- index by a certain feature
+"""
+from loguru import logger
 import pandas as pd
 
 def mergeTables(tables: list[pd.DataFrame]) -> pd.DataFrame:
     """merges tables along the rows, but assumes unique colnames!"""
-
+    logger.trace("Starting merging dataframes with each other.")
     dataset = tables.copy()
     for i in range(len(dataset) - 1):
         dataset[0] = dataset[0].join(dataset[i+1], rsuffix="_other")
@@ -24,7 +30,7 @@ def dropListEntries(dataframe: pd.DataFrame) -> pd.DataFrame:
         the resulting dataframe with dropped lists
         
     """
-
+    logger.trace("dropped List entries of a dataframe.")
     list_cols = [c for c in dataframe.columns if dataframe[c].apply(lambda x: isinstance(x, list)).any()]
     return dataframe.drop(columns=list_cols)
 
@@ -45,6 +51,7 @@ def indexByOneVariable(df: pd.DataFrame, var: str) -> pd.DataFrame:
         the new dataframe indexed by var
     
     """
+    logger.trace(f"Starting index a dataframe via the feature {var}.")
     dataframe = df.copy()
     colsWithoutMetaKey = list(dataframe.columns)
     colsWithoutMetaKey.remove(var)

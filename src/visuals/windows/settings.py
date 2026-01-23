@@ -27,7 +27,7 @@ class SettingsDialog(QDialog):
     
     """
     def __init__(self, parent) -> None:
-        """SettingsDialog Constructor"""
+
         super().__init__(parent)
         self.ui = Ui_settings_dialog()
         self.ui.setupUi(self)
@@ -38,7 +38,6 @@ class SettingsDialog(QDialog):
         self.ui.checkbox_mariadb_activated.stateChanged.connect(self._change_maria_setting)
 
     def _init_fields(self) -> None:
-        """initializes the settings fields with the current values of lsas.conf"""
 
         logger.trace("Start init_fields function for object: "+str(self))
         if config.general_settings[Configs.MAIN]["import_label"] == "date":
@@ -57,7 +56,7 @@ class SettingsDialog(QDialog):
         logger.trace("Finished init_fields function.")
 
     def _change_maria_setting(self) -> None:
-        """Update the settings/window according to changed settings"""
+
         logger.trace("Started change_maria_setting function for object: " + str(self))
         if self.ui.checkbox_mariadb_activated.isChecked():
             self.ui.lineEdit_csv_path.setDisabled(True)
@@ -69,7 +68,7 @@ class SettingsDialog(QDialog):
 
 
     def saveSettings(self) -> None:
-        """saves values of GUI fields to RAM"""
+        
         config.general_settings[Configs.MAIN]["V5"]                 = str(int(self.ui.checkBox_V5.isChecked()))
         config.general_settings[Configs.MAIN]["mariadb"]            = str(int(self.ui.checkbox_mariadb_activated.isChecked()))
         config.general_settings[Configs.MAIN]["old_patch_support"]  = str(int(self.ui.checkBox_old_patch.isChecked()))
