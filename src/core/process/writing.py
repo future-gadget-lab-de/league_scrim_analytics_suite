@@ -19,13 +19,13 @@ def writeData(tabledict: dict[GameTable, pd.DataFrame]) -> None:
     
     """
     logger.trace("Start writing data to persistant storage.")
-    match config.general_settings[Configs.MAIN]["mariadb"]:
+    match config.general_settings[Configs.PROF]["mode"]:
 
-        case "0":
+        case "csv":
             logger.trace("Writing in CSV mode.")
             DataToCsv(tabledict)
             
-        case "1":
+        case "db":
             logger.trace("Writing in DB mode.")
             
             conn, cur = buildConnection()

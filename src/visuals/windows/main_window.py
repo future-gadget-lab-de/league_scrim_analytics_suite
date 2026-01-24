@@ -93,7 +93,7 @@ class MainWindow(QMainWindow):
     def _update_window(self) -> None:
 
         logger.trace("Starting updating the GUI objects.")
-        isV5Disabled = config.general_settings[Configs.MAIN]["V5"] == "0"
+        isV5Disabled = True
         self.ui.comboBox_division.setDisabled(isV5Disabled)
         self.ui.comboBox_queue.setDisabled(isV5Disabled)
         self.ui.comboBox_rank.setDisabled(isV5Disabled)
@@ -165,7 +165,6 @@ class MainWindow(QMainWindow):
         logger.trace("Start building the MariaDialog.")
         mdlg = MariaDialog(self)
         if mdlg.exec():
-            mdlg._try_connection()
             logger.debug("Successfully run the MariaDialog.")
 
         self._update_window()

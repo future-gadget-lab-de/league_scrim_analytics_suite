@@ -165,6 +165,17 @@ def readJsonFile(pathToJson: str) -> dict:
         logger.trace("Finished rejoadjsonfiles function with output: " + str(data))
         return json.load(data)
 
+def writeJsonFile(data: dict, path: str) -> None:
+
+    # be sure, the file exists
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+
+    with open(path, 'w', encoding="utf-8") as file:
+        json.dump(data, file)
+        logger.debug(f"dumped the json file: {path}.")
+
+
+
 #TODO: Rewrite Logging
 def readSQLFile(relPathtoFile: str) -> list[str]:
     """imports a .sql file.

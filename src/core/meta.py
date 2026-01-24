@@ -20,3 +20,9 @@ class GameTable(StrEnum):
     META = "metadata"
     TEAM = "teamdata"
     PLAYER = "playerdata"
+
+gameTableLength: dict[GameTable, int] = {
+    GameTable.META: 1,
+    GameTable.PLAYER: 10,
+    GameTable.TEAM: 2
+}

@@ -93,7 +93,7 @@ def getGameIdsByPuuid(puuid: str, devKEY = False) -> list:
 
     return data_of_user
     
-def getGameById(gameid: str, saveLocation: str, devKEY = False) -> tuple[dict]:
+def getGameById(gameid: str, saveLocation: str, meta: str = "", devKEY = False) -> tuple[dict]:
     """loads the matchdata of a gameid
     
     Parameters
@@ -119,8 +119,8 @@ def getGameById(gameid: str, saveLocation: str, devKEY = False) -> tuple[dict]:
         time.sleep(1)
     resource_link_static = f"https://europe.api.riotgames.com/lol/match/v5/matches/{gameid}?api_key={api_key}"
     resource_link_timeline = f"https://europe.api.riotgames.com/lol/match/v5/matches/{gameid}/timeline?api_key={api_key}"
-    data_of_match: list = requestJsonFile(resource_link_static, f"{saveLocation}/matches/{gameid}_static.json")
-    data_of_time: list = requestJsonFile(resource_link_timeline, f"{saveLocation}/timelines/{gameid}_time.json")
+    data_of_match: list = requestJsonFile(resource_link_static, f"{saveLocation}{meta}/matches/{gameid}_static.json")
+    data_of_time: list = requestJsonFile(resource_link_timeline, f"{saveLocation}{meta}/timelines/{gameid}_time.json")
 
     return (data_of_match, data_of_time)
 
@@ -177,7 +177,8 @@ def getEqualDistGameSamples(
         division: str, 
         maxPageNumber: int,
         samplesize: int = 10, 
-        saveLocation: str = config.general_settings[Configs.MAIN]["metadata_directory"]
+        saveLocation: str = config.general_settings[Configs.MAIN]["metadata_directory"] + \
+                            "/" + config.general_settings[Configs.MAIN]["current_prof"]
     ) -> None:
 
     """generates a sample of matchfiles, based on rank, queue and division
@@ -230,7 +231,7 @@ def getEqualDistGameSamples(
             game_index = math.floor(np.random.uniform(0, cus_number_of_games))
             gameid = getGameIdsByPuuid(puuid)[game_index]
 
-        sample_list.append(getGameById(gameid, saveLocation))
+        sample_list.append(getGameById(gameid, saveLocation, f"/{rank}_{division}_{queue}"))
 
     return sample_list
 

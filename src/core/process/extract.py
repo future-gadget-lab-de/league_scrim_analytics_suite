@@ -3,13 +3,10 @@
 import pandas as pd
 from enum import Enum
 from loguru import logger
-from src.core.team import playerTeamCheck
 from src.core.meta import GameTable
-from src.core.process.map import lsasmapper
-from src.core.process.pipelines.client import ClientKeys, tableTypeForClient, needsAggClient, needsMetaDataClient, translationClient
+from src.core.process.pipelines.client import ClientKeys, tableTypeForClient, needsAggClient, needsMetaDataClient
 from src.core.process.pipelines.matchv5 import MatchV5Keys, tableTypeForMatchV5, needsAggMatchV5, needsMetaDataMatchV5
 from src.utils.pandas import dropListEntries, mergeTables, indexByOneVariable
-from src.utils.sqlquery import returnInsertQuery
 
 class ImportPipeline(Enum):
     """possible pipelines, we use currently
@@ -25,10 +22,7 @@ class ImportPipeline(Enum):
     CLIENT  = ClientKeys
     MATCHV5 = MatchV5Keys
 
-pipeToTrans: dict[ImportPipeline, dict] = {
-    ImportPipeline.CLIENT: translationClient
-}
-"""dict, which maps the pipeline to the translation helper"""
+
 
 pipeToAgg: dict[ImportPipeline, dict] = {
     ImportPipeline.CLIENT: needsAggClient,
@@ -41,54 +35,6 @@ pipeToMeta: dict[ImportPipeline, dict] = {
     ImportPipeline.MATCHV5: needsMetaDataMatchV5
 }
 """dict, which maps the pipeline to the metapath helper"""
-
-gameTableLength: dict[GameTable, int] = {
-    GameTable.META: 1,
-    GameTable.PLAYER: 10,
-    GameTable.TEAM: 2
-}
-
-mappables: dict[GameTable, dict[str, list[str]]] = {
-    GameTable.META: {},
-    GameTable.PLAYER: {
-        "summoner": [
-            "spell1Id",
-            "spell2Id",
-        ],
-        "perk": [
-            "stats_perk0",
-            "stats_perk1",
-            "stats_perk2",
-            "stats_perk3",
-            "stats_perk4",
-            "stats_perk5",
-        ],
-        "item": [
-            "stats_item0",
-            "stats_item1",
-            "stats_item2",
-            "stats_item3",
-            "stats_item4",
-            "stats_item5",
-            "stats_item6",
-        ],
-        "champion": [
-            "championId"
-        ]
-    },
-    GameTable.TEAM: {
-        "champion": [
-            "championId_0",
-            "championId_1",
-            "championId_2",
-            "championId_3",
-            "championId_4"
-        ]
-    }
-}
-
-subTestSet: set[str] = {'championId_0', 'championId_1', 'championId_2', 'championId_3', 'championId_4'}
-"""a set of names to test if contained in the resulting table"""
 
 def classify(member: ClientKeys | MatchV5Keys) -> GameTable:
     """classifys the GameTabletype for a Key
@@ -152,7 +98,6 @@ def getData(
         
     return listlessDf
 
-
 def extractRawTables(data: dict, pipe: ImportPipeline) -> dict[GameTable, pd.DataFrame]:
     """Collects all member of a enum class (see head of this file) and 
     executes these onto a data dict, to extract the data and format it into
@@ -204,60 +149,4 @@ def extractRawTables(data: dict, pipe: ImportPipeline) -> dict[GameTable, pd.Dat
         GameTable.TEAM:   mergeTables(TEAMDATA), 
         GameTable.PLAYER: mergeTables(PLAYERDATA)
     }
-
-def translateTables(rawTables: dict[GameTable, pd.DataFrame], pipe: ImportPipeline) -> None:
-    """adjusts the passed rawTables according to the translation dict
-    
-    Parameters
-    ----------
-    rawTables : dict[GameTable, pd.DataFrame]
-        the raw table, we will adjust in this method
-    pipe : ImportPipeline
-        the pipeline we used in the extraction
-        
-    """
-    logger.trace("Start translation process for the result dataframe.")
-    translateDict: dict[str,str] = pipeToTrans[pipe]
-
-    patch_list = rawTables[GameTable.META].loc[0,"gameVersion"].split(".")
-    rawTables[GameTable.META].loc[0,"gameVersion"] = ".".join(patch_list[0:2]) + ".1"
-    read_patch = rawTables[GameTable.META].loc[0,"gameVersion"]
-
-    lsasmapper.addPatchIfMissing(read_patch)
-
-    for tableType in GameTable:
-        # translate into the old layout
-        transTablecols = list(translateDict[tableType].keys())
-        tablecols = set(rawTables[tableType].columns)
-        # insert empty columns, for all missing ones
-        if not subTestSet.issubset(tablecols):
-            for lostEntry in subTestSet: 
-                rawTables[tableType][lostEntry] = "-"
-        rawTables[tableType] = rawTables[tableType][transTablecols]
-
-        mappables_list = list(mappables[tableType].keys())
-
-        for mapping in mappables_list:
-            for feature in mappables[tableType][mapping]:
-                rawTables[tableType][feature] = rawTables[tableType][feature].astype('str')
-                for i in range(gameTableLength[tableType]):
-                    rawTables[tableType].loc[i, feature] = lsasmapper.map[(mapping, read_patch)][rawTables[tableType].loc[i, feature]]
-
-
-        rawTables[tableType] = rawTables[tableType].rename(translateDict[tableType], axis="columns")
-
-
-        # aggregate further
-        match tableType:
-
-            case GameTable.META:
-                rawTables[tableType].loc[0,"date"] = rawTables[tableType].loc[0,"date"][0:10]
-
-            case GameTable.TEAM:
-                for i in range(2):
-                    rawTables[tableType].loc[i,"win"] = True if (rawTables[tableType].loc[i,"win"] == "Win") else False
-
-            case GameTable.PLAYER:
-                for i in range(10):
-                    rawTables[tableType].loc[i,"team"] = playerTeamCheck(rawTables[tableType].loc[i,"team"])
 

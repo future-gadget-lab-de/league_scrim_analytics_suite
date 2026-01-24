@@ -23,8 +23,8 @@ def executeSelectQuery(query: str) -> pd.DataFrame:
     """
     logger.info(f"executing the .sql query: {query}")
 
-    match config.general_settings[Configs.MAIN]["mariadb"]:
-        case "1":
+    match config.general_settings[Configs.PROF]["mode"]:
+        case "db":
 
             conn, cur = buildConnection()
             executeQuery(query, conn, cur)
@@ -35,7 +35,7 @@ def executeSelectQuery(query: str) -> pd.DataFrame:
 
             return output
 
-        case "0":
+        case "csv":
             dframeDict = csvToData()
 
             for ttype in GameTable:

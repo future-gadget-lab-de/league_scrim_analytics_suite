@@ -34,10 +34,6 @@ def transformPathtoFileList(PathToFolder: str) -> list[str]:
     else: # if it is a directory
         files = list_relative_filepaths(relPathToFolder)
 
-    if len(files) == 0:
-        err_msg = "There are no files provided through args. Adjust the Path!"
-        logger.error(err_msg)
-        raise Exception(err_msg)
     logger.trace("Finished transformPathtoFileList function with output: " + str(files))
     return files
 

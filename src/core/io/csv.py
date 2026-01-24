@@ -1,6 +1,7 @@
 """this file contains code, that does I/O functionality between .csv files and DataFrames"""
 import duckdb, os
 import pandas as pd
+from loguru import logger
 from src.core.meta import GameTable
 from src.core.config import config, Configs
 
@@ -22,7 +23,7 @@ def csvToData() -> dict[GameTable, pd.DataFrame]:
     """
     logger.debug("reading the csv data.")
     csv_dir = config.general_settings[Configs.MAIN]["csv_directory"]
-
+    csv_dir += "/" + config.general_settings[Configs.MAIN]["current_prof"]
     return {
         GameTable.META: readCsv(csv_dir + "/" + GameTable.META.value + ".csv"),
         GameTable.PLAYER: readCsv(csv_dir + "/" + GameTable.PLAYER.value + ".csv"),
@@ -44,6 +45,7 @@ def DataToCsv(tabledict: dict[GameTable, pd.DataFrame]) -> None:
         
     """
     csv_dir = config.general_settings[Configs.MAIN]["csv_directory"]
+    csv_dir += "/" + config.general_settings[Configs.MAIN]["current_prof"]
     oldTabledict = csvToData()
 
     os.makedirs(os.path.dirname(csv_dir+"/"), exist_ok=True)

@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 from PySide6.QtWidgets import QDialog
-from src.visuals.ui.generated.ui_settings import Ui_settings_dialog
+from src.visuals.ui.generated.ui_neosettings import Ui_settings_dialog
+from src.visuals.windows.profile_dialog import ProfileDialog
+from src.core.process.pipelines.client import labellistclient
 
 from src.core.config import config, Configs
 from loguru import logger
@@ -35,45 +37,89 @@ class SettingsDialog(QDialog):
         logger.debug("Build the SettingsDialog Window")
 
         # hooks for functionality
-        self.ui.checkbox_mariadb_activated.stateChanged.connect(self._change_maria_setting)
+        self.ui.checkBox_API.stateChanged.connect(self._change_API)
+        self.ui.checkBox_imported.stateChanged.connect(self._change_label)
+        self.ui.checkBox_paths.stateChanged.connect(self._change_paths)
+        self.ui.pushButton_profile.clicked.connect(self._start_profiles)
 
     def _init_fields(self) -> None:
-
         logger.trace("Start init_fields function for object: "+str(self))
-        if config.general_settings[Configs.MAIN]["import_label"] == "date":
-            self.ui.comboBox_imported.setCurrentIndex(1)
-        if config.general_settings[Configs.MAIN]["mariadb"] == "1":
-            self.ui.checkbox_mariadb_activated.setChecked(True)
-            self.ui.lineEdit_csv_path.setDisabled(True)
-        if config.general_settings[Configs.MAIN]["V5"] == "1":
-            self.ui.checkBox_V5.setChecked(True)
-        if config.general_settings[Configs.MAIN]["old_patch_support"] == "1":
-            self.ui.checkBox_old_patch.setChecked(True)
-        if config.volatile_settings["_connected"] == "0":
-            self.ui.checkbox_mariadb_activated.setDisabled(True)
-        self.ui.lineEdit_csv_path.setText(config.general_settings[Configs.MAIN]["csv_directory"])
-        self.ui.lineEdit_API.setText(config.general_settings[Configs.MAIN]["API_key"])
+        list_of_profiles: list[str] = config.getFiles(Configs.PROF)
+        self.ui.comboBox_profile.addItems(list_of_profiles)
+        self.ui.comboBox_profile.setCurrentText(config.general_settings[Configs.MAIN]["current_prof"])
+
+        csv = config.general_settings[Configs.MAIN]["csv_directory"]
+        meta = config.general_settings[Configs.MAIN]["metadata_directory"]
+        dir_dif = csv != "data" or meta != "meta"
+        self.ui.checkBox_paths.setChecked(dir_dif)
+        self.ui.lineEdit_csv.setText(csv)
+        self.ui.lineEdit_meta.setText(meta)
+        self.ui.lineEdit_csv.setDisabled(not dir_dif)
+        self.ui.lineEdit_meta.setDisabled(not dir_dif)
+        self.ui.toolButton_csv.setDisabled(not dir_dif)
+        self.ui.toolButton_meta.setDisabled(not dir_dif)
+
+        api = config.general_settings[Configs.MAIN]["API_key"]
+        self.ui.checkBox_API.setChecked(bool(api))
+        self.ui.lineEdit_API.setText(api)
+        self.ui.lineEdit_API.setDisabled(not bool(api))
+
+        label = config.general_settings[Configs.MAIN]["import_label"]
+        self.ui.checkBox_imported.setChecked(bool(label))
+
+        form = config.general_settings[Configs.PROF]["format"]
+        if form == "client":
+            self.ui.comboBox_imported.addItems(labellistclient)
+            self.ui.comboBox_imported.setCurrentText(config.general_settings[Configs.MAIN]["import_label"])
+
         logger.trace("Finished init_fields function.")
 
-    def _change_maria_setting(self) -> None:
+    def _start_profiles(self) -> None:
+        dlg = ProfileDialog(self)
+        if dlg.exec():
+            dlg._add_prof()
+        self.ui.comboBox_profile.clear()
+        self._init_fields()
+
+    def _change_API(self) -> None:
 
         logger.trace("Started change_maria_setting function for object: " + str(self))
-        if self.ui.checkbox_mariadb_activated.isChecked():
-            self.ui.lineEdit_csv_path.setDisabled(True)
-            logger.debug("Enabled mariadb")
-        else:
-            self.ui.lineEdit_csv_path.setEnabled(True)
-            logger.debug("Disabled mariadb")
+        isChecked = self.ui.checkBox_API.isChecked()
+        self.ui.lineEdit_API.setDisabled(not isChecked)
+        if not isChecked:
+            self.ui.lineEdit_API.setText("")
+        logger.trace("Finished change_maria_setting function")
+
+    def _change_label(self) -> None:
+
+        logger.trace("Started change_maria_setting function for object: " + str(self))
+        isChecked = self.ui.checkBox_imported.isChecked()
+        self.ui.comboBox_imported.setDisabled(not isChecked)
+        logger.trace("Finished change_maria_setting function")
+
+    def _change_paths(self) -> None:
+
+        logger.trace("Started change_maria_setting function for object: " + str(self))
+        isChecked = self.ui.checkBox_paths.isChecked()
+        self.ui.lineEdit_csv.setDisabled(not isChecked)
+        self.ui.lineEdit_meta.setDisabled(not isChecked)
+        self.ui.toolButton_csv.setDisabled(not isChecked)
+        self.ui.toolButton_meta.setDisabled(not isChecked)
+        if not isChecked:
+            self.ui.lineEdit_csv.setText("data")
+            self.ui.lineEdit_meta.setText("meta")
         logger.trace("Finished change_maria_setting function")
 
 
     def saveSettings(self) -> None:
         
-        config.general_settings[Configs.MAIN]["V5"]                 = str(int(self.ui.checkBox_V5.isChecked()))
-        config.general_settings[Configs.MAIN]["mariadb"]            = str(int(self.ui.checkbox_mariadb_activated.isChecked()))
-        config.general_settings[Configs.MAIN]["old_patch_support"]  = str(int(self.ui.checkBox_old_patch.isChecked()))
+        config.general_settings[Configs.MAIN]["csv_directory"]      = self.ui.lineEdit_meta.text()
+        config.general_settings[Configs.MAIN]["current_prof"]       = self.ui.comboBox_profile.currentText()
         config.general_settings[Configs.MAIN]["import_label"]       = self.ui.comboBox_imported.currentText()
         config.general_settings[Configs.MAIN]["API_key"]            = self.ui.lineEdit_API.text()
-        config.general_settings[Configs.MAIN]["csv_directory"]      = self.ui.lineEdit_csv_path.text()
+        config.general_settings[Configs.MAIN]["csv_directory"]      = self.ui.lineEdit_csv.text()
+
+        config.setProfile(self.ui.comboBox_profile.currentText())
+
         logger.debug("Saved Settings via SettingsDialog to RAM.")
 

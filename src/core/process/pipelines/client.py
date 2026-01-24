@@ -1,6 +1,12 @@
 """Client pipeline."""
 from enum import Enum
-from src.core.meta import GameTable
+from src.core.meta import GameTable, gameTableLength
+from src.core.process.map import lsasmapper
+from src.core.team import playerTeamCheck
+from loguru import logger
+import pandas as pd
+
+labellistclient = ["gameid", "date"]
 
 class ClientKeys(Enum):
     """current paths to data, for pandas json_normalize
@@ -46,11 +52,11 @@ tableTypeForClient: dict[ClientKeys, str] = {
     ClientKeys.TEAM_2    -> GameTable.TEAM,
 
 """
-
 needsMetaDataClient: dict[ClientKeys, list[str]] = {
     ClientKeys.PLAYER_1: "gameId",
     ClientKeys.TEAM_1: "gameId"
 }
+
 """the tables produced by these keys, need metadata, to be assignable
 
 ClientKeys.PLAYER_1 -> "gameId"
@@ -64,6 +70,49 @@ needsAggClient: dict[ClientKeys, list[str]] = { ClientKeys.TEAM_2: ["teams","tea
 MatchV5Keys.TEAM_2:     -> ["info", "teams","teamId"]
 
 """
+
+subTestSet: set[str] = {'championId_0', 'championId_1', 'championId_2', 'championId_3', 'championId_4'}
+"""a set of names to test if contained in the resulting table"""
+
+
+mappables: dict[GameTable, dict[str, list[str]]] = {
+    GameTable.META: {},
+    GameTable.PLAYER: {
+        "summoner": [
+            "spell1Id",
+            "spell2Id",
+        ],
+        "perk": [
+            "stats_perk0",
+            "stats_perk1",
+            "stats_perk2",
+            "stats_perk3",
+            "stats_perk4",
+            "stats_perk5",
+        ],
+        "item": [
+            "stats_item0",
+            "stats_item1",
+            "stats_item2",
+            "stats_item3",
+            "stats_item4",
+            "stats_item5",
+            "stats_item6",
+        ],
+        "champion": [
+            "championId"
+        ]
+    },
+    GameTable.TEAM: {
+        "champion": [
+            "championId_0",
+            "championId_1",
+            "championId_2",
+            "championId_3",
+            "championId_4"
+        ]
+    }
+}
 
 translationClient: dict[GameTable, dict[str, str]] = {
 
@@ -127,3 +176,62 @@ translationClient: dict[GameTable, dict[str, str]] = {
         "player_puuid":                          "team"
     }
 }
+
+def translateTablesForClient(rawTables: dict[GameTable, pd.DataFrame]) -> None:
+    """adjusts the passed rawTables according to the translation dict
+    
+    Parameters
+    ----------
+    rawTables : dict[GameTable, pd.DataFrame]
+        the raw table, we will adjust in this method
+    pipe : ImportPipeline
+        the pipeline we used in the extraction
+        
+    """
+    logger.trace("Start translation process for the result dataframe.")
+    translateDict: dict[str,str] = translationClient
+
+    patch_list = rawTables[GameTable.META].loc[0,"gameVersion"].split(".")
+    rawTables[GameTable.META].loc[0,"gameVersion"] = ".".join(patch_list[0:2]) + ".1"
+    read_patch = rawTables[GameTable.META].loc[0,"gameVersion"]
+
+    lsasmapper.addPatchIfMissing(read_patch)
+
+    for tableType in GameTable:
+        # translate into the old layout
+        transTablecols = list(translateDict[tableType].keys())
+        tablecols = set(rawTables[tableType].columns)
+        # insert empty columns, for all missing ones
+        if not subTestSet.issubset(tablecols):
+            for lostEntry in subTestSet: 
+                rawTables[tableType][lostEntry] = "-"
+        
+        rawTables[tableType] = rawTables[tableType][transTablecols]
+
+        mappables_list = list(mappables[tableType].keys())
+
+        for mapping in mappables_list:
+            for feature in mappables[tableType][mapping]:
+                rawTables[tableType][feature] = rawTables[tableType][feature].astype('str')
+                for i in range(gameTableLength[tableType]):
+                    rawTables[tableType].loc[i, feature] = lsasmapper.map[(mapping, read_patch)][rawTables[tableType].loc[i, feature]]
+
+
+        rawTables[tableType] = rawTables[tableType].rename(translateDict[tableType], axis="columns")
+
+
+        # aggregate further
+        match tableType:
+
+            case GameTable.META:
+                rawTables[tableType].loc[0,"date"] = rawTables[tableType].loc[0,"date"][0:10]
+
+            case GameTable.TEAM:
+                for i in range(2):
+                    rawTables[tableType].loc[i,"win"] = True if (rawTables[tableType].loc[i,"win"] == "Win") else False
+
+            case GameTable.PLAYER:
+                for i in range(10):
+                    rawTables[tableType].loc[i,"team"] = playerTeamCheck(rawTables[tableType].loc[i,"team"])
+
+

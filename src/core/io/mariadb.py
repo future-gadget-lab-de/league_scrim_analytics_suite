@@ -29,7 +29,6 @@ def updateConnectionState() -> None:
     except:
         logger.debug("connection failed.")
         config.volatile_settings["_connected"] = "0"
-        config.general_settings[Configs.MAIN]["mariadb"] = "0"
         config.writeSettings()
 
     
@@ -94,9 +93,9 @@ def executeSQLFile(pathToFile: str) -> None:
 
     """
     logger.trace(f"start executing the sql file: {pathToFile}.")
-    match config.general_settings[Configs.MAIN]["mariadb"]:
+    match config.general_settings[Configs.PROF]["mode"]:
         
-        case "1":
+        case "db":
             conn, cur = buildConnection()
             queries = readSQLFile(pathToFile)
 
@@ -107,7 +106,7 @@ def executeSQLFile(pathToFile: str) -> None:
             conn.close()
             cur.close()
 
-        case "0":
+        case "csv":
             raise Exception("Your MariaDB Config can't establish a connection. Reconfigure the your settings.")
             sys.exit(1)
 
@@ -115,8 +114,8 @@ def databaseSetup() -> None:
     """
     Setups the connected database with the correct datatypes 
     """
-    match config.general_settings[Configs.MAIN]["mariadb"]:
-        case "1":
+    match config.general_settings[Configs.PROF]["mode"]:
+        case "db":
             try:
                 create_queries = importSQLQueries("src/core/io/sqlfiles/db_creation_dump.sql")
 
@@ -131,7 +130,7 @@ def databaseSetup() -> None:
                 cur.close()
             except:
                 logger.debug("Database structure already initialized")
-        case "0":
+        case "csv":
             logger.debug("CSV Mode, therefore no structure creation.")
 
 def getCursorSelect(cur) -> pd.DataFrame:

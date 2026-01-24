@@ -1,50 +1,47 @@
 """
 This file contains a class for handling the current configuration of the program
 """
+import os
 from loguru import logger
 from enum import StrEnum
 from src.utils.io import readSettingsFile, writeSettingsFile
+from src.utils.path import transformPathtoFileList
 from src.core.meta import version_c
 
-locPathInt_c: str = ".internal/location.conf"
+locPathInt_c: str = ".internal/"
 """location for the **internal** config file"""
 
-locPathSet_c: str = "config"
+locPathSet_c: str = "config/"
 """location for **general** settings"""
 
 class Configs(StrEnum):
-    """all configs, currently supported
-    
-    Attributes
-    ----------
-    MAIN : str
-        the main settings of lsas
-    DB : str
-        the mariadb connection settings
-        
-    """
     MAIN = "lsas"
-    DB = "mariadb"
+    DB = "connections"
+    PROF = "profiles"
 
-template_c: dict[Configs, dict[str, str]] = {
+
+templates: dict[Configs, dict[str, str]] = {
     Configs.MAIN: {
-        "old_patch_support":"0",
+        "current_prof": "placeholder",
         "csv_directory": "data",
         "metadata_directory": "meta",
         "mariadb": "0",
         "API_key": "",
-        "import_label": "gameid",
-        "V5": "0"
+        "import_label": "",
     },
     Configs.DB: {
         "host": "",
+        "port": "",
         "user": "",
         "password": "",
-        "port": "",
-        "database": ""
+        "database": "",
+    },
+    Configs.PROF: {
+        "mode": "csv",
+        "con": "",
+        "format": "client"
     }
 }
-"""the template for config files in lsas"""
 
 class ConfigHandler:
     """general handler for configs. This file loads an instance of this.
@@ -75,6 +72,7 @@ class ConfigHandler:
             "_connected": "0"
         }
 
+
         self.internal_settings: dict[str, str] = readSettingsFile(locPathInt_c)
         """rtfesafes"""
         
@@ -82,45 +80,78 @@ class ConfigHandler:
             self.createInternals()
             self.writeInternals()
 
-        self.general_settings: dict[Configs, dict[str, str]] = {
-            Configs.MAIN: readSettingsFile(self.internal_settings[Configs.MAIN.value]),
-            Configs.DB: readSettingsFile(self.internal_settings[Configs.DB.value])
-        }
+        self.general_settings: dict[Configs, dict[str, str]] = {}
 
-        if not self.general_settings:
-            self.general_settings = template_c
+        self.general_settings[Configs.MAIN] = readSettingsFile(locPathSet_c + "lsas.conf")
+
+        if not self.general_settings[Configs.MAIN]:
+            self.general_settings[Configs.MAIN] = templates[Configs.MAIN]
             self.writeSettings()
 
-        logger.trace("Initialized a fesh ConfigHandler.")
+        cur_prof =  self.general_settings[Configs.MAIN]["current_prof"]
+
+        self.setProfile(cur_prof)
+
+        logger.trace("Initialized a fresh ConfigHandler.")
 
 
     def reconfigure(self):
+
         self.createInternals()
         self.writeInternals()
 
-        for conf in Configs:
-            keys = set(self.general_settings[conf].keys())
-            temp_keys = set(template_c[conf].keys())
-            keys_miss = temp_keys.difference(keys)
+        keys = set(self.general_settings[Configs.MAIN].keys())
+        temp_keys = set(templates[Configs.MAIN].keys())
+        keys_miss = temp_keys.difference(keys)
 
-            for key in keys_miss:
-                self.general_settings[conf][key] = template_c[conf][key]
+        for key in keys_miss:
+            self.general_settings[conf][key] = templates[Configs.MAIN][key]
         self.writeSettings()
 
         logger.debug("reconfigured the current configs configuration.")
 
     def createInternals(self):
-        for conf in Configs:
-            self.internal_settings[conf.value] = locPathSet_c + "/" + conf.value + ".conf"
         self.internal_settings["last_noticed_version"] = version_c
 
+    def createPlaceholder(self):
+        mariadb_path = locPathSet_c + "connections/placeholder.conf"
+        profile_path = locPathSet_c + "profiles/placeholder.conf"
+        os.makedirs(os.path.dirname(mariadb_path), exist_ok=True)
+        os.makedirs(os.path.dirname(profile_path), exist_ok=True)
+        writeSettingsFile(templates[Configs.PROF], profile_path)
+
+    def setProfile(self, name: str = "placeholder"):
+        prof = locPathSet_c + "profiles/" + name + ".conf"
+        self.general_settings[Configs.PROF] = readSettingsFile(prof)
+        if not self.general_settings[Configs.PROF]:
+            self.createPlaceholder()
+            self.general_settings[Configs.MAIN]["current_prof"] = "placeholder"
+            self.writeSettings()
+            self.general_settings[Configs.PROF] = templates[Configs.PROF]
+            self.general_settings[Configs.DB] = {}
+            return
+        self.general_settings[Configs.MAIN]["current_prof"] = name
+        con_name = self.general_settings[Configs.PROF]["con"]
+        if not con_name:
+            self.general_settings[Configs.DB] = {}
+            return
+        con = locPathSet_c + "connections/" + con_name + ".conf"
+        self.general_settings[Configs.DB] = readSettingsFile(con)
+
+    def getFiles(self, config: Configs):
+        listofFiles = transformPathtoFileList(locPathSet_c + config.value)
+        result: list[str] = []
+        for file in listofFiles:
+            result.append(file.split("/")[-1].split(".")[0])
+        return result
+
     def writeSettings(self):
-        for config in Configs:
-            writeSettingsFile(self.general_settings[config], self.internal_settings[config.value])
+        filepath = locPathSet_c + Configs.MAIN.value + ".conf"
+        writeSettingsFile(self.general_settings[Configs.MAIN], filepath)
         logger.trace("changes in general settings written to file.")
 
     def writeInternals(self):
-        writeSettingsFile(self.internal_settings, locPathInt_c)
+        writeSettingsFile(self.internal_settings, locPathInt_c + "location.conf")
         logger.trace("changes in internal settings written to file.")
 
     @property

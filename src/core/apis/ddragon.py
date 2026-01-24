@@ -20,7 +20,9 @@ def scrapeRecentPatch() -> str:
 
     link = "https://ddragon.leagueoflegends.com/realms/euw.json"
     date = datetime.datetime.today().strftime('%Y-%m-%d')
-    data_file_path = f"{config.general_settings[Configs.MAIN]["metadata_directory"]}/dictionaries/EUW_{date}.json"
+    data_file_path = config.general_settings[Configs.MAIN]["metadata_directory"]
+    data_file_path += "/" + config.general_settings[Configs.MAIN]["current_prof"]
+    data_file_path += f"/dictionaries/EUW_{date}.json"
 
     logger.debug("Scraping recent Patch.")
     data_dict = readJsonFile(data_file_path)
@@ -92,7 +94,9 @@ def loadIdDataSet(dataRequested: str, patch: str | None = None) -> dict:
         logger.info("No patch specified, using latest.")
         patch = scrapeRecentPatch()
 
-    data_file_path = f"{config.general_settings[Configs.MAIN]["metadata_directory"]}/dictionaries/{dataRequested}_{patch}.json"
+    data_file_path = config.general_settings[Configs.MAIN]["metadata_directory"]
+    data_file_path += "/" + config.general_settings[Configs.MAIN]["current_prof"]
+    data_file_path += f"/dictionaries/{dataRequested}_{patch}.json"
     logger.debug("Reload of the data: " + dataRequested)
 
     data_output = readJsonFile(data_file_path)
