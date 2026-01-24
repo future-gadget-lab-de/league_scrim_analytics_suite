@@ -7,139 +7,168 @@
     <x>0</x>
     <y>0</y>
     <width>392</width>
-    <height>238</height>
+    <height>350</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
     <width>392</width>
-    <height>238</height>
+    <height>350</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
     <width>392</width>
-    <height>238</height>
+    <height>350</height>
    </size>
   </property>
   <property name="windowTitle">
    <string>MariaDB configuration</string>
   </property>
-  <widget class="QDialogButtonBox" name="buttonBox">
-   <property name="geometry">
-    <rect>
-     <x>190</x>
-     <y>200</y>
-     <width>191</width>
-     <height>32</height>
-    </rect>
-   </property>
-   <property name="orientation">
-    <enum>Qt::Orientation::Horizontal</enum>
-   </property>
-   <property name="standardButtons">
-    <set>QDialogButtonBox::StandardButton::Cancel|QDialogButtonBox::StandardButton::Ok</set>
-   </property>
-  </widget>
-  <widget class="QWidget" name="formLayoutWidget">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>10</y>
-     <width>371</width>
-     <height>141</height>
-    </rect>
-   </property>
-   <layout class="QFormLayout" name="formLayout">
-    <property name="fieldGrowthPolicy">
-     <enum>QFormLayout::FieldGrowthPolicy::AllNonFixedFieldsGrow</enum>
-    </property>
-    <property name="labelAlignment">
-     <set>Qt::AlignmentFlag::AlignCenter</set>
-    </property>
-    <property name="formAlignment">
-     <set>Qt::AlignmentFlag::AlignCenter</set>
-    </property>
-    <property name="horizontalSpacing">
-     <number>7</number>
-    </property>
-    <property name="verticalSpacing">
-     <number>0</number>
-    </property>
-    <property name="leftMargin">
-     <number>0</number>
-    </property>
-    <item row="0" column="0">
-     <widget class="QLabel" name="label_adress">
-      <property name="text">
-       <string>server adress</string>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="1">
-     <widget class="QLineEdit" name="lineEdit_adress"/>
-    </item>
-    <item row="1" column="0">
-     <widget class="QLabel" name="label_port">
-      <property name="text">
-       <string>port</string>
-      </property>
-     </widget>
-    </item>
-    <item row="2" column="0">
-     <widget class="QLabel" name="label_un">
-      <property name="text">
-       <string>username</string>
-      </property>
-     </widget>
-    </item>
-    <item row="2" column="1">
-     <widget class="QLineEdit" name="lineEdit_un"/>
-    </item>
-    <item row="3" column="0">
-     <widget class="QLabel" name="label_pw">
-      <property name="text">
-       <string>password</string>
-      </property>
-     </widget>
-    </item>
-    <item row="3" column="1">
-     <widget class="QLineEdit" name="lineEdit_pw"/>
-    </item>
-    <item row="4" column="0">
-     <widget class="QLabel" name="label_db">
-      <property name="text">
-       <string>database</string>
-      </property>
-     </widget>
-    </item>
-    <item row="4" column="1">
-     <widget class="QLineEdit" name="lineEdit_db"/>
-    </item>
-    <item row="1" column="1">
-     <widget class="QLineEdit" name="lineEdit_port"/>
-    </item>
-   </layout>
-  </widget>
-  <widget class="QWidget" name="formLayoutWidget_2">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>150</y>
-     <width>371</width>
-     <height>41</height>
-    </rect>
-   </property>
-   <layout class="QFormLayout" name="formLayout_2">
-    <item row="0" column="1">
-     <widget class="QPushButton" name="pushButton_connection">
-      <property name="text">
-       <string>connect</string>
-      </property>
-     </widget>
-    </item>
-   </layout>
-  </widget>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QGroupBox" name="group_activate">
+     <property name="title">
+      <string>General:</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_3">
+      <item>
+       <widget class="QCheckBox" name="checkBox_maria">
+        <property name="maximumSize">
+         <size>
+          <width>300</width>
+          <height>500</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Activate MariaDB Support</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="group_connect">
+     <property name="title">
+      <string>Add Connection:</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_2">
+      <item>
+       <widget class="QLineEdit" name="lineEdit">
+        <property name="placeholderText">
+         <string>Name of the connection</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <layout class="QFormLayout" name="formLayout">
+        <property name="fieldGrowthPolicy">
+         <enum>QFormLayout::FieldGrowthPolicy::AllNonFixedFieldsGrow</enum>
+        </property>
+        <property name="labelAlignment">
+         <set>Qt::AlignmentFlag::AlignCenter</set>
+        </property>
+        <property name="formAlignment">
+         <set>Qt::AlignmentFlag::AlignCenter</set>
+        </property>
+        <property name="horizontalSpacing">
+         <number>7</number>
+        </property>
+        <property name="verticalSpacing">
+         <number>2</number>
+        </property>
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <item row="0" column="0">
+         <widget class="QLabel" name="label_adress">
+          <property name="text">
+           <string>Server Adress</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QLineEdit" name="lineEdit_adress"/>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="label_port">
+          <property name="text">
+           <string>Port</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QLabel" name="label_un">
+          <property name="text">
+           <string>Username</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1">
+         <widget class="QLineEdit" name="lineEdit_un"/>
+        </item>
+        <item row="3" column="0">
+         <widget class="QLabel" name="label_pw">
+          <property name="text">
+           <string>Password</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="1">
+         <widget class="QLineEdit" name="lineEdit_pw"/>
+        </item>
+        <item row="4" column="0">
+         <widget class="QLabel" name="label_db">
+          <property name="text">
+           <string>Database</string>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="1">
+         <widget class="QLineEdit" name="lineEdit_db"/>
+        </item>
+        <item row="1" column="1">
+         <widget class="QLineEdit" name="lineEdit_port">
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <item>
+         <widget class="QPushButton" name="pushButton_connection">
+          <property name="text">
+           <string>Connect</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="pushButton_add">
+          <property name="text">
+           <string>Add to profiles</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="orientation">
+      <enum>Qt::Orientation::Horizontal</enum>
+     </property>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::StandardButton::Cancel|QDialogButtonBox::StandardButton::Ok</set>
+     </property>
+    </widget>
+   </item>
+  </layout>
  </widget>
  <resources/>
  <connections>

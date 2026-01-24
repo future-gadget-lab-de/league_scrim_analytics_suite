@@ -1,3 +1,5 @@
+"""the wrapper class for the window, which manages the LoadingScreenDialog."""
+
 from __future__ import annotations
 import time
 
@@ -5,13 +7,29 @@ from PySide6.QtCore import QTimer
 from PySide6.QtWidgets import QDialog, QApplication
 from src.visuals.ui.generated.ui_loading import Ui_LoadingDialog
 
-from src.config import readSettings,readInternalSettings, settings_list_c
 from loguru import logger
 
 class LoadingDialog(QDialog):
-    """Wrapper class for the general settings window"""
+    """Wrapper class for the general settings window
+    
+    Attributes
+    ----------
+    ui : Ui_LoadingDialog
+        the raw class, produced by compilation
+    abs : int
+        the absolute number of tasks
+    done_i : int 
+        the absolute number of finished tasks
+    loading_state : int
+        the relative frequency for printing into the screen
+
+    _execute_function : function
+        executes a function along a list of kwargs
+        
+    """
     def __init__(self, parent, loaded_func, list_of_args: list) -> None:
         super().__init__(parent)
+        logger.trace("Startet the LoadingsScreen Widget.")
         self.ui = Ui_LoadingDialog()
         self.ui.setupUi(self)
         
@@ -24,8 +42,9 @@ class LoadingDialog(QDialog):
         QTimer.singleShot(30, lambda: self._execute_function(loaded_func, list_of_args))
 
     def _execute_function(self, loaded_func, list_of_args):
+        logger.debug("Starting the executeprocess of the LoadingScreen.")
         for arg in list_of_args:
-
+            logger.trace(f"Currently in executing the function {loaded_func} with the arg {arg}.")
             start = time.time()
             loaded_func(**arg)
             self.done_i += 1
@@ -44,5 +63,6 @@ class LoadingDialog(QDialog):
             self.ui.label_time.setText(f"{self.done_i}/{self.abs} - remaining time: {time_remaining}\n Attention: Do not close the window!")
             QApplication.processEvents()  # erzwingt UI-Updates
         self.ui.label_time.setText(f"done!")
+        logger.debug("Successfully finished the executeprocess of the LoadingScreen.")
         QTimer.singleShot(2000,lambda: self.close())
             

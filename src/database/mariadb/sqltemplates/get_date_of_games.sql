@@ -1,1 +1,0 @@
-SELECT gameid FROM metadata ORDER BY gameid ASC;

@@ -1,102 +1,125 @@
+"""The Wrapper Class for handling the settingsdialog."""
+
 from __future__ import annotations
 
 from PySide6.QtWidgets import QDialog
-from src.visuals.ui.generated.ui_settings import Ui_settings_dialog
+from src.visuals.ui.generated.ui_neosettings import Ui_settings_dialog
+from src.visuals.windows.profile_dialog import ProfileDialog
+from src.core.process.pipelines.client import labellistclient
 
-from src.config import readSettings,readInternalSettings, settings_list_c
+from src.core.config import config, Configs
 from loguru import logger
 
-
-#NOTE: Wiso sind manche methods lower_lower_lower und manche lower_Upper...
 class SettingsDialog(QDialog):
-    """Wrapper class for the general settings window"""
+    """Wrapper class for the general settings window
+    
+    Attributes
+    ----------
+    ui : Ui_settings_dialog
+        the raw SettingsDialog Class, produced by compilation
 
+    _init_fields : function
+        initializes all fields with the provided values through
+        the configs
+    _change_maria_setting : function
+        gets activated, whe the mariadb checkbox toggles. 
+        enables or disables the csv path option.
+    saveSettings : function
+        saves the current GUI Values to settings in RAM.
+    
+    """
     def __init__(self, parent) -> None:
+
         super().__init__(parent)
         self.ui = Ui_settings_dialog()
         self.ui.setupUi(self)
-        
-        # init settings
-        self.lsas_settings = readSettings(settings_list_c[0])
-        self.int_settings = readInternalSettings()
         self._init_fields()
+        logger.debug("Build the SettingsDialog Window")
 
         # hooks for functionality
-        self.ui.lineEdit_csv_path.textChanged.connect(self._change_line_setting)
-        self.ui.lineEdit_API.textChanged.connect(self._change_line_setting)
-        self.ui.checkbox_mariadb_activated.stateChanged.connect(self._change_maria_setting)
-        self.ui.checkBox_old_patch.stateChanged.connect(self._change_legacy_support)
-        self.ui.checkBox_V5.stateChanged.connect(self._change_V5_support)
-        self.ui.comboBox_imported.currentIndexChanged.connect(self._change_label)
+        self.ui.checkBox_API.stateChanged.connect(self._change_API)
+        self.ui.checkBox_imported.stateChanged.connect(self._change_label)
+        self.ui.checkBox_paths.stateChanged.connect(self._change_paths)
+        self.ui.pushButton_profile.clicked.connect(self._start_profiles)
 
     def _init_fields(self) -> None:
-        """initializes the settings fields with the current values of lsas.conf"""
-
         logger.trace("Start init_fields function for object: "+str(self))
-        if self.lsas_settings["import_label"] == "date":
-            self.ui.comboBox_imported.setCurrentIndex(1)
-        if self.lsas_settings["mariadb"] == "1":
-            self.ui.checkbox_mariadb_activated.setChecked(True)
-            self.ui.lineEdit_csv_path.setDisabled(True)
-        if self.lsas_settings["V5"] == "1":
-            self.ui.checkBox_V5.setChecked(True)
-        if self.lsas_settings["old_patch_support"] == "1":
-            self.ui.checkBox_old_patch.setChecked(True)
-        if self.int_settings["_connected"] == "0":
-            self.ui.checkbox_mariadb_activated.setDisabled(True)
-        self.ui.lineEdit_csv_path.setText(self.lsas_settings["csv_directory"])
-        self.ui.lineEdit_API.setText(self.lsas_settings["API_key"])
+        list_of_profiles: list[str] = config.getFiles(Configs.PROF)
+        self.ui.comboBox_profile.addItems(list_of_profiles)
+        self.ui.comboBox_profile.setCurrentText(config.general_settings[Configs.MAIN]["current_prof"])
+
+        csv = config.general_settings[Configs.MAIN]["csv_directory"]
+        meta = config.general_settings[Configs.MAIN]["metadata_directory"]
+        dir_dif = csv != "data" or meta != "meta"
+        self.ui.checkBox_paths.setChecked(dir_dif)
+        self.ui.lineEdit_csv.setText(csv)
+        self.ui.lineEdit_meta.setText(meta)
+        self.ui.lineEdit_csv.setDisabled(not dir_dif)
+        self.ui.lineEdit_meta.setDisabled(not dir_dif)
+        self.ui.toolButton_csv.setDisabled(not dir_dif)
+        self.ui.toolButton_meta.setDisabled(not dir_dif)
+
+        api = config.general_settings[Configs.MAIN]["API_key"]
+        self.ui.checkBox_API.setChecked(bool(api))
+        self.ui.lineEdit_API.setText(api)
+        self.ui.lineEdit_API.setDisabled(not bool(api))
+
+        label = config.general_settings[Configs.MAIN]["import_label"]
+        self.ui.checkBox_imported.setChecked(bool(label))
+
+        form = config.general_settings[Configs.PROF]["format"]
+        if form == "client":
+            self.ui.comboBox_imported.addItems(labellistclient)
+            self.ui.comboBox_imported.setCurrentText(config.general_settings[Configs.MAIN]["import_label"])
+
         logger.trace("Finished init_fields function.")
 
-    def _get_settings(self) -> dict:
-        """returns the settings, for later use in mainWindow"""
-        logger.trace("Started get_settings for " + str(self))
-        return self.lsas_settings
+    def _start_profiles(self) -> None:
+        dlg = ProfileDialog(self)
+        if dlg.exec():
+            dlg._add_prof()
+        self.ui.comboBox_profile.clear()
+        self._init_fields()
 
-    def _change_V5_support(self) -> None:
-        """Update the settings/window according to changed settings"""
-        logger.trace("Started V5_change function for object: " + str(self))
-        if self.ui.checkBox_V5.isChecked():
-            self.lsas_settings["V5"] = "1"
-            logger.debug("Set V5 to true")
-        else:
-            self.lsas_settings["V5"] = "0"
-            logger.debug("Set V5 to false")
-        logger.trace("Finished V5_change function.")
+    def _change_API(self) -> None:
 
-    def _change_maria_setting(self) -> None:
-        """Update the settings/window according to changed settings"""
         logger.trace("Started change_maria_setting function for object: " + str(self))
-        if self.ui.checkbox_mariadb_activated.isChecked():
-            self.lsas_settings["mariadb"] = "1"
-            self.ui.lineEdit_csv_path.setDisabled(True)
-            logger.debug("Enabled mariadb")
-        else:
-            self.lsas_settings["mariadb"] = "0"
-            self.ui.lineEdit_csv_path.setEnabled(True)
-            logger.debug("Disabled mariadb")
+        isChecked = self.ui.checkBox_API.isChecked()
+        self.ui.lineEdit_API.setDisabled(not isChecked)
+        if not isChecked:
+            self.ui.lineEdit_API.setText("")
         logger.trace("Finished change_maria_setting function")
 
-    def _change_legacy_support(self):
-        """Update the settings/window according to changed settings"""
-        logger.trace("Started change_Legacy_Support function for object: " + str(self))
-        if self.ui.checkBox_old_patch.isChecked():
-            self.lsas_settings["old_patch_support"] = "1"
-            logger.debug("Set old_patch_support to true")
-        else:
-            self.lsas_settings["old_patch_support"] = "0"
-            logger.debug("Set old_patch_support to false")
-        logger.trace("Finished change_Legacy_Support function.")
-
-    def _change_line_setting(self) -> None:
-        """Update the settings/window according to changed settings"""
-        logger.trace("Started change_line_setting function for object" + str(self))
-        self.lsas_settings["csv_directory"] = self.ui.lineEdit_csv_path.text()
-        self.lsas_settings["API_key"] = self.ui.lineEdit_API.text()
-        self.ui.checkBox_V5.setDisabled(self.lsas_settings["API_key"] == "")
-        logger.debug("Changed csv_directory setting to" +str(self.ui.lineEdit_csv_path) )
-        logger.debug("Changed API_key setting to " + str(self.ui.lineEdit_API) )
-        logger.trace("Finished change_line_setting function.")
-
     def _change_label(self) -> None:
-        self.lsas_settings["import_label"] = self.ui.comboBox_imported.currentText()
+
+        logger.trace("Started change_maria_setting function for object: " + str(self))
+        isChecked = self.ui.checkBox_imported.isChecked()
+        self.ui.comboBox_imported.setDisabled(not isChecked)
+        logger.trace("Finished change_maria_setting function")
+
+    def _change_paths(self) -> None:
+
+        logger.trace("Started change_maria_setting function for object: " + str(self))
+        isChecked = self.ui.checkBox_paths.isChecked()
+        self.ui.lineEdit_csv.setDisabled(not isChecked)
+        self.ui.lineEdit_meta.setDisabled(not isChecked)
+        self.ui.toolButton_csv.setDisabled(not isChecked)
+        self.ui.toolButton_meta.setDisabled(not isChecked)
+        if not isChecked:
+            self.ui.lineEdit_csv.setText("data")
+            self.ui.lineEdit_meta.setText("meta")
+        logger.trace("Finished change_maria_setting function")
+
+
+    def saveSettings(self) -> None:
+        
+        config.general_settings[Configs.MAIN]["csv_directory"]      = self.ui.lineEdit_meta.text()
+        config.general_settings[Configs.MAIN]["current_prof"]       = self.ui.comboBox_profile.currentText()
+        config.general_settings[Configs.MAIN]["import_label"]       = self.ui.comboBox_imported.currentText()
+        config.general_settings[Configs.MAIN]["API_key"]            = self.ui.lineEdit_API.text()
+        config.general_settings[Configs.MAIN]["csv_directory"]      = self.ui.lineEdit_csv.text()
+
+        config.setProfile(self.ui.comboBox_profile.currentText())
+
+        logger.debug("Saved Settings via SettingsDialog to RAM.")
+
