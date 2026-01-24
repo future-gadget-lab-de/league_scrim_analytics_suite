@@ -9,8 +9,8 @@ from PySide6.QtWidgets import QApplication
 from loguru import logger
 from src.core.config import config
 
-LSAS = pathlib.Path(__file__).resolve().parents[3]
-COMPILE_UI = LSAS / "LSAS" / "src" / "visuals" / "ui" 
+LSAS = pathlib.Path(__file__).resolve().parents[2]
+COMPILE_UI = LSAS / "src" / "visuals" / "ui" 
 
 def runAdvancedFrontend() -> None:
     """entrypoint method for all GUI applications"""

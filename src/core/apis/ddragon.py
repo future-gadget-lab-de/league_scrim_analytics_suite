@@ -101,7 +101,7 @@ def loadIdDataSet(dataRequested: str, patch: str | None = None) -> dict:
 
     data_output = readJsonFile(data_file_path)
     if not data_output:
-        scrape_link = returnScrapeLink(dataRequested)
+        scrape_link = returnScrapeLink(dataRequested, patch)
         data_output = requestJsonFile(scrape_link, data_file_path)
 
     logger.success("Loaded IdDataSet: " +dataRequested) 
