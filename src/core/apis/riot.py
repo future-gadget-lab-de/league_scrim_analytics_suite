@@ -5,7 +5,7 @@ from loguru import logger
 from src.core.config import config, Configs
 from src.utils.io import readJsonFile, requestJsonFile
 
-def getPUIDbySummAndTagline(summonername: str, tagline: str, devKEY = False) -> str:
+def getPUIDbySummAndTagline(summonername: str, tagline: str) -> str:
     """loads the metadata of a league account by summ and tagline
     
     Parameters
@@ -27,14 +27,12 @@ def getPUIDbySummAndTagline(summonername: str, tagline: str, devKEY = False) -> 
     # reading api key
     api_key = config.general_settings[Configs.MAIN]["API_key"]
     # scraping summonerdata
-    if not devKEY:
-        time.sleep(1)
     resource_link = f"https://europe.api.riotgames.com/riot/account/v1/accounts/by-riot-id/{summonername}/{tagline}?api_key={api_key}"
     data_of_user = requestJsonFile(resource_link)
 
     return data_of_user["puuid"]
 
-def getSummonerSample(rank: str, queue: str, division: str, page: int = 1, devKEY = False) -> list[dict]:
+def getSummonerSample(rank: str, queue: str, division: str, page: int = 1) -> list[dict]:
     """
     loads a sample of players according to the passed arguments.
 
@@ -52,19 +50,20 @@ def getSummonerSample(rank: str, queue: str, division: str, page: int = 1, devKE
         if true, releases the wait time of 1 second
 
     """
-
-    # reading apikey
     api_key = config.general_settings[Configs.MAIN]["API_key"]
+    headers = {
+        "X-Riot-Token": api_key,
+        "Accept": "application/json",
+        "User-Agent": "my-riot-client/1.0",
+    }
     # scraping
-    if not devKEY:
-        time.sleep(1)
-    resource_link = f"https://euw1.api.riotgames.com/lol/league-exp/v4/entries/{queue}/{rank}/{division}?page={page}&api_key={api_key}"
-    data_of_user: list = requestJsonFile(resource_link)
+    resource_link = f"https://euw1.api.riotgames.com/lol/league-exp/v4/entries/{queue}/{rank}/{division}?page={page}"
+    data_of_user: list = requestJsonFile(resource_link, headers)
     
     return data_of_user
 
 
-def getGameIdsByPuuid(puuid: str, devKEY = False) -> list:
+def getGameIdsByPuuid(puuid: str) -> list:
     """loads a list of match ids
     
     Parameters
@@ -80,20 +79,22 @@ def getGameIdsByPuuid(puuid: str, devKEY = False) -> list:
         a dict of matchids
     
     """
-
     # reading apikey
     api_key = config.general_settings[Configs.MAIN]["API_key"]
+    headers = {
+        "X-Riot-Token": api_key,
+        "Accept": "application/json",
+        "User-Agent": "my-riot-client/1.0",
+    }
     # scraping
-    if not devKEY:
-        time.sleep(1)
     start = 0
     count = 100
-    resource_link = f"https://europe.api.riotgames.com/lol/match/v5/matches/by-puuid/{puuid}/ids?type=ranked&start={start}&count={count}&api_key={api_key}"
-    data_of_user: list = requestJsonFile(resource_link)
+    resource_link = f"https://europe.api.riotgames.com/lol/match/v5/matches/by-puuid/{puuid}/ids?type=ranked&start={start}&count={count}"
+    data_of_user: list = requestJsonFile(resource_link, headers)
 
     return data_of_user
     
-def getGameById(gameid: str, saveLocation: str, meta: str = "", devKEY = False) -> tuple[dict]:
+def getGameById(gameid: str, saveLocation: str, meta: str = "") -> tuple[dict]:
     """loads the matchdata of a gameid
     
     Parameters
@@ -111,17 +112,17 @@ def getGameById(gameid: str, saveLocation: str, meta: str = "", devKEY = False) 
         a dict of matchdata
     
     """
-
-    # reading apikey
     api_key = config.general_settings[Configs.MAIN]["API_key"]
+    headers = {
+        "X-Riot-Token": api_key,
+        "Accept": "application/json",
+        "User-Agent": "my-riot-client/1.0",
+    }
     # scraping
-    if not devKEY:
-        time.sleep(1)
-    resource_link_static = f"https://europe.api.riotgames.com/lol/match/v5/matches/{gameid}?api_key={api_key}"
-    resource_link_timeline = f"https://europe.api.riotgames.com/lol/match/v5/matches/{gameid}/timeline?api_key={api_key}"
-    data_of_match: list = requestJsonFile(resource_link_static, f"{saveLocation}{meta}/matches/{gameid}_static.json")
-    data_of_time: list = requestJsonFile(resource_link_timeline, f"{saveLocation}{meta}/timelines/{gameid}_time.json")
-
+    resource_link_static = f"https://europe.api.riotgames.com/lol/match/v5/matches/{gameid}"
+    resource_link_timeline = f"https://europe.api.riotgames.com/lol/match/v5/matches/{gameid}/timeline"
+    data_of_match: list = requestJsonFile(resource_link_static, headers, f"{saveLocation}{meta}/matches/{gameid}_static.json")
+    data_of_time: list = requestJsonFile(resource_link_timeline, headers, f"{saveLocation}{meta}/timelines/{gameid}_time.json")
     return (data_of_match, data_of_time)
 
 def getMaxPageNumber(rank: str, queue: str, division: str) -> int:
@@ -145,7 +146,6 @@ def getMaxPageNumber(rank: str, queue: str, division: str) -> int:
     maxPage = 1
 
     while len(getSummonerSample(rank, queue, division, maxPage)) > 0:
-        
         maxPage *= 2
 
     empty_side = maxPage

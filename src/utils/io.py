@@ -4,9 +4,15 @@
 - .json
 - .sql
 """
-
-import os, pathlib, json, requests, csv, sys
+import os, pathlib, json, requests, csv, sys, time
 from loguru import logger
+import socket
+import urllib3.util.connection as urllib3_cn
+
+def force_ipv4_for_requests() -> None:
+    urllib3_cn.allowed_gai_family = lambda: socket.AF_INET
+
+force_ipv4_for_requests()
     
 def readSettingsFile(rel_path_with_name: str) -> dict[str, str]:
     """
@@ -111,7 +117,7 @@ def moveFile(file, dest: str) -> None:
     logger.trace("Finished moveFile function")
 
 
-def requestJsonFile(linkToJson: str, saveLocation: str | None = None) -> dict:
+def requestJsonFile(linkToJson: str, header: str | None = None, saveLocation: str | None = None) -> dict:
     """request the json body of a provided link.
 
     Parameters
@@ -129,7 +135,20 @@ def requestJsonFile(linkToJson: str, saveLocation: str | None = None) -> dict:
     logger.trace("Started requestjsonfile function with link: " + linkToJson)
     logger.debug("Json file gets downstreamed.")
     data_url = linkToJson
-    data_response = requests.get(data_url)
+    try:
+        data_response = requests.get(data_url, headers=header, timeout=(5, 30))
+    except requests.exceptions.RequestException as e:
+        logger.exception(f"HTTP request failed (network/timeout): {e}")
+        raise
+
+    # Rate limit
+    if data_response.status_code == 429:
+        retry_after = data_response.headers.get("Retry-After")
+        sleep_s = int(retry_after) if retry_after and retry_after.isdigit() else 2
+        logger.warning(f"Rate limited (429). Sleeping {sleep_s}s then retrying once.")
+        time.sleep(sleep_s)
+        data_response = requests.get(linkToJson, headers=header, timeout=(5, 30))
+
     logger.debug("You got a "+str(data_response.status_code) +" reponse with the body:\n"+data_response.__str__())
     if data_response.status_code != 200:
         logger.error("the requested .json body said no! "+ str(data_response.status_code)+": "+data_response.reason) 

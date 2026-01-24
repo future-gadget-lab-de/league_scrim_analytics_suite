@@ -31,10 +31,14 @@ def importMatchfiles(relPathToFile: str) -> dict[GameTable, pd.DataFrame]:
         case "matchv5":
             tabledict: dict[GameTable, pd.DataFrame] = extractRawTables(rawdict, ImportPipeline.MATCHV5)
             #translateTables(tabledict, ImportPipeline.MATCHV5)
+            for table in GameTable:
+                tabledict[table].to_csv("data/" + table.value + "_match.csv")
 
         case "client":
             tabledict: dict[GameTable, pd.DataFrame] = extractRawTables(rawdict, ImportPipeline.CLIENT)
             logger.trace("constructed the dict: "+str(tabledict))
+            for table in GameTable:
+                tabledict[table].to_csv("data/" + table.value + "_client.csv")
             translateTablesForClient(tabledict)
 
     logger.trace("Finished the import process for the file.")

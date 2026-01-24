@@ -93,7 +93,7 @@ class MainWindow(QMainWindow):
     def _update_window(self) -> None:
 
         logger.trace("Starting updating the GUI objects.")
-        isV5Disabled = True
+        isV5Disabled = False
         self.ui.comboBox_division.setDisabled(isV5Disabled)
         self.ui.comboBox_queue.setDisabled(isV5Disabled)
         self.ui.comboBox_rank.setDisabled(isV5Disabled)
