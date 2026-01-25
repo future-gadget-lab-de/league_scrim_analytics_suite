@@ -1,7 +1,7 @@
 *.pyc
 *.conf
 src/visuals/ui/generated/*
-*.csv
+data
 docs/build/*
 docs/source/api
 docs/source/_static

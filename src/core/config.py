@@ -2,6 +2,7 @@
 This file contains a class for handling the current configuration of the program
 """
 import os
+import pandas as pd
 from loguru import logger
 from enum import StrEnum
 from src.utils.io import readSettingsFile, writeSettingsFile
@@ -25,7 +26,6 @@ templates: dict[Configs, dict[str, str]] = {
         "current_prof": "placeholder",
         "csv_directory": "data",
         "metadata_directory": "meta",
-        "mariadb": "0",
         "API_key": "",
         "import_label": "",
     },
@@ -39,7 +39,10 @@ templates: dict[Configs, dict[str, str]] = {
     Configs.PROF: {
         "mode": "csv",
         "con": "",
-        "format": "client"
+        "format": "client",
+        "meta": "",
+        "team": "",
+        "player": ""
     }
 }
 
@@ -68,6 +71,7 @@ class ConfigHandler:
     
     """
     def __init__(self):
+
         self.volatile_settings: dict[str, str] = {
             "_connected": "0"
         }
@@ -120,7 +124,10 @@ class ConfigHandler:
         os.makedirs(os.path.dirname(profile_path), exist_ok=True)
         writeSettingsFile(templates[Configs.PROF], profile_path)
 
+
+
     def setProfile(self, name: str = "placeholder"):
+
         prof = locPathSet_c + "profiles/" + name + ".conf"
         self.general_settings[Configs.PROF] = readSettingsFile(prof)
         if not self.general_settings[Configs.PROF]:
@@ -144,6 +151,7 @@ class ConfigHandler:
         for file in listofFiles:
             result.append(file.split("/")[-1].split(".")[0])
         return result
+
 
     def writeSettings(self):
         filepath = locPathSet_c + Configs.MAIN.value + ".conf"

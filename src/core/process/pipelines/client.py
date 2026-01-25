@@ -214,7 +214,7 @@ def translateTablesForClient(rawTables: dict[GameTable, pd.DataFrame]) -> None:
             for feature in mappables[tableType][mapping]:
                 rawTables[tableType][feature] = rawTables[tableType][feature].astype('str')
                 for i in range(gameTableLength[tableType]):
-                    rawTables[tableType].loc[i, feature] = lsasmapper.map[(mapping, read_patch)][rawTables[tableType].loc[i, feature]]
+                    rawTables[tableType].loc[i, feature] = lsasmapper.mapItem(rawTables[tableType].loc[i, feature], mapping, read_patch)
 
 
         rawTables[tableType] = rawTables[tableType].rename(translateDict[tableType], axis="columns")

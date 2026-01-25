@@ -1,0 +1,4 @@
+endOfGameResult,gameCreation,gameCreationDate,gameDuration,gameId,gameMode,gameType,gameVersion,mapId,platformId,queueId,seasonId
+gameresult,dateEpoch,date,duration,gameid,gamemode,gametype,rawpatch,mapid,platformid,queueid,seasonid
+varchar(16),bigint(16),date,int(8),bigint(16),varchar(16),varchar(24),varchar(16),tinyint(4),varchar(8),int(8),int(8) 
+meta,time,time,time,meta,game,game,meta,game,meta,meta,meta

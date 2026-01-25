@@ -26,7 +26,7 @@ class MatchV5Keys(Enum):
     META:           None        = None
     # playerdata
     PLAYER_1:       list[str]   = ["info", "participants"]
-    PLAYER_2:       list[str]   = ["info","participants", "challenges", "legendaryItemUsed"]
+    # PLAYER_2:       list[str]   = ["info","participants", "challenges", "legendaryItemUsed"]
     PLAYER_3:       list[str]   = ["info","participants","perks", "styles", "selections"]
     # teamdata
     TEAM_1:         list[str]   = ["info","teams"]
@@ -36,7 +36,7 @@ class MatchV5Keys(Enum):
 tableTypeForMatchV5: dict[MatchV5Keys, str] = {
     MatchV5Keys.META:     GameTable.META,
     MatchV5Keys.PLAYER_1: GameTable.PLAYER,
-    MatchV5Keys.PLAYER_2: GameTable.PLAYER,
+    # MatchV5Keys.PLAYER_2: GameTable.PLAYER,
     MatchV5Keys.PLAYER_3: GameTable.PLAYER,
     MatchV5Keys.TEAM_1:   GameTable.TEAM,
     MatchV5Keys.TEAM_2:   GameTable.TEAM,
@@ -64,7 +64,7 @@ MatchV5Keys.TEAM_1   -> "gameId"
 """
 
 needsAggMatchV5: dict[MatchV5Keys, list[str]] = {
-    MatchV5Keys.PLAYER_2: ["info","participants","participantId"],
+    # MatchV5Keys.PLAYER_2: ["info","participants","participantId"],
     MatchV5Keys.PLAYER_3: ["info","participants","participantId"],
     MatchV5Keys.TEAM_2:   ["info", "teams","teamId"]
 }
