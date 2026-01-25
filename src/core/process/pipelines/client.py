@@ -220,7 +220,7 @@ def translateTablesForClient(rawTables: dict[GameTable, pd.DataFrame]) -> None:
         rawTables[tableType] = rawTables[tableType].rename(translateDict[tableType], axis="columns")
 
 
-        # aggregate further
+        # aggregate further test 
         match tableType:
 
             case GameTable.META:
