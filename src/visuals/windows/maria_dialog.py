@@ -112,7 +112,6 @@ class MariaDialog(QDialog):
 
     def _try_connection(self) -> None:
 
-        self.saveSettings()
         updateConnectionState()
 
         if config.volatile_settings["_connected"] == "1":
