@@ -2,4 +2,3 @@ teamId,win,feats_EPIC_MONSTER_KILL_featState,feats_FIRST_BLOOD_featState,feats_F
 teamid,win,epicMonsterFeatState,firstBloodFeatState,firstTurretFeatState,firstAtakhan,atakhanKills,firstBaron,baronKills,firstChampion,championKills,firstDargon,dragonKills,firstHorde,hordeKills,firstInhibitor,inhibitorKills,firstRiftHerald,riftHeraldKills,firstTower,towerKills,gameid,ban0,ban1,ban2,ban3,ban4,pickNumber0,pickNumber1,pickNumber2,pickNumber3,pickNumber4
 Int(4),bool,Int(4),Int(8),Int(4),bool,Int(4),bool,Int(4),bool,Int(8),bool,Int(4),bool,Int(4),bool,Int(4),bool,Int(4),bool,Int(8),Bigint(16),Int(4),Int(4),Int(4),Int(4),Int(4),Int(4),Int(4),Int(4),Int(4),Int(4)
 meta,bools,scores,scores,scores,bools,scores,bools,scores,bools,scores,bools,scores,bools,scores,bools,scores,bools,scores,bools,scores,meta,cs,cs,cs,cs,cs,cs,cs,cs,cs,cs
-

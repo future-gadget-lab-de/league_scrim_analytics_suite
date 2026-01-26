@@ -8,6 +8,8 @@ import mariadb, sys
 import pandas as pd
 from src.core.config import config, Configs
 from src.utils.io import readSQLFile
+from src.core.process.manager import centralmanager
+from src.core.meta import GameTable
 from loguru import logger
 
 def updateConnectionState() -> None:
@@ -132,6 +134,46 @@ def databaseSetup() -> None:
                 logger.debug("Database structure already initialized")
         case "csv":
             logger.debug("CSV Mode, therefore no structure creation.")
+
+def getCreationQueries():
+    
+    tables = centralmanager.recent_tables
+
+    queries = [
+        "SET SQL_MODE = 'NO_AUTO_VALUE_ON_ZERO';",
+        "START TRANSACTION;",
+        "SET time_zone = '+00:00';"
+    ]
+
+    for tabletype in GameTable:
+        query = ""
+        query += f"CREATE TABLE `{tabletype.value}` ("
+
+        table = tables[tabletype]
+        if centralmanager.present[tabletype]:
+            table = table.iloc[:,centralmanager.filter[tabletype]]
+        print(table)
+        for col in table.columns:
+            query += f"'{table.loc[0, col]}' {table.loc[1,col]} NOT NULL, "
+        query = query.removesuffix(", ")
+        query += ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;"
+
+        queries += [query]
+
+
+    queries += [
+        f"ALTER TABLE `{GameTable.META.value}` ADD PRIMARY KEY (`gameid`);",
+        f"ALTER TABLE `{GameTable.PLAYER.value}` ADD PRIMARY KEY (`gameid`,`playerid`);",
+        f"ALTER TABLE `{GameTable.TEAM.value}` ADD PRIMARY KEY (`gameid`,`teamid`);",
+        "COMMIT;"
+    ]
+
+    print(queries)
+    return queries
+
+
+
+
 
 def getCursorSelect(cur) -> pd.DataFrame:
     """returns the content of the cursor, after a done SELECT query.

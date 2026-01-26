@@ -2,4 +2,3 @@ baronKills,dominionVictoryScore,dragonKills,firstBaron,firstBlood,firstDargon,fi
 baronKills,dominionVictoryScore,dragonKills,firstBaron,firstBlood,firstDargon,firstInhibitor,firstTower,hordeKills,inhibitorKills,riftHeraldKills,teamid,towerKills,vilemawKills,winStr,gameid,ban0,ban1,ban2,ban3,ban4,pickNumber0,pickNumber1,pickNumber2,pickNumber3,pickNumber4
 Int(8),Int(8),Int(4),bool,bool,bool,bool,bool,Int(4),Int(4),Int(4),Int(8),Int(4),Int(4),Varchar(8),Bigint(16),Int(4),Int(4),Int(4),Int(4),Int(4),Int(4),Int(4),Int(4),Int(4),Int(4)
 scores,scores,scores,bools,bools,bools,bools,bools,scores,scores,scores,meta,scores,scores,bools,meta,cs,cs,cs,cs,cs,cs,cs,cs,cs,cs
-
