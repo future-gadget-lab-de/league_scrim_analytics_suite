@@ -156,9 +156,11 @@ def getCreationQueries():
         table = tables[tabletype]
         if centralmanager.present[tabletype]:
             table = table.iloc[:,centralmanager.filter[tabletype]]
-        print(table)
+
         for col in table.columns:
-            query += f"`{table.loc[0, col]}` {table.loc[1,col]} NOT NULL, "
+            query += f"`{table.loc[0, col]}` {table.loc[1,col]}"
+            query +=  " NOT NULL"
+            query += ", "
         query = query.removesuffix(", ")
         query += ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;"
 
@@ -172,7 +174,6 @@ def getCreationQueries():
         "COMMIT;"
     ]
 
-    print(queries)
     return queries
 
 

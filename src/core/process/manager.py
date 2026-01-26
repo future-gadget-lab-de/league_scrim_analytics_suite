@@ -54,6 +54,5 @@ class LeagueDataManager:
             GameTable.TEAM: { self.tables[mode][GameTable.TEAM].columns[i]: self.tables[mode][GameTable.TEAM].iloc[0,i] for i in range(len(self.tables[mode][GameTable.TEAM].columns)) },
             GameTable.PLAYER: { self.tables[mode][GameTable.PLAYER].columns[i]: self.tables[mode][GameTable.PLAYER].iloc[0,i] for i in range(len(self.tables[mode][GameTable.PLAYER].columns)) }            
         }
-        print(self.namemap)
         
 centralmanager: LeagueDataManager = LeagueDataManager()

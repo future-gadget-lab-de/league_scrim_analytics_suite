@@ -1,5 +1,6 @@
 """contains methods for reading data, that will be processed"""
 import pandas as pd
+import numpy as np
 from loguru import logger
 from src.core.config import config, Configs
 from src.core.meta import GameTable
@@ -45,19 +46,31 @@ def translateCentralData(tables: dict[GameTable, pd.DataFrame]):
 
 
 
+
     for tabletype in GameTable:
 
-        missing = [v for v in centralmanager.recent_tables[tabletype].columns if v not in tables[tabletype].columns]
-        tables[tabletype][missing] = -1
+
+        cols = centralmanager.recent_tables[tabletype].columns
+        missing = [v for v in cols if v not in tables[tabletype].columns]
+
+        tables[tabletype][missing] = 0
+
+        tables[tabletype] = tables[tabletype][cols]
 
         tables[tabletype] = tables[tabletype].rename(centralmanager.namemap[tabletype], axis="columns")
+
+        tables[tabletype] = tables[tabletype].reindex(sorted(tables[tabletype].columns), axis=1)
         
+        tables[tabletype] = tables[tabletype].fillna(0)
+
         if not centralmanager.present[tabletype]:
             continue
 
         ifilter = centralmanager.filter[tabletype]
 
         tables[tabletype] = tables[tabletype].iloc[:,ifilter]
+
+    
 
 
 
