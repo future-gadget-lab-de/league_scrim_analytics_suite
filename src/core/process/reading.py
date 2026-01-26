@@ -8,6 +8,7 @@ from src.core.process.pipelines.client import translateTablesForClient
 from src.core.io.wrapper import executeSelectQuery
 from src.utils.io import readJsonFile
 from src.utils.sqlquery import returnSelectQuery
+from src.core.process.manager import centralmanager
 
 def importMatchfiles(relPathToFile: str) -> dict[GameTable, pd.DataFrame]:
     """
@@ -31,18 +32,33 @@ def importMatchfiles(relPathToFile: str) -> dict[GameTable, pd.DataFrame]:
         case "matchv5":
             tabledict: dict[GameTable, pd.DataFrame] = extractRawTables(rawdict, ImportPipeline.MATCHV5)
             #translateTables(tabledict, ImportPipeline.MATCHV5)
-            for table in GameTable:
-                tabledict[table].to_csv("data/" + table.value + "_match.csv")
 
         case "client":
             tabledict: dict[GameTable, pd.DataFrame] = extractRawTables(rawdict, ImportPipeline.CLIENT)
             logger.trace("constructed the dict: "+str(tabledict))
-            for table in GameTable:
-                tabledict[table].to_csv("data/" + table.value + "_client.csv")
-            translateTablesForClient(tabledict)
 
     logger.trace("Finished the import process for the file.")
     return tabledict
+
+
+def translateCentralData(tables: dict[GameTable, pd.DataFrame]):
+
+
+
+    for tabletype in GameTable:
+
+        missing = [v for v in centralmanager.recent_tables[tabletype].columns if v not in tables[tabletype].columns]
+        tables[tabletype][missing] = -1
+
+        tables[tabletype] = tables[tabletype].rename(centralmanager.namemap[tabletype], axis="columns")
+        
+        if not centralmanager.present[tabletype]:
+            continue
+
+        ifilter = centralmanager.filter[tabletype]
+
+        tables[tabletype] = tables[tabletype].iloc[:,ifilter]
+
 
 
 def listImportedMatchfiles() -> list[str]:

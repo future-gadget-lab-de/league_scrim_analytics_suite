@@ -69,9 +69,5 @@ def main() -> None:
     config.writeSettings()
 
 if __name__ == "__main__":
-    getCreationQueries()
-    ds = pd.read_csv("saved/metadata_match.csv")
-    cols = list(ds[ds.columns[ds.loc[2].eq("meta")]].iloc[0,:])
-    print(cols)
     main()
     

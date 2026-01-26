@@ -74,6 +74,9 @@ class ProfileDialog(QDialog):
             "mode": self.ui.comboBox_filemode.currentText(),
             "con": self.ui.comboBox_connection.currentText(),
             "format": self.ui.comboBox_gamefile.currentText(),
+            "meta": "",
+            "team": "",
+            "player": ""
         }
         file = locPathSet_c + "profiles/" + self.ui.lineEdit_profilename.text() + ".conf"
         writeSettingsFile(settings, file)

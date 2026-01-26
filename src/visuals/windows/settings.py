@@ -6,6 +6,7 @@ from PySide6.QtWidgets import QDialog
 from src.visuals.ui.generated.ui_neosettings import Ui_settings_dialog
 from src.visuals.windows.profile_dialog import ProfileDialog
 from src.core.process.pipelines.client import labellistclient
+from src.core.process.manager import centralmanager
 
 from src.core.config import config, Configs
 from loguru import logger
@@ -120,6 +121,7 @@ class SettingsDialog(QDialog):
         config.general_settings[Configs.MAIN]["csv_directory"]      = self.ui.lineEdit_csv.text()
 
         config.setProfile(self.ui.comboBox_profile.currentText())
+        centralmanager.updateManager()
 
         logger.debug("Saved Settings via SettingsDialog to RAM.")
 

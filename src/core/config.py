@@ -27,7 +27,7 @@ templates: dict[Configs, dict[str, str]] = {
         "csv_directory": "data",
         "metadata_directory": "meta",
         "API_key": "",
-        "import_label": "",
+        "import_label": "gameid",
     },
     Configs.DB: {
         "host": "",
