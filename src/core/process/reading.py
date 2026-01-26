@@ -5,7 +5,6 @@ from loguru import logger
 from src.core.config import config, Configs
 from src.core.meta import GameTable
 from src.core.process.extract import extractRawTables, ImportPipeline
-from src.core.process.pipelines.client import translateTablesForClient
 from src.core.io.wrapper import executeSelectQuery
 from src.utils.io import readJsonFile
 from src.utils.sqlquery import returnSelectQuery
@@ -51,6 +50,7 @@ def translateCentralData(tables: dict[GameTable, pd.DataFrame]):
 
 
         cols = centralmanager.recent_tables[tabletype].columns
+
         missing = [v for v in cols if v not in tables[tabletype].columns]
 
         tables[tabletype][missing] = 0
@@ -61,6 +61,7 @@ def translateCentralData(tables: dict[GameTable, pd.DataFrame]):
 
         tables[tabletype] = tables[tabletype].reindex(sorted(tables[tabletype].columns), axis=1)
         
+        tables[tabletype] = tables[tabletype].infer_objects()
         tables[tabletype] = tables[tabletype].fillna(0)
 
         if not centralmanager.present[tabletype]:

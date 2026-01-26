@@ -6,7 +6,9 @@ from PySide6.QtWidgets import QDialog
 from src.visuals.ui.generated.ui_neosettings import Ui_settings_dialog
 from src.visuals.windows.profile_dialog import ProfileDialog
 from src.core.process.pipelines.client import labellistclient
+from src.core.io.mariadb import databaseSetup
 from src.core.process.manager import centralmanager
+from src.core.meta import GameTable
 
 from src.core.config import config, Configs
 from loguru import logger
@@ -68,10 +70,9 @@ class SettingsDialog(QDialog):
         label = config.general_settings[Configs.MAIN]["import_label"]
         self.ui.checkBox_imported.setChecked(bool(label))
 
-        form = config.general_settings[Configs.PROF]["format"]
-        if form == "client":
-            self.ui.comboBox_imported.addItems(labellistclient)
-            self.ui.comboBox_imported.setCurrentText(config.general_settings[Configs.MAIN]["import_label"])
+        metacols = list(centralmanager.recent_tables[GameTable.META].iloc[0,:])
+        self.ui.comboBox_imported.addItems(metacols)
+        self.ui.comboBox_imported.setCurrentText(config.general_settings[Configs.MAIN]["import_label"])
 
         logger.trace("Finished init_fields function.")
 
@@ -122,6 +123,7 @@ class SettingsDialog(QDialog):
 
         config.setProfile(self.ui.comboBox_profile.currentText())
         centralmanager.updateManager()
+        databaseSetup()
 
         logger.debug("Saved Settings via SettingsDialog to RAM.")
 
