@@ -9,10 +9,10 @@ def readCsv(csvdir: str) -> pd.DataFrame:
     if not os.path.isfile(csvdir):
         return pd.DataFrame()
     
-    return pd.read_csv(csvdir)
+    return pd.read_csv(csvdir, low_memory=False)
 
 
-def csvToData() -> dict[GameTable, pd.DataFrame]:
+def csvToData() -> dict[GameTable | TimeTable, pd.DataFrame]:
     """reads the internal database .csv files
     
     Returns
@@ -78,6 +78,8 @@ def runSelectOnCsv(query: str, tables: dict[GameTable, pd.DataFrame]) -> pd.Data
     logger.debug("run a query on dataframes.")
     con = duckdb.connect()
     for name, df in tables.items():
+        if df.empty:
+            continue
         con.register(name.value, df)
     try:
         return con.execute(query).df()

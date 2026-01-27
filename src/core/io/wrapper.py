@@ -39,7 +39,6 @@ def executeSelectQuery(query: str) -> pd.DataFrame:
             dframeDict = csvToData()
 
             for ttype in GameTable:
-                print(dframeDict[ttype])
                 if dframeDict[ttype].empty:
 
                     return pd.DataFrame()
