@@ -40,6 +40,7 @@ def executeSelectQuery(query: str) -> pd.DataFrame:
 
             for ttype in GameTable:
                 if dframeDict[ttype].empty:
+
                     return pd.DataFrame()
 
             return runSelectOnCsv(query, dframeDict)

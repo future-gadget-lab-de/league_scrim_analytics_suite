@@ -17,6 +17,7 @@ from src.core.macros import importPipeline
 from src.core.apis.riot import getEqualDistGameSamples, getMaxPageNumber
 from src.utils.path import transformPathtoFileList
 from src.utils.sqlquery import returnSelectQuery
+from src.core.meta import ImportType
 
 from src.core.config import config, Configs
 #TODO: Rewrite Logging
@@ -71,7 +72,8 @@ class MainWindow(QMainWindow):
         self.ui.button_sample.clicked.connect(self._execute_sample)
         self.ui.actionSettings_2.triggered.connect(self._open_settings)
         self.ui.actionMariaDB.triggered.connect(self._open_mariadb_config)
-        self.ui.actionImport_Matchfile.triggered.connect(self._filedialog_opener)
+        self.ui.actionImport_Matchfile.triggered.connect(self._match_importer)
+        self.ui.actionImport_Timeline.triggered.connect(self._time_importer)
 
     def _update_files(self) -> None:
 
@@ -93,7 +95,7 @@ class MainWindow(QMainWindow):
     def _update_window(self) -> None:
 
         logger.trace("Starting updating the GUI objects.")
-        isV5Disabled = True
+        isV5Disabled = False
         self.ui.comboBox_division.setDisabled(isV5Disabled)
         self.ui.comboBox_queue.setDisabled(isV5Disabled)
         self.ui.comboBox_rank.setDisabled(isV5Disabled)
@@ -131,7 +133,7 @@ class MainWindow(QMainWindow):
         self._update_window()
     
 
-    def _filedialog_opener(self) -> None:
+    def _filedialog_opener(self) -> list[str] | None:
 
         logger.trace("Starting setup the FileDialog.")
         dialog = QFileDialog(self)
@@ -143,12 +145,30 @@ class MainWindow(QMainWindow):
         if dialog.exec_():
             logger.debug("successful run the FileDialog.")
             fileNames = dialog.selectedFiles()
-        if fileNames is not None:
-            ldlg = LoadingDialog(self, importPipeline, [{"pathToFolder": path} for path in fileNames])
+
+        return fileNames
+
+    def _match_importer(self) -> None:
+        files = self._filedialog_opener()
+
+        if files is not None:
+            ldlg = LoadingDialog(self, importPipeline, [{"pathToFolder": path, "typ": ImportType.GENERAL} for path in files])
             if ldlg.exec():
                 logger.debug("successful run the LoadingDialog.")
                 pass
         self._update_window()
+
+
+    def _time_importer(self) -> None:
+        files = self._filedialog_opener()
+
+        if files is not None:
+            ldlg = LoadingDialog(self, importPipeline, [{"pathToFolder": path, "typ": ImportType.TIMELINE} for path in files])
+            if ldlg.exec():
+                logger.debug("successful run the LoadingDialog.")
+                pass
+        self._update_window()
+
 
     def _open_settings(self) -> None:
 

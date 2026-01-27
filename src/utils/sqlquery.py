@@ -45,6 +45,9 @@ def returnInsertQuery(table: str, df: pd.DataFrame, ignoreDuplicateOn: str | Non
             if f"{df.iloc[r,c]}" == "False":
                 query += f"'{0}'" + ", "
                 continue
+            if f"{df.iloc[r,c]}" == "nan":
+                query += "NULL, "
+                continue
             query += f"'{df.iloc[r,c]}'" + ", "
         query = query.removesuffix(", ")
         query += "), "
@@ -74,6 +77,8 @@ def returnSelectQuery(table: str, columns: list[str], where_cond: str | None = N
     query : str
         the wanted SELECT query
     """
+    if "" in columns:
+        return ""
     logger.trace("Starting returnSelectQuery for table: " + table +", with columns: " +str(columns) )
     query = "SELECT " 
     logger.info("Generating select query")

@@ -6,6 +6,9 @@ from PySide6.QtWidgets import QDialog
 from src.visuals.ui.generated.ui_neosettings import Ui_settings_dialog
 from src.visuals.windows.profile_dialog import ProfileDialog
 from src.core.process.pipelines.client import labellistclient
+from src.core.io.mariadb import databaseSetup
+from src.core.process.manager import centralmanager
+from src.core.meta import GameTable
 
 from src.core.config import config, Configs
 from loguru import logger
@@ -67,10 +70,13 @@ class SettingsDialog(QDialog):
         label = config.general_settings[Configs.MAIN]["import_label"]
         self.ui.checkBox_imported.setChecked(bool(label))
 
-        form = config.general_settings[Configs.PROF]["format"]
-        if form == "client":
-            self.ui.comboBox_imported.addItems(labellistclient)
-            self.ui.comboBox_imported.setCurrentText(config.general_settings[Configs.MAIN]["import_label"])
+        metacols = list(centralmanager.recent_tables[GameTable.META].iloc[0,:])
+        if not label:
+            self.ui.comboBox_imported.addItems([""])
+        else:
+            self.ui.comboBox_imported.addItems(metacols)
+
+        self.ui.comboBox_imported.setCurrentText(label)
 
         logger.trace("Finished init_fields function.")
 
@@ -79,6 +85,7 @@ class SettingsDialog(QDialog):
         if dlg.exec():
             dlg._add_prof()
         self.ui.comboBox_profile.clear()
+        self.ui.comboBox_imported.clear()
         self._init_fields()
 
     def _change_API(self) -> None:
@@ -91,10 +98,15 @@ class SettingsDialog(QDialog):
         logger.trace("Finished change_maria_setting function")
 
     def _change_label(self) -> None:
-
+        self.ui.comboBox_imported.clear()
         logger.trace("Started change_maria_setting function for object: " + str(self))
         isChecked = self.ui.checkBox_imported.isChecked()
         self.ui.comboBox_imported.setDisabled(not isChecked)
+        metacols = list(centralmanager.recent_tables[GameTable.META].iloc[0,:])
+        if isChecked:
+            self.ui.comboBox_imported.addItems(metacols)
+        else:
+            self.ui.comboBox_imported.addItems([""])
         logger.trace("Finished change_maria_setting function")
 
     def _change_paths(self) -> None:
@@ -120,6 +132,8 @@ class SettingsDialog(QDialog):
         config.general_settings[Configs.MAIN]["csv_directory"]      = self.ui.lineEdit_csv.text()
 
         config.setProfile(self.ui.comboBox_profile.currentText())
+        centralmanager.updateManager()
+        databaseSetup()
 
         logger.debug("Saved Settings via SettingsDialog to RAM.")
 

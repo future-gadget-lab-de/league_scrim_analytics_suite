@@ -1,0 +1,4 @@
+championId_0,championId_1,championId_2,championId_3,championId_4,baronKills,dominionVictoryScore,dragonKills,firstBaron,firstBlood,firstDargon,firstInhibitor,firstTower,gameId,hordeKills,inhibitorKills,pickTurn_0,pickTurn_1,pickTurn_2,pickTurn_3,pickTurn_4,riftHeraldKills,teamId,towerKills,vilemawKills,win
+ban0,ban1,ban2,ban3,ban4,baronKills,dominionVictoryScore,dragonKills,firstBaron,firstBlood,firstDargon,firstInhibitor,firstTower,gameid,hordeKills,inhibitorKills,pickNumber0,pickNumber1,pickNumber2,pickNumber3,pickNumber4,riftHeraldKills,teamid,towerKills,vilemawKills,winStr
+Int(4),Int(4),Int(4),Int(4),Int(4),Int(8),Int(8),Int(4),bool,bool,bool,bool,bool,Bigint(16),Int(4),Int(4),Int(4),Int(4),Int(4),Int(4),Int(4),Int(4),Int(8),Int(4),Int(4),Varchar(8)
+cs,cs,cs,cs,cs,scores,scores,scores,bools,bools,bools,bools,bools,meta,scores,scores,cs,cs,cs,cs,cs,scores,meta,scores,scores,bools

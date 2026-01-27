@@ -2,7 +2,7 @@
 
 from enum import StrEnum, Enum, IntEnum
 
-version_c = "0.0.2"
+version_c = "0.0.3"
 
 class GameTable(StrEnum):
     """the three tablenames of this project 
@@ -26,3 +26,11 @@ gameTableLength: dict[GameTable, int] = {
     GameTable.PLAYER: 10,
     GameTable.TEAM: 2
 }
+
+class TimeTable(StrEnum):
+    FRAME = "framedata"
+    EVENT = "eventdata"
+
+class ImportType(Enum):
+    GENERAL = GameTable
+    TIMELINE = TimeTable

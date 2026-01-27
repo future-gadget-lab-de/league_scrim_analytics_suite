@@ -11,7 +11,7 @@ from src.visuals.ui.generated.ui_profiles import Ui_Dialog
 from loguru import logger
 from src.core.io.mariadb import updateConnectionState
 from src.utils.io import writeSettingsFile
-from src.core.config import config, Configs, locPathSet_c
+from src.core.config import config, Configs, locPathSet_c, templates
 
 class ProfileDialog(QDialog):
     """Wrapper class for the mariadb settings window
@@ -70,10 +70,11 @@ class ProfileDialog(QDialog):
 
     def _add_prof(self) -> None:
 
-        settings = {
-            "mode": self.ui.comboBox_filemode.currentText(),
-            "con": self.ui.comboBox_connection.currentText(),
-            "format": self.ui.comboBox_gamefile.currentText(),
-        }
+        settings = templates[Configs.PROF]
+        settings["mode"] = self.ui.comboBox_filemode.currentText()
+        settings["con"] = self.ui.comboBox_connection.currentText()
+        
+        settings["format"] = self.ui.comboBox_gamefile.currentText()
+
         file = locPathSet_c + "profiles/" + self.ui.lineEdit_profilename.text() + ".conf"
         writeSettingsFile(settings, file)

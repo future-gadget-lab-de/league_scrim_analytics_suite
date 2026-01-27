@@ -8,9 +8,11 @@ import mariadb, sys
 import pandas as pd
 from src.core.config import config, Configs
 from src.utils.io import readSQLFile
+from src.core.process.manager import centralmanager
+from src.core.meta import GameTable, ImportType, TimeTable
 from loguru import logger
 
-def updateConnectionState() -> None:
+def updateConnectionState(customConf: dict | None = None) -> None:
     """
     updates the the connection status of lsas and writes it into the config files.
 
@@ -20,21 +22,23 @@ def updateConnectionState() -> None:
         either a '1' for connected or a '0' for disconnected
     
     """
+
+
     logger.trace("Checking the Connectionstate.")
     try:
-        logger.debug("successfully established a connection to mariadb.")
-        buildConnection()
+        buildConnection(customConf)
         config.volatile_settings["_connected"] = "1"
         config.writeSettings()
+        logger.debug("successfully established a connection to mariadb.")
     except:
-        logger.debug("connection failed.")
         config.volatile_settings["_connected"] = "0"
         config.writeSettings()
+        logger.debug("connection failed.")
 
     
 
 #TODO: Rewrite Logging
-def buildConnection() -> tuple:
+def buildConnection(customConf: dict | None = None) -> tuple:
     """builds a connection to mariadb server
 
     Uses connection parameters to build a connection and a cursor(interface with server) to a database host
@@ -48,6 +52,9 @@ def buildConnection() -> tuple:
     """
 
     conn_params: dict[str, str] = config.general_settings[Configs.DB].copy()
+
+    if customConf is not None:
+        conn_params = customConf.copy()
     conn_params['port'] = int(conn_params['port']) 
 
     conn = mariadb.connect(**conn_params)
@@ -80,7 +87,6 @@ def executeQuery(query: str, conn, cur):
     except mariadb.Error as e:
         cur.close()
         logger.error(f"Error connecting to MariaDB Platform: {e}")
-        sys.exit(1)
     
 def executeSQLFile(pathToFile: str) -> None:
     """
@@ -117,8 +123,8 @@ def databaseSetup() -> None:
     match config.general_settings[Configs.PROF]["mode"]:
         case "db":
             try:
-                create_queries = importSQLQueries("src/core/io/sqlfiles/db_creation_dump.sql")
-
+                # create_queries = importSQLQueries("src/core/io/sqlfiles/db_creation_dump.sql")
+                create_queries = getCreationQueries()
                 logger.debug("Creating DB Format.")
 
                 conn, cur = buildConnection()
@@ -132,6 +138,57 @@ def databaseSetup() -> None:
                 logger.debug("Database structure already initialized")
         case "csv":
             logger.debug("CSV Mode, therefore no structure creation.")
+
+def getCreationQueries():
+    
+    tables = centralmanager.recent_tables
+
+    queries = [
+        "SET SQL_MODE = 'NO_AUTO_VALUE_ON_ZERO';",
+        "START TRANSACTION;",
+        "SET time_zone = '+00:00';"
+    ]
+
+
+    for typ in ImportType:
+        for tabletype in typ.value:
+            if tables[tabletype].empty:
+                continue
+            query = ""
+            query += f"CREATE TABLE `{tabletype.value}` ("
+
+            table = tables[tabletype]
+            if centralmanager.present[tabletype]:
+                table = table.iloc[:,centralmanager.filter[tabletype]]
+
+            for col in table.columns:
+                query += f"`{table.loc[0, col]}` {table.loc[1,col]}"
+                # query +=  " NOT NULL"
+                query += ", "
+            query = query.removesuffix(", ")
+            query += ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;"
+
+            queries += [query]
+
+
+    queries += [
+        f"ALTER TABLE `{GameTable.META.value}` ADD PRIMARY KEY (`gameid`);",
+        f"ALTER TABLE `{GameTable.PLAYER.value}` ADD PRIMARY KEY (`gameid`,`participantid`);",
+        f"ALTER TABLE `{GameTable.TEAM.value}` ADD PRIMARY KEY (`gameid`,`teamid`);",
+    ]
+    if centralmanager.mode == "matchv5":
+        queries += [
+            f"ALTER TABLE `{TimeTable.FRAME}` ADD PRIMARY KEY (`matchid`, `participantid`, `timestamp`);",
+            f"ALTER TABLE `{TimeTable.EVENT}` ADD PRIMARY KEY (`matchid`, `participantid`, `timestamp`);",
+        ]
+
+    queries += [ "COMMIT;" ]
+
+    return queries
+
+
+
+
 
 def getCursorSelect(cur) -> pd.DataFrame:
     """returns the content of the cursor, after a done SELECT query.

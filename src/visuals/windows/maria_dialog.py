@@ -112,8 +112,13 @@ class MariaDialog(QDialog):
 
     def _try_connection(self) -> None:
 
-        self.saveSettings()
-        updateConnectionState()
+        updateConnectionState({
+            "host": self.ui.lineEdit_adress.text(),
+            "user": self.ui.lineEdit_un.text(),
+            "password": self.ui.lineEdit_pw.text(),
+            "port": self.ui.lineEdit_port.text(),
+            "database": self.ui.lineEdit_db.text()
+        })
 
         if config.volatile_settings["_connected"] == "1":
             self.ui.pushButton_connection.setText("connected!")

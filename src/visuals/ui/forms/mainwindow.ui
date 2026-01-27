@@ -70,6 +70,7 @@
     <addaction name="actionSettings_2"/>
     <addaction name="actionMariaDB"/>
     <addaction name="actionImport_Matchfile"/>
+    <addaction name="actionImport_Timeline"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
@@ -98,6 +99,7 @@
    <addaction name="actionSettings_2"/>
    <addaction name="actionMariaDB"/>
    <addaction name="actionImport_Matchfile"/>
+   <addaction name="actionImport_Timeline"/>
    <addaction name="separator"/>
    <addaction name="actionAdd_AnalyticsSpace"/>
    <addaction name="actionRemove_AnalyticsSpace"/>
@@ -353,6 +355,14 @@
    </property>
    <property name="menuRole">
     <enum>QAction::MenuRole::TextHeuristicRole</enum>
+   </property>
+  </action>
+  <action name="actionImport_Timeline">
+   <property name="icon">
+    <iconset theme="QIcon::ThemeIcon::AppointmentNew"/>
+   </property>
+   <property name="text">
+    <string>Import Timeline</string>
    </property>
   </action>
  </widget>

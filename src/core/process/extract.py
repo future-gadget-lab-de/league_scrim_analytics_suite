@@ -3,10 +3,10 @@
 import pandas as pd
 from enum import Enum
 from loguru import logger
-from src.core.meta import GameTable
+from src.core.meta import GameTable, TimeTable, ImportType
 from src.core.process.pipelines.client import ClientKeys, tableTypeForClient, needsAggClient, needsMetaDataClient
 from src.core.process.pipelines.matchv5 import MatchV5Keys, tableTypeForMatchV5, needsAggMatchV5, needsMetaDataMatchV5
-from src.utils.pandas import dropListEntries, mergeTables, indexByOneVariable
+from src.utils.pandas import dropListEntries, mergeTables, indexByOneVariable, concatOnPrefixes
 
 class ImportPipeline(Enum):
     """possible pipelines, we use currently
@@ -22,8 +22,6 @@ class ImportPipeline(Enum):
     CLIENT  = ClientKeys
     MATCHV5 = MatchV5Keys
 
-
-
 pipeToAgg: dict[ImportPipeline, dict] = {
     ImportPipeline.CLIENT: needsAggClient,
     ImportPipeline.MATCHV5: needsAggMatchV5
@@ -36,7 +34,7 @@ pipeToMeta: dict[ImportPipeline, dict] = {
 }
 """dict, which maps the pipeline to the metapath helper"""
 
-def classify(member: ClientKeys | MatchV5Keys) -> GameTable:
+def classify(member: ClientKeys | MatchV5Keys) -> GameTable | TimeTable:
     """classifys the GameTabletype for a Key
     
     Parameters
@@ -59,6 +57,7 @@ def classify(member: ClientKeys | MatchV5Keys) -> GameTable:
 def getData(
     data:    dict, 
     pathKey: MatchV5Keys | ClientKeys, 
+    typ:     ImportType,
     metaKey: list[list[str]] | None = None,
     agg:      bool = False,
 ) -> pd.DataFrame:
@@ -94,11 +93,26 @@ def getData(
     
     if agg:
         logger.debug("Start aggregating the resulting datatable.")
-        return indexByOneVariable(listlessDf, "_".join(metaKey[0]))
+        match typ:
+            case ImportType.GENERAL:
+                return indexByOneVariable(listlessDf, "_".join(metaKey[0]))
+            case ImportType.TIMELINE:
+                return concatOnPrefixes(listlessDf, [
+                    "participantFrames_1_",
+                    "participantFrames_2_",
+                    "participantFrames_3_",
+                    "participantFrames_4_",
+                    "participantFrames_5_",
+                    "participantFrames_6_",
+                    "participantFrames_7_",
+                    "participantFrames_8_",
+                    "participantFrames_9_",
+                    "participantFrames_10_",
+                ], "participantid")
         
     return listlessDf
 
-def extractRawTables(data: dict, pipe: ImportPipeline) -> dict[GameTable, pd.DataFrame]:
+def extractRawTables(data: dict, pipe: ImportPipeline, typ: ImportType) -> dict[GameTable, pd.DataFrame]:
     """Collects all member of a enum class (see head of this file) and 
     executes these onto a data dict, to extract the data and format it into
     three outcomes: PLAYER-, META- and TEAMDATA
@@ -120,8 +134,13 @@ def extractRawTables(data: dict, pipe: ImportPipeline) -> dict[GameTable, pd.Dat
     METADATA: list[pd.DataFrame]   = []
     PLAYERDATA: list[pd.DataFrame] = []
     TEAMDATA: list[pd.DataFrame]   = []
+    FRAMEDATA: list[pd.DataFrame]  = []
+    EVENTDATA: list[pd.DataFrame]  = []
 
     for path in pipe.value:
+        if not isinstance(classify(path),typ.value):
+            continue
+
         logger.debug(f"extracting the part of the json, according to {path.value}.")
         metaKey = None
         aggregation: bool = (path in pipeToAgg[pipe])
@@ -132,6 +151,7 @@ def extractRawTables(data: dict, pipe: ImportPipeline) -> dict[GameTable, pd.Dat
         table: pd.DataFrame = getData(
                 data=data,
                 pathKey=path,
+                typ=typ,
                 metaKey=metaKey,
                 agg=aggregation
         )
@@ -143,10 +163,16 @@ def extractRawTables(data: dict, pipe: ImportPipeline) -> dict[GameTable, pd.Dat
                 PLAYERDATA.append(table)
             case GameTable.META:
                 METADATA.append(table)
+            case TimeTable.FRAME:
+                FRAMEDATA.append(table)
+            case TimeTable.EVENT:
+                EVENTDATA.append(table)
 
     return {
         GameTable.META:   mergeTables(METADATA), 
         GameTable.TEAM:   mergeTables(TEAMDATA), 
-        GameTable.PLAYER: mergeTables(PLAYERDATA)
+        GameTable.PLAYER: mergeTables(PLAYERDATA),
+        TimeTable.FRAME:  mergeTables(FRAMEDATA), 
+        TimeTable.EVENT:  mergeTables(EVENTDATA)
     }
 

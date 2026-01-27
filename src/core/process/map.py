@@ -96,6 +96,9 @@ class IdMapper:
 
         self.loadedpatches.add(patch)
 
+    def mapItem(self, id: str, req: str, patch: str):
+        return self.map[(req,patch)][id]
+
 
 lsasmapper: IdMapper = IdMapper()
 """the global map function"""

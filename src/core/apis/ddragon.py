@@ -27,7 +27,7 @@ def scrapeRecentPatch() -> str:
     logger.debug("Scraping recent Patch.")
     data_dict = readJsonFile(data_file_path)
     if not data_dict:
-        data_dict = requestJsonFile(link, data_file_path)
+        data_dict = requestJsonFile(link, saveLocation=data_file_path)
     patch = data_dict["v"]
 
     logger.trace("Finished scrapeRecentPatch function.")
@@ -102,7 +102,7 @@ def loadIdDataSet(dataRequested: str, patch: str | None = None) -> dict:
     data_output = readJsonFile(data_file_path)
     if not data_output:
         scrape_link = returnScrapeLink(dataRequested, patch)
-        data_output = requestJsonFile(scrape_link, data_file_path)
+        data_output = requestJsonFile(scrape_link, saveLocation=data_file_path)
 
     logger.success("Loaded IdDataSet: " +dataRequested) 
     return data_output

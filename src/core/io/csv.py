@@ -2,17 +2,17 @@
 import duckdb, os
 import pandas as pd
 from loguru import logger
-from src.core.meta import GameTable
+from src.core.meta import GameTable, TimeTable, ImportType
 from src.core.config import config, Configs
 
 def readCsv(csvdir: str) -> pd.DataFrame:
     if not os.path.isfile(csvdir):
         return pd.DataFrame()
     
-    return pd.read_csv(csvdir)
+    return pd.read_csv(csvdir, low_memory=False)
 
 
-def csvToData() -> dict[GameTable, pd.DataFrame]:
+def csvToData() -> dict[GameTable | TimeTable, pd.DataFrame]:
     """reads the internal database .csv files
     
     Returns
@@ -27,11 +27,13 @@ def csvToData() -> dict[GameTable, pd.DataFrame]:
     return {
         GameTable.META: readCsv(csv_dir + "/" + GameTable.META.value + ".csv"),
         GameTable.PLAYER: readCsv(csv_dir + "/" + GameTable.PLAYER.value + ".csv"),
-        GameTable.TEAM: readCsv(csv_dir + "/" + GameTable.TEAM.value + ".csv")
+        GameTable.TEAM: readCsv(csv_dir + "/" + GameTable.TEAM.value + ".csv"),
+        TimeTable.FRAME: readCsv(csv_dir + "/" + TimeTable.FRAME.value + ".csv"),
+        TimeTable.EVENT: readCsv(csv_dir + "/" + TimeTable.EVENT.value + ".csv")
     }
 
 
-def DataToCsv(tabledict: dict[GameTable, pd.DataFrame]) -> None:
+def DataToCsv(tabledict: dict[GameTable, pd.DataFrame], typ: ImportType) -> None:
     """A method, which adds the passed data to the .csv database
     
     Parameters
@@ -50,7 +52,7 @@ def DataToCsv(tabledict: dict[GameTable, pd.DataFrame]) -> None:
 
     os.makedirs(os.path.dirname(csv_dir+"/"), exist_ok=True)
 
-    for tabletype in GameTable:
+    for tabletype in typ.value:
         df = pd.concat([oldTabledict[tabletype], tabledict[tabletype]], ignore_index=True)
         df = df.drop_duplicates()
         df.to_csv(csv_dir + "/" + tabletype.value + ".csv", index=False)
@@ -76,6 +78,8 @@ def runSelectOnCsv(query: str, tables: dict[GameTable, pd.DataFrame]) -> pd.Data
     logger.debug("run a query on dataframes.")
     con = duckdb.connect()
     for name, df in tables.items():
+        if df.empty:
+            continue
         con.register(name.value, df)
     try:
         return con.execute(query).df()

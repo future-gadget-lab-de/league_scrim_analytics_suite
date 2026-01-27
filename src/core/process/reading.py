@@ -1,15 +1,16 @@
 """contains methods for reading data, that will be processed"""
 import pandas as pd
+import numpy as np
 from loguru import logger
 from src.core.config import config, Configs
-from src.core.meta import GameTable
+from src.core.meta import GameTable, TimeTable, ImportType
 from src.core.process.extract import extractRawTables, ImportPipeline
-from src.core.process.pipelines.client import translateTablesForClient
 from src.core.io.wrapper import executeSelectQuery
 from src.utils.io import readJsonFile
 from src.utils.sqlquery import returnSelectQuery
+from src.core.process.manager import centralmanager
 
-def importMatchfiles(relPathToFile: str) -> dict[GameTable, pd.DataFrame]:
+def importMatchfiles(relPathToFile: str, typ: ImportType) -> dict[GameTable, pd.DataFrame]:
     """
     imports a matchfile
 
@@ -29,16 +30,46 @@ def importMatchfiles(relPathToFile: str) -> dict[GameTable, pd.DataFrame]:
     match config.general_settings[Configs.PROF]["format"]:
 
         case "matchv5":
-            tabledict: dict[GameTable, pd.DataFrame] = extractRawTables(rawdict, ImportPipeline.MATCHV5)
+            rawdict["info"]["matchId"] = rawdict["metadata"]["matchId"]
+            tabledict: dict[GameTable, pd.DataFrame] = extractRawTables(rawdict, ImportPipeline.MATCHV5, typ)
             #translateTables(tabledict, ImportPipeline.MATCHV5)
 
         case "client":
-            tabledict: dict[GameTable, pd.DataFrame] = extractRawTables(rawdict, ImportPipeline.CLIENT)
+            tabledict: dict[GameTable, pd.DataFrame] = extractRawTables(rawdict, ImportPipeline.CLIENT, typ)
             logger.trace("constructed the dict: "+str(tabledict))
-            translateTablesForClient(tabledict)
 
     logger.trace("Finished the import process for the file.")
     return tabledict
+
+
+def translateCentralData(tables: dict[GameTable, pd.DataFrame], typ: ImportType):
+
+
+    for tabletype in typ.value:
+
+        cols = centralmanager.recent_tables[tabletype].columns
+        missing = [v for v in cols if v not in tables[tabletype].columns]
+
+        tables[tabletype][missing] = np.nan
+
+        tables[tabletype] = tables[tabletype][cols]
+
+        tables[tabletype] = tables[tabletype].rename(centralmanager.namemap[tabletype], axis="columns")
+
+        tables[tabletype] = tables[tabletype].reindex(sorted(tables[tabletype].columns), axis=1)
+        
+        tables[tabletype] = tables[tabletype].infer_objects()
+        # tables[tabletype] = tables[tabletype].fillna(0)
+
+        if not centralmanager.present[tabletype]:
+            continue
+
+        ifilter = centralmanager.filter[tabletype]
+
+        tables[tabletype] = tables[tabletype].iloc[:,ifilter]
+
+    
+
 
 
 def listImportedMatchfiles() -> list[str]:
@@ -52,6 +83,9 @@ def listImportedMatchfiles() -> list[str]:
     """
 
     importlabel = config.general_settings[Configs.MAIN]["import_label"]
+    if not importlabel:
+        return []
+
     query = returnSelectQuery(GameTable.META.value,[importlabel])
     data = executeSelectQuery(query)
 
