@@ -23,9 +23,6 @@ def executeSelectQuery(query: str) -> pd.DataFrame:
     """
     logger.info(f"executing the .sql query: {query}")
 
-    if query == "":
-        return pd.DataFrame()
-
     match config.general_settings[Configs.PROF]["mode"]:
         case "db":
 
@@ -42,7 +39,9 @@ def executeSelectQuery(query: str) -> pd.DataFrame:
             dframeDict = csvToData()
 
             for ttype in GameTable:
+                print(dframeDict[ttype])
                 if dframeDict[ttype].empty:
+
                     return pd.DataFrame()
 
             return runSelectOnCsv(query, dframeDict)

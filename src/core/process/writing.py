@@ -23,7 +23,7 @@ def writeData(tabledict: dict[GameTable, pd.DataFrame], typ: ImportType) -> None
 
         case "csv":
             logger.trace("Writing in CSV mode.")
-            DataToCsv(tabledict)
+            DataToCsv(tabledict, typ)
             
         case "db":
             logger.trace("Writing in DB mode.")
