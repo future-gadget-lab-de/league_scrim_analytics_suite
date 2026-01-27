@@ -44,15 +44,10 @@ def importMatchfiles(relPathToFile: str, typ: ImportType) -> dict[GameTable, pd.
 
 def translateCentralData(tables: dict[GameTable, pd.DataFrame], typ: ImportType):
 
-    print(typ.value)
+
     for tabletype in typ.value:
-        print(tabletype)
-        print()
 
         cols = centralmanager.recent_tables[tabletype].columns
-        print(tables[tabletype].columns)
-        print(cols)
-
         missing = [v for v in cols if v not in tables[tabletype].columns]
 
         tables[tabletype][missing] = 0
