@@ -163,7 +163,7 @@ def getCreationQueries():
 
             for col in table.columns:
                 query += f"`{table.loc[0, col]}` {table.loc[1,col]}"
-                query +=  " NOT NULL"
+                # query +=  " NOT NULL"
                 query += ", "
             query = query.removesuffix(", ")
             query += ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;"

@@ -50,7 +50,7 @@ def translateCentralData(tables: dict[GameTable, pd.DataFrame], typ: ImportType)
         cols = centralmanager.recent_tables[tabletype].columns
         missing = [v for v in cols if v not in tables[tabletype].columns]
 
-        tables[tabletype][missing] = 0
+        tables[tabletype][missing] = np.nan
 
         tables[tabletype] = tables[tabletype][cols]
 
@@ -59,7 +59,7 @@ def translateCentralData(tables: dict[GameTable, pd.DataFrame], typ: ImportType)
         tables[tabletype] = tables[tabletype].reindex(sorted(tables[tabletype].columns), axis=1)
         
         tables[tabletype] = tables[tabletype].infer_objects()
-        tables[tabletype] = tables[tabletype].fillna(0)
+        # tables[tabletype] = tables[tabletype].fillna(0)
 
         if not centralmanager.present[tabletype]:
             continue

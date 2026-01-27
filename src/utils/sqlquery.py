@@ -45,6 +45,9 @@ def returnInsertQuery(table: str, df: pd.DataFrame, ignoreDuplicateOn: str | Non
             if f"{df.iloc[r,c]}" == "False":
                 query += f"'{0}'" + ", "
                 continue
+            if f"{df.iloc[r,c]}" == "nan":
+                query += "NULL, "
+                continue
             query += f"'{df.iloc[r,c]}'" + ", "
         query = query.removesuffix(", ")
         query += "), "
