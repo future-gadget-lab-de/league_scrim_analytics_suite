@@ -26,3 +26,11 @@ gameTableLength: dict[GameTable, int] = {
     GameTable.PLAYER: 10,
     GameTable.TEAM: 2
 }
+
+class TimeTable(StrEnum):
+    FRAME = "framedata"
+    EVENT = "eventdata"
+
+class ImportType(Enum):
+    GENERAL = GameTable
+    TIMELINE = TimeTable

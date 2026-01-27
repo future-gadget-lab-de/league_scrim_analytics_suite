@@ -71,8 +71,12 @@ class SettingsDialog(QDialog):
         self.ui.checkBox_imported.setChecked(bool(label))
 
         metacols = list(centralmanager.recent_tables[GameTable.META].iloc[0,:])
-        self.ui.comboBox_imported.addItems(metacols)
-        self.ui.comboBox_imported.setCurrentText(config.general_settings[Configs.MAIN]["import_label"])
+        if not label:
+            self.ui.comboBox_imported.addItems([""])
+        else:
+            self.ui.comboBox_imported.addItems(metacols)
+
+        self.ui.comboBox_imported.setCurrentText(label)
 
         logger.trace("Finished init_fields function.")
 
@@ -81,6 +85,7 @@ class SettingsDialog(QDialog):
         if dlg.exec():
             dlg._add_prof()
         self.ui.comboBox_profile.clear()
+        self.ui.comboBox_imported.clear()
         self._init_fields()
 
     def _change_API(self) -> None:
@@ -93,10 +98,15 @@ class SettingsDialog(QDialog):
         logger.trace("Finished change_maria_setting function")
 
     def _change_label(self) -> None:
-
+        self.ui.comboBox_imported.clear()
         logger.trace("Started change_maria_setting function for object: " + str(self))
         isChecked = self.ui.checkBox_imported.isChecked()
         self.ui.comboBox_imported.setDisabled(not isChecked)
+        metacols = list(centralmanager.recent_tables[GameTable.META].iloc[0,:])
+        if isChecked:
+            self.ui.comboBox_imported.addItems(metacols)
+        else:
+            self.ui.comboBox_imported.addItems([""])
         logger.trace("Finished change_maria_setting function")
 
     def _change_paths(self) -> None:

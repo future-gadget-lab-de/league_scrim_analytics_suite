@@ -9,7 +9,7 @@ import pandas as pd
 from src.core.config import config, Configs
 from src.utils.io import readSQLFile
 from src.core.process.manager import centralmanager
-from src.core.meta import GameTable
+from src.core.meta import GameTable, ImportType, TimeTable
 from loguru import logger
 
 def updateConnectionState(customConf: dict | None = None) -> None:
@@ -149,30 +149,40 @@ def getCreationQueries():
         "SET time_zone = '+00:00';"
     ]
 
-    for tabletype in GameTable:
-        query = ""
-        query += f"CREATE TABLE `{tabletype.value}` ("
 
-        table = tables[tabletype]
-        if centralmanager.present[tabletype]:
-            table = table.iloc[:,centralmanager.filter[tabletype]]
+    for typ in ImportType:
+        for tabletype in typ.value:
+            if tables[tabletype].empty:
+                continue
+            query = ""
+            query += f"CREATE TABLE `{tabletype.value}` ("
 
-        for col in table.columns:
-            query += f"`{table.loc[0, col]}` {table.loc[1,col]}"
-            query +=  " NOT NULL"
-            query += ", "
-        query = query.removesuffix(", ")
-        query += ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;"
+            table = tables[tabletype]
+            if centralmanager.present[tabletype]:
+                table = table.iloc[:,centralmanager.filter[tabletype]]
 
-        queries += [query]
+            for col in table.columns:
+                query += f"`{table.loc[0, col]}` {table.loc[1,col]}"
+                query +=  " NOT NULL"
+                query += ", "
+            query = query.removesuffix(", ")
+            query += ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;"
+
+            queries += [query]
 
 
     queries += [
         f"ALTER TABLE `{GameTable.META.value}` ADD PRIMARY KEY (`gameid`);",
         f"ALTER TABLE `{GameTable.PLAYER.value}` ADD PRIMARY KEY (`gameid`,`participantid`);",
         f"ALTER TABLE `{GameTable.TEAM.value}` ADD PRIMARY KEY (`gameid`,`teamid`);",
-        "COMMIT;"
     ]
+    if centralmanager.mode == "matchv5":
+        queries += [
+            f"ALTER TABLE `{TimeTable.FRAME}` ADD PRIMARY KEY (`matchid`, `participantid`, `timestamp`);",
+            f"ALTER TABLE `{TimeTable.EVENT}` ADD PRIMARY KEY (`matchid`, `participantid`, `timestamp`);",
+        ]
+
+    queries += [ "COMMIT;" ]
 
     return queries
 

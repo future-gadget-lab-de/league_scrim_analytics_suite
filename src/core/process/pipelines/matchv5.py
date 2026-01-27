@@ -1,6 +1,6 @@
 """MatchV5 pipeline"""
 from enum import Enum
-from src.core.meta import GameTable
+from src.core.meta import GameTable, TimeTable
 
 class MatchV5Keys(Enum):
     """current paths to data, for pandas json_normalize
@@ -33,13 +33,20 @@ class MatchV5Keys(Enum):
     TEAM_2:         list[str]   = ["info","teams", "bans"]
 
 
-tableTypeForMatchV5: dict[MatchV5Keys, str] = {
+    FRAME:          list[str]   = ["info", "frames"]
+
+    EVENTS:         list[str]   = ["info", "frames", "events"]
+
+
+tableTypeForMatchV5: dict[MatchV5Keys, GameTable|TimeTable] = {
     MatchV5Keys.META:     GameTable.META,
     MatchV5Keys.PLAYER_1: GameTable.PLAYER,
     # MatchV5Keys.PLAYER_2: GameTable.PLAYER,
     MatchV5Keys.PLAYER_3: GameTable.PLAYER,
     MatchV5Keys.TEAM_1:   GameTable.TEAM,
     MatchV5Keys.TEAM_2:   GameTable.TEAM,
+    MatchV5Keys.FRAME:    TimeTable.FRAME,
+    MatchV5Keys.EVENTS:   TimeTable.EVENT
 }
 """classification of each resulting table
 
@@ -54,7 +61,8 @@ tableTypeForMatchV5: dict[MatchV5Keys, str] = {
 
 needsMetaDataMatchV5: dict[MatchV5Keys, list[str]] = {
     MatchV5Keys.PLAYER_1: ["info","gameId"],
-    MatchV5Keys.TEAM_1:   ["info","gameId"]
+    MatchV5Keys.TEAM_1:   ["info","gameId"],
+    MatchV5Keys.EVENTS:   ["info", "matchId"]
 }
 """the tables produced by these keys, need metadata, to be assignable
 
@@ -66,7 +74,8 @@ MatchV5Keys.TEAM_1   -> "gameId"
 needsAggMatchV5: dict[MatchV5Keys, list[str]] = {
     # MatchV5Keys.PLAYER_2: ["info","participants","participantId"],
     MatchV5Keys.PLAYER_3: ["info","participants","participantId"],
-    MatchV5Keys.TEAM_2:   ["info", "teams","teamId"]
+    MatchV5Keys.TEAM_2:   ["info", "teams","teamId"],
+    MatchV5Keys.FRAME:    ["info", "matchId"],
 }
 """The tables produced by this keys, need further aggregation into the right table format.
 

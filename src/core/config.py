@@ -42,7 +42,9 @@ templates: dict[Configs, dict[str, str]] = {
         "format": "client",
         "meta": "",
         "team": "",
-        "player": ""
+        "player": "",
+        "frame": "",
+        "event": ""
     }
 }
 
