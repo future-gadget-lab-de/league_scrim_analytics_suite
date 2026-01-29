@@ -83,28 +83,6 @@
    <addaction name="menuEdit"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
-  <widget class="QToolBar" name="tools">
-   <property name="windowTitle">
-    <string>toolBar</string>
-   </property>
-   <property name="movable">
-    <bool>true</bool>
-   </property>
-   <attribute name="toolBarArea">
-    <enum>TopToolBarArea</enum>
-   </attribute>
-   <attribute name="toolBarBreak">
-    <bool>false</bool>
-   </attribute>
-   <addaction name="actionSettings_2"/>
-   <addaction name="actionMariaDB"/>
-   <addaction name="actionImport_Matchfile"/>
-   <addaction name="actionImport_Timeline"/>
-   <addaction name="separator"/>
-   <addaction name="actionAdd_AnalyticsSpace"/>
-   <addaction name="actionRemove_AnalyticsSpace"/>
-   <addaction name="separator"/>
-  </widget>
   <widget class="QDockWidget" name="left_dock">
    <property name="minimumSize">
     <size>
@@ -311,9 +289,28 @@
     </layout>
    </widget>
   </widget>
+  <widget class="QToolBar" name="tools">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <property name="movable">
+    <bool>true</bool>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionSettings_2"/>
+   <addaction name="actionMariaDB"/>
+   <addaction name="separator"/>
+   <addaction name="actionImport_Matchfile"/>
+   <addaction name="actionImport_Timeline"/>
+  </widget>
   <action name="actionSettings_2">
    <property name="icon">
-    <iconset theme="QIcon::ThemeIcon::HelpAbout"/>
+    <iconset theme="applications-system"/>
    </property>
    <property name="text">
     <string>Settings</string>
@@ -321,7 +318,7 @@
   </action>
   <action name="actionMariaDB">
    <property name="icon">
-    <iconset theme="QIcon::ThemeIcon::NetworkWireless"/>
+    <iconset theme="applications-internet"/>
    </property>
    <property name="text">
     <string>MariaDB...</string>
@@ -329,7 +326,7 @@
   </action>
   <action name="actionImport_Matchfile">
    <property name="icon">
-    <iconset theme="QIcon::ThemeIcon::DocumentNew"/>
+    <iconset theme="QIcon::ThemeIcon::DocumentOpen"/>
    </property>
    <property name="text">
     <string>Import Matchfile</string>
@@ -337,7 +334,7 @@
   </action>
   <action name="actionAdd_AnalyticsSpace">
    <property name="icon">
-    <iconset theme="QIcon::ThemeIcon::ListAdd"/>
+    <iconset theme="QIcon::ThemeIcon::DocumentOpenRecent"/>
    </property>
    <property name="text">
     <string>Add AnalyticsSpace</string>
@@ -359,7 +356,7 @@
   </action>
   <action name="actionImport_Timeline">
    <property name="icon">
-    <iconset theme="QIcon::ThemeIcon::AppointmentNew"/>
+    <iconset theme="QIcon::ThemeIcon::DocumentOpenRecent"/>
    </property>
    <property name="text">
     <string>Import Timeline</string>

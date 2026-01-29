@@ -3,7 +3,7 @@ from __future__ import annotations
 from loguru import logger
 import json
 
-from src.visuals.windows.analytics_singleton import AnalyticsSingleton
+from src.visuals.windows.spaces.templater import AnalyticsSingleton, NeoDiagrams
 from src.visuals.ui.generated.ui_scroll_wrapper import Ui_Scroll_wrapper
 
 from PySide6.QtCore import Qt, QKeyCombination, Signal
@@ -39,11 +39,11 @@ class NeoAnalyticsSingleton(QWidget):
         
             match e.key():
 
-                case Qt.Key.Key_Q:
+                case Qt.Key.Key_H:
                     print("emitted")
                     self.buttonpressed.emit("horizontal", self)
 
-                case Qt.Key.Key_E:
+                case Qt.Key.Key_V:
                     print("emitted")
                     self.buttonpressed.emit("vertical", self)
 
@@ -71,7 +71,7 @@ class NeoAnalyticsSpace(QWidget):
                 "parent": "root"
             }
         ]
-        split = self._build_by_struct(struct_dict, "root", 1, [])
+        split = self._build_by_struct(struct_std, "root", 1, [])
         self.splitter.append(
             split
         )
@@ -92,7 +92,9 @@ class NeoAnalyticsSpace(QWidget):
         layout.addWidget(QLineEdit())
         group.setLayout(layout)
 
-        test = NeoAnalyticsSingleton(group)
+        test = NeoAnalyticsSingleton(NeoDiagrams())
+
+
 
         but1.pressed.connect(self.saveStates)
         test.buttonpressed.connect(self._add_Splitter_str)
