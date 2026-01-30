@@ -21,12 +21,12 @@ This plugin structure is partitioned into two parts
 
 To expand `lsas` plot codebase you have to drop a **python file**, into `templates/plugins` (relative to the executable), which consists of
 
-1. Three **constant** members, namely
+1. four **constant** members, namely
     - `input_layout_c` - which identifies, which kind of dataframes your function can handle.
     ```python
     # For Example:
     # one of the simplest layouts --> one dataframe with a integer row
-    input_layout_c = [("int64",)] 
+    input_layout_c: list[tuple[str] | tuple[str, str] | tuple[str, str, str] | ...] = [("int64",)] 
     # more complex examples:
     input_layout_c = [("int64","int64")] # -> one dataframe with 2 integer rows
     input_layout_c = [("int64",), ("int64",)] # two dataframes with 1 integer row
@@ -35,15 +35,16 @@ To expand `lsas` plot codebase you have to drop a **python file**, into `templat
         a number of entries of it.
     ```python
     # assume
-    accept_less_c = True
+    accept_less_c: bool = True
     input_layout_c = [("int64",), ("int64",)] # two dataframes with 1 integer row
     # in this example your method would also be applicable to one dataframe with 1 integer row
     ```
     - `location_c` - which identifies the location where you want to save the file.
     ```python
     # For Example:
-    location_c = "graphs/mygraph.png" # --> .../lsas/graphs/mygraph.png
+    location_c: str = "graphs/mygraph.png" # --> .../lsas/graphs/mygraph.png
     ```
+    - `size_c` - which determines the size of the plot 
 
 2. A plot function, which you can freely write, but should satisfie anyway:
     - having `data: list[pd.DataFrame]` as the first positional argument and apart from the first
