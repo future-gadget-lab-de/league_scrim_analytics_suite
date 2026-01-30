@@ -23,7 +23,6 @@ def importPipeline(pathToFolder: str, typ: ImportType) -> None:
         writeData(table, typ)
 
     
-
 def executeSQLFiles(pathToFolder: str) -> None:
     """executes a number of sqlfiles
     

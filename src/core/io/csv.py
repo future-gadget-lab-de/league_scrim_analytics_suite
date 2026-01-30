@@ -2,6 +2,7 @@
 import duckdb, os
 import pandas as pd
 from loguru import logger
+
 from src.core.meta import GameTable, TimeTable, ImportType
 from src.core.config import config, Configs
 
@@ -17,7 +18,7 @@ def csvToData() -> dict[GameTable | TimeTable, pd.DataFrame]:
     
     Returns
     -------
-    data : list[pd.Dataframe]
+    data : dict[GameTable | TimeTable, pd.Dataframe]
         contains a list of data, namely meta-, team- and playerdata
         
     """
