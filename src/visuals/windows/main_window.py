@@ -1,26 +1,29 @@
 """The Wrapper class for the main Window, which is started with the GUI."""
 from __future__ import annotations
+
 from loguru import logger
 import numpy as np
 
-from PySide6.QtWidgets import QMainWindow, QFileDialog, QLabel
-from src.visuals.ui.generated.ui_mainwindow import Ui_MainWindow
-from src.visuals.windows.settings import SettingsDialog
-from src.visuals.windows.maria_dialog import MariaDialog
-from src.visuals.windows.analytics_space import AnalyticsSpace
-from src.visuals.windows.loading_dialog import LoadingDialog
-from src.visuals.windows.sample_dialog import SampleDialog
-
+from src.core.config import config, Configs
 from src.core.process.reading import listImportedMatchfiles
 from src.core.io.wrapper import executeSelectQuery
 from src.core.io.mariadb import databaseSetup
 from src.core.macros import importPipeline
 from src.core.apis.riot import getEqualDistGameSamples, getMaxPageNumber
-from src.utils.path import transformPathtoFileList
-from src.utils.sqlquery import returnSelectQuery
 from src.core.meta import ImportType
 
-from src.core.config import config, Configs
+from src.visuals.ui.generated.ui_mainwindow import Ui_MainWindow
+from src.visuals.windows.settings import SettingsDialog
+from src.visuals.windows.maria_dialog import MariaDialog
+from src.visuals.windows.analytics_space import NeoAnalyticsSpaceWrapper
+from src.visuals.windows.loading_dialog import LoadingDialog
+from src.visuals.windows.sample_dialog import SampleDialog
+
+from src.utils.path import transformPathtoFileList
+from src.utils.sqlquery import returnSelectQuery
+
+from PySide6.QtWidgets import QMainWindow, QFileDialog, QLabel
+
 #TODO: Rewrite Logging
 class MainWindow(QMainWindow):
     """Wrapper class for the Main Window
@@ -39,11 +42,14 @@ class MainWindow(QMainWindow):
         updates the MainWindow
     _update_files : function
         updates the list of QLables with the current imported Gamefiles
-    _execute_sample : function
-        downstreams a sample of gamefiles according to the 
-        passed configuration in the MainWindow
+    _show_files : function
+        updates the presence of the bar on the left
     _filedialog_opener : function
         Handles the fileDialog, which is in use to import the gamefiles
+    _time_importer : function
+        imports a given timelinefile via filedialog
+    _match_importer : function
+        imports a given matchfile via filedialog
     _open_settings : function
         creates an instance of a SettingsDialog
     _open_mariadb_config : function
@@ -61,16 +67,14 @@ class MainWindow(QMainWindow):
 
         # setup the window
         self._update_window()
+        self._show_files()
 
         # setup the analyticsworkspace
-        self.space = AnalyticsSpace(self)
+        self.space = NeoAnalyticsSpaceWrapper(self)
         self.ui.stackWorkspace.addWidget(self.space)
         logger.debug("Setupped the AnalyticsSpace.")
 
         # hooks for buttons/interaction
-        #self.ui.actionAdd_AnalyticsSpace.triggered.connect(self.space._add_instance)
-        #self.ui.actionRemove_AnalyticsSpace.triggered.connect(self.space._remove_instance)
-        #self.ui.button_sample.clicked.connect(self._execute_sample)
         self.ui.actionSample.triggered.connect(self._open_sample)
         self.ui.actionSettings_2.triggered.connect(self._open_settings)
         self.ui.actionMariaDB.triggered.connect(self._open_mariadb_config)
@@ -79,8 +83,8 @@ class MainWindow(QMainWindow):
         self.ui.actionImported_games_bar.triggered.connect(self._show_files)
 
     def _show_files(self) -> None:
-        isChecked = self.ui.actionImported_games_bar.isChecked()
 
+        isChecked = self.ui.actionImported_games_bar.isChecked()
         self.ui.widget_import.setVisible(isChecked)
 
     def _update_files(self) -> None:
@@ -104,17 +108,9 @@ class MainWindow(QMainWindow):
 
         logger.trace("Starting updating the GUI objects.")
         isV5 = config.general_settings[Configs.PROF]["format"] == "matchv5"
-        self.ui.actionImported_games_bar.setChecked(True)
+        self.ui.actionImport_Timeline.setDisabled( not isV5)
         self.ui.actionSample.setDisabled(not isV5)
-        # self.ui.comboBox_division.setDisabled(isV5Disabled)
-        # self.ui.comboBox_queue.setDisabled(isV5Disabled)
-        # self.ui.comboBox_rank.setDisabled(isV5Disabled)
-        # self.ui.spin_sample.setDisabled(isV5Disabled)
-        # self.ui.button_sample.setDisabled(isV5Disabled)
-        # load all included matches
         self._update_files()
-
-    
 
     def _filedialog_opener(self) -> list[str] | None:
 

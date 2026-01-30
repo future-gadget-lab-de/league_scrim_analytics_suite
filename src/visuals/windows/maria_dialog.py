@@ -1,17 +1,18 @@
 """The wrapper class for handling the mariadb settings Dialog."""
-
 from __future__ import annotations
 
+from loguru import logger
 import time
+
+from src.core.io.mariadb import updateConnectionState
+from src.core.config import config, Configs, locPathSet_c
+
+from src.visuals.ui.generated.ui_maria_dialog import Ui_Dialog
+
+from src.utils.io import writeSettingsFile
 
 from PySide6.QtWidgets import QDialog
 from PySide6.QtCore import QTimer
-from src.visuals.ui.generated.ui_maria_dialog import Ui_Dialog
-
-from loguru import logger
-from src.core.io.mariadb import updateConnectionState
-from src.utils.io import writeSettingsFile
-from src.core.config import config, Configs, locPathSet_c
 
 class MariaDialog(QDialog):
     """Wrapper class for the mariadb settings window
@@ -31,8 +32,10 @@ class MariaDialog(QDialog):
         Uses the QTimer, if a connection is not successful
     _restore_button : function
         restores the pressable buttonstate.
-    saveSettings : function
-        saves the current GUI Values to settings in RAM.
+    _add_con : function
+        adds the connection to persistant memory
+    _change_maria : function
+        updates all fields
     
     """
     def __init__(self, parent=None) -> None:

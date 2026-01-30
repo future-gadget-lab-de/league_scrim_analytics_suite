@@ -1,20 +1,21 @@
 """The wrapper class for handling the mariadb settings Dialog."""
-
 from __future__ import annotations
 
+from loguru import logger
 import time
 import numpy as np
 
-from PySide6.QtWidgets import QDialog
-from PySide6.QtCore import QTimer
-from src.visuals.ui.generated.ui_sampledialog import Ui_Sampledialog
 from src.core.apis.riot import getEqualDistGameSamples, getMaxPageNumber
+from src.core.io.mariadb import updateConnectionState
+from src.core.config import config, Configs, locPathSet_c
+
+from src.visuals.ui.generated.ui_sampledialog import Ui_Sampledialog
 from src.visuals.windows.loading_dialog import LoadingDialog
 
-from loguru import logger
-from src.core.io.mariadb import updateConnectionState
 from src.utils.io import writeSettingsFile
-from src.core.config import config, Configs, locPathSet_c
+
+from PySide6.QtWidgets import QDialog, QApplication
+from PySide6.QtCore import QTimer
 
 class SampleDialog(QDialog):
     """Wrapper class for the mariadb settings window
@@ -22,39 +23,25 @@ class SampleDialog(QDialog):
     Attributes
     ----------
     ui : Ui_Dialog
-        the raw MariaDialog Class, produced by compilation
-    timer : QTimer
-        a timer, which is used to count time for the connection button
-
-    _init_fields : function
-        initializes all fields with the provided values through
-        the mariadbconfigs
-    _try_connection : function
-        gets activated, when the connection button is pressed. 
-        Uses the QTimer, if a connection is not successful
-    _restore_button : function
-        restores the pressable buttonstate.
-    saveSettings : function
-        saves the current GUI Values to settings in RAM.
-    
+        the raw sampledialog Class, produced by compilation
     """
     def __init__(self, parent=None) -> None:
         
         super().__init__(parent)
         self.ui = Ui_Sampledialog()
         self.ui.setupUi(self)
-        logger.debug("Build the SettingsDialog Window")
-        logger.trace("Initialized the QTimer Class")
 
-        # try a connection
+        # if execute button is clicked, execute that
         self.ui.commandLinkButton_sample.pressed.connect(self._execute_sample)
 
 
     def _execute_sample(self) -> None:
-
+        """
+        executes sampling for the provided settings
+        """
         self.ui.commandLinkButton_sample.setDisabled(True)
         self.ui.buttonBox.setDisabled(True)
-
+        QApplication.processEvents()
         samplesize = self.ui.spinBox_samplesize.value()
         logger.trace(f"Starting sampling {samplesize} gamefiles.")
         sample_vec = np.arange(samplesize)
@@ -79,3 +66,5 @@ class SampleDialog(QDialog):
         if ldlg.exec():
             logger.debug("LoadingDialog was running successful.")
             pass
+
+        QTimer.singleShot(2000,lambda: self.close())

@@ -24,11 +24,17 @@ class SettingsDialog(QDialog):
     _init_fields : function
         initializes all fields with the provided values through
         the configs
-    _change_maria_setting : function
-        gets activated, whe the mariadb checkbox toggles. 
-        enables or disables the csv path option.
+    _start_profiles : function
+        this starts the dialog, for creating a new profile
+    _change_API : function
+        function, which executes in order to update api fields
+    _change_label : function
+        function, which executes in order to update label fields
+    _change_paths : function
+        function, which executes in order to update path fields
     saveSettings : function
-        saves the current GUI Values to settings in RAM.
+        saves the current settings to ram
+
     
     """
     def __init__(self, parent) -> None:

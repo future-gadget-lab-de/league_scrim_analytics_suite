@@ -1,17 +1,18 @@
 """The wrapper class for handling the mariadb settings Dialog."""
-
 from __future__ import annotations
 
+from loguru import logger
 import time
+
+from src.core.config import config, Configs, locPathSet_c, templates
+from src.core.io.mariadb import updateConnectionState
+
+from src.visuals.ui.generated.ui_profiles import Ui_Dialog
+
+from src.utils.io import writeSettingsFile
 
 from PySide6.QtWidgets import QDialog
 from PySide6.QtCore import QTimer
-from src.visuals.ui.generated.ui_profiles import Ui_Dialog
-
-from loguru import logger
-from src.core.io.mariadb import updateConnectionState
-from src.utils.io import writeSettingsFile
-from src.core.config import config, Configs, locPathSet_c, templates
 
 class ProfileDialog(QDialog):
     """Wrapper class for the mariadb settings window
