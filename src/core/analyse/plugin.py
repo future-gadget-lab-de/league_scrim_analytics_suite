@@ -44,7 +44,7 @@ def getPossiblePlots(queries: str) -> list[list[dict]]: # [ all mods [ their fun
 
     for plugin in module_dict.keys():
         if isLayoutApplicable(DF_list, module_dict[plugin]):
-            result_list += [getData(module_dict[plugin])]
+            result_list += [getData(module_dict[plugin], plugin)]
 
     return result_list
 
@@ -139,7 +139,7 @@ def isLayoutApplicable(data: list[pd.DataFrame], plug_module) -> bool:
     
     return False
 
-def getData(plug_module) -> list[dict]:
+def getData(plug_module, modname: str) -> list[dict]:
     """returns a dict with the members of a module for further use
     
     Parameters
@@ -158,18 +158,20 @@ def getData(plug_module) -> list[dict]:
 
     this_modules_funcs = list()
 
+
     # check every module for compatibility
     for name, val in member:
         if callable(val):
             this_modules_funcs.append({
                 name:   val, 
-                "args": param_names(val)
+                "args": param_names(val),
+                modname:plug_module 
             })
 
     return this_modules_funcs
 
     
-def ApplyTemplate(pathToTemplateFile: str, customLocation: str = ""):
+def ApplyTemplate(pathToTemplateFile: str, customLocation: str = "", customSize: tuple[int, int] = tuple()):
     """
     this method applys certain modules in the plugin folder as expressed 
     in the procedure .json file.
@@ -199,21 +201,31 @@ def ApplyTemplate(pathToTemplateFile: str, customLocation: str = ""):
     for query in queries_final:
         DF_list.append(executeSelectQuery(query))
 
-    instance_of_plugins = getPlugins(list(template_dict["modulenames"].keys()))
 
     for module in template_dict["modulenames"].keys():
-        if isLayoutApplicable(DF_list, instance_of_plugins[module]):
-            plugin_dictl = getData(instance_of_plugins[module])
 
-            plotfunction = plugin_dictl[0][list(plugin_dictl[0].keys())[0]]
+        executePlugin(DF_list, module, customLocation, customSize, template_dict["modulenames"][module])
 
-            is_module_aggregated = len(plugin_dictl) > 1
-            if is_module_aggregated:
-                aggfunction = plugin_dictl[1][list(plugin_dictl[1].keys())[0]]
-                DF_list = aggfunction(DF_list)
 
-            if customLocation:
-                instance_of_plugins[module].location_c = customLocation
 
-            plotfunction(DF_list, **template_dict["modulenames"][module])
+def executePlugin(frames: pd.DataFrame, plugname: str, customLocation: str = "", customSize: tuple[int, int] = tuple(), args: dict = {}):
+    plugin_instance = getPlugins([plugname])
+
+    if isLayoutApplicable(frames, plugin_instance[plugname]):
+        plugin_dictl = getData(plugin_instance[plugname], plugname)
+
+        plotfunction = plugin_dictl[0][list(plugin_dictl[0].keys())[0]]
+
+        is_module_aggregated = len(plugin_dictl) > 1
+        if is_module_aggregated:
+            aggfunction = plugin_dictl[1][list(plugin_dictl[1].keys())[0]]
+            frames = aggfunction(frames)
+
+        if customLocation:
+            plugin_instance[plugname].location_c = customLocation
+
+        if customSize:
+            plugin_instance[plugname].size_c = customSize
+
+        plotfunction(frames, **args)
 

@@ -1,6 +1,6 @@
 {
     "modulenames": {
-        "histo": {
+        "histogram": {
             "color": "red"
         }
     },

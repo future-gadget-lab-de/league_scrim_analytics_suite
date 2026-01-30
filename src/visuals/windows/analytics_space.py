@@ -3,8 +3,9 @@ from __future__ import annotations
 from loguru import logger
 import json
 
-from src.visuals.windows.spaces.templater import AnalyticsSingleton, NeoDiagrams
+from src.visuals.windows.spaces.templater import NeoDiagrams
 from src.visuals.ui.generated.ui_scroll_wrapper import Ui_Scroll_wrapper
+from src.core.config import locPathSet_c, config, Configs
 
 from PySide6.QtCore import Qt, QKeyCombination, Signal
 from PySide6.QtGui import QKeyEvent
@@ -55,7 +56,13 @@ class NeoAnalyticsSingleton(QWidget):
         super().mousePressEvent(event)
 
 class NeoAnalyticsSpace(QWidget):
-    def __init__(self, parent=None):
+    def __init__(
+        self, 
+        parent=None, 
+        recstruct: dict = [{
+            "id": "rootpanel",
+            "parent": "root"
+        }]):
 
         super().__init__(parent)
 
@@ -64,14 +71,8 @@ class NeoAnalyticsSpace(QWidget):
 
         self.struct = dict()
 
-        struct_dict = readJsonFile("config/ctr.json")
-        struct_std = [
-            {
-                "id": "rootpanel",
-                "parent": "root"
-            }
-        ]
-        split = self._build_by_struct(struct_std, "root", 1, [])
+        split = self._build_by_struct(recstruct, "root", 1, [])
+
         self.splitter.append(
             split
         )
@@ -82,21 +83,15 @@ class NeoAnalyticsSpace(QWidget):
         self.setLayout(horizontallayout)
 
 
-    def _make_panel(self) -> QGroupBox:
-        group = QGroupBox()
-        layout = QHBoxLayout()
-        but1 = QPushButton("vert")
-        but2 = QPushButton("hort")
-        layout.addWidget(but1)
-        layout.addWidget(but2)
-        layout.addWidget(QLineEdit())
-        group.setLayout(layout)
+    def _make_panel(self) -> NeoDiagrams:
 
-        test = NeoAnalyticsSingleton(NeoDiagrams())
+        
+        se = NeoDiagrams(ids=f"id_{len(self.widgets)}")
+        test = NeoAnalyticsSingleton(se)
 
 
 
-        but1.pressed.connect(self.saveStates)
+        se.ui.commandLink_plot.pressed.connect(self.saveStates)
         test.buttonpressed.connect(self._add_Splitter_str)
 
         #but1.clicked.connect(lambda checked=False, b=but1: self._add_Splitter(b, Qt.Orientation.Vertical, checked))
@@ -135,7 +130,6 @@ class NeoAnalyticsSpace(QWidget):
         if size:
             split.setSizes(size)
 
-        print(self.struct)
         return split
 
 
@@ -155,7 +149,7 @@ class NeoAnalyticsSpace(QWidget):
         baseids = self.struct["root"]["children"]
         rec_dict = self.recursifyDict(self.struct, baseids)
         print(rec_dict)
-        writeJsonFile(rec_dict, "config/ctr.json")
+        writeJsonFile(rec_dict, locPathSet_c + "ctr.json")
 
     def recursifyDict(self, explicit: dict, ids: list[str]) -> dict:
         final = list()
@@ -194,11 +188,12 @@ class NeoAnalyticsSpace(QWidget):
             newpanel.setProperty("id", f"something_{len_of_struct}")
             print(self.struct[splitter.property("id")]["children"])
             print(newpanel.property("id"))
+
             self.struct[splitter.property("id")]["children"].append(newpanel.property("id"))
             self.struct[newpanel.property("id")] = dict()
             self.struct[newpanel.property("id")]["parent"] = splitter.property("id")
             self.widgets.append(newpanel)
-            splitter.insertWidget(widget_ind, newpanel)
+            splitter.addWidget(newpanel)
             print(self.struct)
             return
 
@@ -222,7 +217,7 @@ class NeoAnalyticsSpace(QWidget):
         splitter.setSizes([1 for size in splitter.sizes()])
         print(widget.property("id"))
         self.struct[splitter.property("id")]["children"].remove(widget.property("id"))
-        self.struct[splitter.property("id")]["children"].append(newSplitter.property("id"))
+        self.struct[splitter.property("id")]["children"].insert(index, newSplitter.property("id"))
 
         self.struct[newSplitter.property("id")] = dict()
         self.struct[newSplitter.property("id")]["parent"] = splitter.property("id")
@@ -235,8 +230,6 @@ class NeoAnalyticsSpace(QWidget):
 
         print(self.struct)
 
-    def _divide_active_window(self):
-        pass
 
 
 class AnalyticsSpace(QWidget):
@@ -261,19 +254,28 @@ class AnalyticsSpace(QWidget):
         self.ui.setupUi(self)
         self.thinker = NeoAnalyticsSpace(self)
         # initializing a list of singletons, for proper management
-        self.instances = list[AnalyticsSingleton]()
         self.ui.scrollarea_insertlayout.addWidget(self.thinker)
 
 
+        self.ui.toolButton_dell.clicked.connect(self.deleteLayout)
+        self.ui.toolButton_loadl.clicked.connect(self.loadLayout)
+        self.ui.toolButton_savel.clicked.connect(self.saveLayout)
 
-    def _remove_instance(self) -> None:
-        self.ui.scrollarea_insertlayout.removeWidget(self.instances[-1])
-        self.instances[-1].deleteLater()
-        self.instances.pop()
-        logger.trace("removed a Analyticssingleton instance.")
+    def saveLayout(self):
+        self.thinker.saveStates()
 
-    def _add_instance(self) -> None:
-        newInstance = AnalyticsSingleton()
-        self.instances.append(newInstance)
-        self.ui.scrollarea_insertlayout.addWidget(newInstance)
-        logger.trace("added a Analyticssingleton instance.")
+    def loadLayout(self):
+        path = locPathSet_c + "ctr.json"
+        layout = readJsonFile(path)
+
+        self.thinker.deleteLater()
+        self.thinker = NeoAnalyticsSpace(self, layout)
+
+        self.ui.scrollarea_insertlayout.addWidget(self.thinker)
+
+    def deleteLayout(self):
+        self.thinker.deleteLater()
+        self.thinker = NeoAnalyticsSpace(self)
+
+        self.ui.scrollarea_insertlayout.addWidget(self.thinker)
+

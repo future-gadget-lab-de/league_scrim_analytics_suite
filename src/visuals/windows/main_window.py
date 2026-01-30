@@ -9,6 +9,7 @@ from src.visuals.windows.settings import SettingsDialog
 from src.visuals.windows.maria_dialog import MariaDialog
 from src.visuals.windows.analytics_space import AnalyticsSpace
 from src.visuals.windows.loading_dialog import LoadingDialog
+from src.visuals.windows.sample_dialog import SampleDialog
 
 from src.core.process.reading import listImportedMatchfiles
 from src.core.io.wrapper import executeSelectQuery
@@ -67,13 +68,20 @@ class MainWindow(QMainWindow):
         logger.debug("Setupped the AnalyticsSpace.")
 
         # hooks for buttons/interaction
-        self.ui.actionAdd_AnalyticsSpace.triggered.connect(self.space._add_instance)
-        self.ui.actionRemove_AnalyticsSpace.triggered.connect(self.space._remove_instance)
-        self.ui.button_sample.clicked.connect(self._execute_sample)
+        #self.ui.actionAdd_AnalyticsSpace.triggered.connect(self.space._add_instance)
+        #self.ui.actionRemove_AnalyticsSpace.triggered.connect(self.space._remove_instance)
+        #self.ui.button_sample.clicked.connect(self._execute_sample)
+        self.ui.actionSample.triggered.connect(self._open_sample)
         self.ui.actionSettings_2.triggered.connect(self._open_settings)
         self.ui.actionMariaDB.triggered.connect(self._open_mariadb_config)
         self.ui.actionImport_Matchfile.triggered.connect(self._match_importer)
         self.ui.actionImport_Timeline.triggered.connect(self._time_importer)
+        self.ui.actionImported_games_bar.triggered.connect(self._show_files)
+
+    def _show_files(self) -> None:
+        isChecked = self.ui.actionImported_games_bar.isChecked()
+
+        self.ui.widget_import.setVisible(isChecked)
 
     def _update_files(self) -> None:
 
@@ -95,42 +103,17 @@ class MainWindow(QMainWindow):
     def _update_window(self) -> None:
 
         logger.trace("Starting updating the GUI objects.")
-        isV5Disabled = False
-        self.ui.comboBox_division.setDisabled(isV5Disabled)
-        self.ui.comboBox_queue.setDisabled(isV5Disabled)
-        self.ui.comboBox_rank.setDisabled(isV5Disabled)
-        self.ui.spin_sample.setDisabled(isV5Disabled)
-        self.ui.button_sample.setDisabled(isV5Disabled)
+        isV5 = config.general_settings[Configs.PROF]["format"] == "matchv5"
+        self.ui.actionImported_games_bar.setChecked(True)
+        self.ui.actionSample.setDisabled(not isV5)
+        # self.ui.comboBox_division.setDisabled(isV5Disabled)
+        # self.ui.comboBox_queue.setDisabled(isV5Disabled)
+        # self.ui.comboBox_rank.setDisabled(isV5Disabled)
+        # self.ui.spin_sample.setDisabled(isV5Disabled)
+        # self.ui.button_sample.setDisabled(isV5Disabled)
         # load all included matches
         self._update_files()
 
-    def _execute_sample(self) -> None:
-
-        samplesize = self.ui.spin_sample.value()
-        logger.trace(f"Starting sampling {samplesize} gamefiles.")
-        sample_vec = np.arange(samplesize)
-        sample_list = list()
-        pages_of_data = getMaxPageNumber(
-            rank = self.ui.comboBox_rank.currentText(), 
-            queue = self.ui.comboBox_queue.currentText(), 
-            division = self.ui.comboBox_division.currentText()
-        )
-        for sample in sample_vec:
-            sample_list.append(
-                {
-                    "rank": self.ui.comboBox_rank.currentText(),
-                    "queue": self.ui.comboBox_queue.currentText(), 
-                    "division": self.ui.comboBox_division.currentText(), 
-                    "maxPageNumber": pages_of_data,
-                    "samplesize": 1
-                }
-            )
-        ldlg = LoadingDialog(self, getEqualDistGameSamples, sample_list)
-        if ldlg.exec():
-            logger.debug("LoadingDialog was running successful.")
-            pass
-
-        self._update_window()
     
 
     def _filedialog_opener(self) -> list[str] | None:
@@ -167,6 +150,13 @@ class MainWindow(QMainWindow):
             if ldlg.exec():
                 logger.debug("successful run the LoadingDialog.")
                 pass
+        self._update_window()
+
+
+    def _open_sample(self) -> None:
+        dlg = SampleDialog()
+        if dlg.exec():
+            pass
         self._update_window()
 
 

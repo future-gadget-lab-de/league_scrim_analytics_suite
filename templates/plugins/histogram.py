@@ -4,11 +4,12 @@ import matplotlib.pyplot as plt
 
 # this file accepts a maximum of two dataframes, with one col each:
 # --> because we stored two tuples with a int entry each and accept_less_c is true (we allow less than two)
-input_layout_c = [("int64",),("int64",)]
-accept_less_c = True
+input_layout_c = [("int64",)]
+accept_less_c = False
 location_c = "gamefiles/test.png"
+size_c = (400, 400)
 
-def simpleHistoLSAS(data: list[pd.DataFrame], color: str = "blue", dim: tuple[int,int] = (400,400)) -> None:
+def histoLSAS(data: list[pd.DataFrame], color: str = "blue") -> None:
     """first easy template. this builds a simple histogram
     
     Parameters
@@ -23,15 +24,17 @@ def simpleHistoLSAS(data: list[pd.DataFrame], color: str = "blue", dim: tuple[in
     """
 
     data = data[0]
+    colname = list(data.columns)[0]
 
-    dpi = 100
-    figsize = (float(dim[0])/float(dpi), float(dim[1])/float(dpi))
+    dpi = 90
+    figsize = (float(size_c[0])/float(dpi), float(size_c[1])/float(dpi))
     
     plt.figure(dpi, figsize)
 
     plt.hist(data.iloc[:,0], color=color, edgecolor="black")
 
-    plt.ylabel("test")
+    plt.ylabel("occurences")
+    plt.xlabel(colname)
     plt.grid()
     os.makedirs(os.path.dirname(location_c), exist_ok=True)
     plt.savefig(location_c)

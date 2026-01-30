@@ -16,6 +16,7 @@ def runAdvancedFrontend() -> None:
     """entrypoint method for all GUI applications"""
     logger.info("Starting GUI.")
     logger.trace("Started runAdvancedFrontend Function.")
+    from src.visuals.windows.main_window import MainWindow
     try:
         from src.visuals.windows.main_window import MainWindow
     except:

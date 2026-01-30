@@ -6,15 +6,18 @@ from loguru import logger
 from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import QWidget
 from src.visuals.ui.generated.ui_NeoDiagrams import Ui_NeoDiagrams
-from src.core.analyse.plugin import ApplyTemplate
+from src.core.analyse.plugin import ApplyTemplate, getPossiblePlots, executePlugin
+from src.core.io.wrapper import executeSelectQuery
 
 from src.core.analyse.plotting import buildAnalyticsFigure
+from src.core.config import locPathSet_c, config, Configs
 
 class NeoDiagrams(QWidget):
 
-    def __init__(self, parent=None) -> None:
+    def __init__(self, parent=None, ids: str = "") -> None:
         super().__init__(parent)
 
+        self.id = ids
         self.ui = Ui_NeoDiagrams()
         self.ui.setupUi(self)
 
@@ -24,6 +27,7 @@ class NeoDiagrams(QWidget):
         self.ui.checkBox_json.stateChanged.connect(self._change_avail)
         self.ui.checkBox_sql.stateChanged.connect(self._change_avail)
         self.ui.commandLink_plot.pressed.connect(self._execute_plot)
+        self.ui.toolButton_sql.pressed.connect(self._show_dropdown)
 
 
     def _init_windows(self):
@@ -34,14 +38,37 @@ class NeoDiagrams(QWidget):
         self.ui.lineEdit_sql.setDisabled(True)
         self.ui.lineEdit_json.setDisabled(True)
 
+    def _show_dropdown(self):
+
+        query = self.ui.lineEdit_sql.text()
+
+        results = getPossiblePlots([query])
+
+        for res in results:
+            print(list(res[0].keys()))
+            self.ui.comboBox_sql.addItems([list(res[0].keys())[-1]])
+
+        self._change_avail()
+
+
     def _change_avail(self):
 
         jsonChecked = self.ui.checkBox_json.isChecked()
         self.ui.lineEdit_json.setDisabled(not jsonChecked)
 
+        if not jsonChecked:
+            self.ui.lineEdit_json.setText("")
+
         sqlChecked = self.ui.checkBox_sql.isChecked()
         self.ui.lineEdit_sql.setDisabled(not sqlChecked)
         self.ui.toolButton_sql.setDisabled(not sqlChecked)
+
+        if not sqlChecked:
+            self.ui.lineEdit_sql.setText("")
+            self.ui.comboBox_sql.clear()
+
+        comboed = self.ui.comboBox_sql.currentText() != ""
+        self.ui.comboBox_sql.setDisabled(not comboed)
 
         applyabel = (jsonChecked != sqlChecked)
         self.ui.commandLink_plot.setDisabled(not applyabel)
@@ -52,59 +79,19 @@ class NeoDiagrams(QWidget):
         comboed = self.ui.comboBox_sql.currentText() != ""
         jsonChecked = self.ui.checkBox_json.isChecked()
 
+        picpath = config.general_settings[Configs.MAIN]["metadata_directory"] \
+                    + "/" + config.general_settings[Configs.MAIN]["current_prof"] \
+                    + self.id + ".png"
+
+        height = self.ui.groupBox.geometry().height()
+        width = self.ui.groupBox.geometry().width()
+
         if comboed:
-            pass
+            DF = executeSelectQuery(self.ui.lineEdit_sql.text())
+            executePlugin([DF], self.ui.comboBox_sql.currentText(), picpath, (width, height))
+            self.ui.picture_root.setPixmap(QPixmap(picpath))
 
         if jsonChecked:
-            ApplyTemplate(self.ui.lineEdit_json.text())
-            self.ui.picture_root.setPixmap(QPixmap("gamefiles/test.png"))
+            ApplyTemplate(self.ui.lineEdit_json.text(), picpath, (width, height))
+            self.ui.picture_root.setPixmap(QPixmap(picpath))
 
-
-
-
-
-
-class AnalyticsSingleton(QWidget):
-    """the wrapper class for a analyticssingleton
-    
-    Attributes
-    ----------
-    ui : Ui_DiagramGenerator
-        raw class produced by compilation
-    pic : QPixmap
-        the picture container for the figures
-    _load_analytics : function
-        starts the plotting process
-    _reset_analytics : function
-        clears the pixmap container
-    """
-    def __init__(self, parent=None) -> None:
-        super().__init__(parent)
-
-        self.ui = Ui_DiagramGenerator()
-        self.ui.setupUi(self)
-
-        # init label
-        self.pic = QPixmap()
-        self.ui.image_label.setPixmap(self.pic)
-
-        # hooks for buttons
-        self.ui.show_button.clicked.connect(self._load_analytics)
-        self.ui.del_button.clicked.connect(self._reset_analytics)
-
-
-    def _load_analytics(self) -> None:
-        logger.trace("Loading a figure for the specified data.")
-        player = self.ui.summoner_edit.text()
-        mode = self.ui.prop_choose.currentText()
-        diagram = self.ui.diagram_choose.currentText()
-        current_width = self.ui.image_label.width()
-        buildAnalyticsFigure(player, mode, (current_width, 400), diagram)
-        self.pic = QPixmap(f"gamefiles/{mode}_{player}_{diagram}.png")
-        self.ui.image_label.setPixmap(self.pic)
-        logger.debug("Successfully loaded a figure, based on data.")
-
-
-    def _reset_analytics(self) -> None:
-        logger.trace("plot container cleared.")
-        self.ui.image_label.clear()

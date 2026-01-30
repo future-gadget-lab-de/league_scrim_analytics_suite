@@ -29,7 +29,7 @@
      <verstretch>0</verstretch>
     </sizepolicy>
    </property>
-   <layout class="QVBoxLayout" name="verticalLayout">
+   <layout class="QHBoxLayout" name="horizontalLayout">
     <property name="spacing">
      <number>0</number>
     </property>
@@ -48,11 +48,131 @@
     <item>
      <layout class="QVBoxLayout" name="mainlayout">
       <item>
-       <widget class="QStackedWidget" name="stackWorkspace"/>
+       <layout class="QHBoxLayout" name="horizontalLayout_3">
+        <item>
+         <widget class="QWidget" name="widget_import" native="true">
+          <layout class="QVBoxLayout" name="verticalLayout">
+           <property name="spacing">
+            <number>0</number>
+           </property>
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+           <item>
+            <layout class="QVBoxLayout" name="left_dock_layout">
+             <property name="rightMargin">
+              <number>6</number>
+             </property>
+             <item>
+              <widget class="QScrollArea" name="import_scroll_area">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="minimumSize">
+                <size>
+                 <width>133</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>133</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+               <property name="widgetResizable">
+                <bool>true</bool>
+               </property>
+               <widget class="QWidget" name="scrollAreaWidgetContents">
+                <property name="geometry">
+                 <rect>
+                  <x>0</x>
+                  <y>0</y>
+                  <width>131</width>
+                  <height>433</height>
+                 </rect>
+                </property>
+                <layout class="QVBoxLayout" name="verticalLayout_3">
+                 <item>
+                  <widget class="QLabel" name="import_head">
+                   <property name="text">
+                    <string>IMPORTED:</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <layout class="QVBoxLayout" name="scroll_sub_content"/>
+                 </item>
+                 <item>
+                  <spacer name="verticalSpacer">
+                   <property name="orientation">
+                    <enum>Qt::Orientation::Vertical</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>20</width>
+                     <height>40</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                </layout>
+               </widget>
+              </widget>
+             </item>
+            </layout>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QStackedWidget" name="stackWorkspace">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </item>
      </layout>
     </item>
    </layout>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QToolBar" name="tools">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <property name="movable">
+    <bool>true</bool>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionSettings_2"/>
+   <addaction name="actionMariaDB"/>
+   <addaction name="separator"/>
+   <addaction name="actionImport_Matchfile"/>
+   <addaction name="actionImport_Timeline"/>
+   <addaction name="separator"/>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
@@ -72,241 +192,16 @@
     <addaction name="actionImport_Matchfile"/>
     <addaction name="actionImport_Timeline"/>
    </widget>
-   <widget class="QMenu" name="menuEdit">
+   <widget class="QMenu" name="menuAnalytics">
     <property name="title">
-     <string>Edit</string>
+     <string>Analytics</string>
     </property>
-    <addaction name="actionAdd_AnalyticsSpace"/>
-    <addaction name="actionRemove_AnalyticsSpace"/>
+    <addaction name="actionSample"/>
+    <addaction name="separator"/>
+    <addaction name="actionImported_games_bar"/>
    </widget>
    <addaction name="menuFile"/>
-   <addaction name="menuEdit"/>
-  </widget>
-  <widget class="QStatusBar" name="statusbar"/>
-  <widget class="QDockWidget" name="left_dock">
-   <property name="minimumSize">
-    <size>
-     <width>253</width>
-     <height>262</height>
-    </size>
-   </property>
-   <attribute name="dockWidgetArea">
-    <number>1</number>
-   </attribute>
-   <widget class="QWidget" name="left_dock_content">
-    <layout class="QHBoxLayout" name="horizontalLayout_2">
-     <property name="leftMargin">
-      <number>0</number>
-     </property>
-     <property name="topMargin">
-      <number>0</number>
-     </property>
-     <property name="rightMargin">
-      <number>0</number>
-     </property>
-     <property name="bottomMargin">
-      <number>0</number>
-     </property>
-     <item>
-      <layout class="QVBoxLayout" name="left_dock_layout">
-       <item>
-        <layout class="QHBoxLayout" name="rank_layout">
-         <item>
-          <widget class="QComboBox" name="comboBox_rank">
-           <item>
-            <property name="text">
-             <string>IRON</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>BRONZE</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>SILVER</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>GOLD</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>PLATINUM</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>EMERALD</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>DIAMOND</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>MASTER</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>GRANDMASTER</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>CHALLENGER</string>
-            </property>
-           </item>
-          </widget>
-         </item>
-         <item>
-          <widget class="QComboBox" name="comboBox_division">
-           <property name="maximumSize">
-            <size>
-             <width>50</width>
-             <height>16777215</height>
-            </size>
-           </property>
-           <item>
-            <property name="text">
-             <string>I</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>II</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>III</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>IV</string>
-            </property>
-           </item>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <widget class="QComboBox" name="comboBox_queue">
-         <item>
-          <property name="text">
-           <string>RANKED_SOLO_5x5</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>RANKED_FLEX_SR</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>RANKED_FLEX_TT</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>RANKED_TFT</string>
-          </property>
-         </item>
-        </widget>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="sample_layout">
-         <item>
-          <widget class="QSpinBox" name="spin_sample">
-           <property name="minimum">
-            <number>1</number>
-           </property>
-           <property name="maximum">
-            <number>10000</number>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="button_sample">
-           <property name="text">
-            <string>sample</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <widget class="QLabel" name="import_head">
-         <property name="text">
-          <string>IMPORTED:</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QScrollArea" name="import_scroll_area">
-         <property name="widgetResizable">
-          <bool>true</bool>
-         </property>
-         <widget class="QWidget" name="scrollAreaWidgetContents">
-          <property name="geometry">
-           <rect>
-            <x>0</x>
-            <y>0</y>
-            <width>249</width>
-            <height>292</height>
-           </rect>
-          </property>
-          <layout class="QVBoxLayout" name="verticalLayout_3">
-           <item>
-            <layout class="QVBoxLayout" name="scroll_sub_content"/>
-           </item>
-           <item>
-            <spacer name="verticalSpacer">
-             <property name="orientation">
-              <enum>Qt::Orientation::Vertical</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>20</width>
-               <height>302</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-          </layout>
-         </widget>
-        </widget>
-       </item>
-      </layout>
-     </item>
-    </layout>
-   </widget>
-  </widget>
-  <widget class="QToolBar" name="tools">
-   <property name="windowTitle">
-    <string>toolBar</string>
-   </property>
-   <property name="movable">
-    <bool>true</bool>
-   </property>
-   <attribute name="toolBarArea">
-    <enum>TopToolBarArea</enum>
-   </attribute>
-   <attribute name="toolBarBreak">
-    <bool>false</bool>
-   </attribute>
-   <addaction name="actionSettings_2"/>
-   <addaction name="actionMariaDB"/>
-   <addaction name="separator"/>
-   <addaction name="actionImport_Matchfile"/>
-   <addaction name="actionImport_Timeline"/>
+   <addaction name="menuAnalytics"/>
   </widget>
   <action name="actionSettings_2">
    <property name="icon">
@@ -360,6 +255,19 @@
    </property>
    <property name="text">
     <string>Import Timeline</string>
+   </property>
+  </action>
+  <action name="actionSample">
+   <property name="text">
+    <string>Sample...</string>
+   </property>
+  </action>
+  <action name="actionImported_games_bar">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Show gamebar</string>
    </property>
   </action>
  </widget>
