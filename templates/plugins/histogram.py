@@ -28,7 +28,7 @@ def histoLSAS(data: list[pd.DataFrame], color: str = "blue") -> None:
 
     dpi = 90
     figsize = (float(size_c[0])/float(dpi), float(size_c[1])/float(dpi))
-    
+    # figsize = size_c
     plt.figure(dpi, figsize)
 
     plt.hist(data.iloc[:,0], color=color, edgecolor="black")

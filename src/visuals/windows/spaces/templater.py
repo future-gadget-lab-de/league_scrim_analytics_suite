@@ -83,8 +83,8 @@ class NeoDiagrams(QWidget):
                     + "/" + config.general_settings[Configs.MAIN]["current_prof"] \
                     + self.id + ".png"
 
-        height = self.ui.groupBox.geometry().height()
-        width = self.ui.groupBox.geometry().width()
+        height = self.ui.picture_root.geometry().height()
+        width = self.ui.picture_root.geometry().width()
 
         if comboed:
             DF = executeSelectQuery(self.ui.lineEdit_sql.text())
