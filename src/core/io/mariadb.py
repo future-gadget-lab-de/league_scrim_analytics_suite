@@ -30,6 +30,7 @@ def updateConnectionState(customConf: dict | None = None) -> None:
         config.volatile_settings["_connected"] = "1"
         config.writeSettings()
         logger.debug("successfully established a connection to mariadb.")
+        
     except:
         config.volatile_settings["_connected"] = "0"
         config.writeSettings()

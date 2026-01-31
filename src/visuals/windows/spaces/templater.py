@@ -68,7 +68,7 @@ class NeoDiagrams(QWidget):
         possiblePlugins = getPossiblePlots([query])
 
         for plugins in possiblePlugins:
-            plugname = list(res[0].keys())[-1]
+            plugname = list(possiblePlugins[0].keys())[-1]
             self.ui.comboBox_sql.addItems([plugname])
 
         self._update_states()
