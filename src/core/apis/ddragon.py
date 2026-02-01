@@ -99,11 +99,14 @@ def loadIdDataSet(dataRequested: str, patch: str | None = None) -> dict:
     data_file_path += f"/dictionaries/{dataRequested}_{patch}.json"
     logger.debug("Reload of the data: " + dataRequested)
 
-    data_output = readJsonFile(data_file_path)
-    if not data_output:
-        scrape_link = returnScrapeLink(dataRequested, patch)
-        data_output = requestJsonFile(scrape_link, saveLocation=data_file_path)
-
+    try:
+        data_output = readJsonFile(data_file_path)
+        if not data_output:
+            scrape_link = returnScrapeLink(dataRequested, patch)
+            data_output = requestJsonFile(scrape_link, saveLocation=data_file_path)
+    except KeyError as e:
+        raise ValueError(f"Not supported argument passed. raised by: {e}")
+        
     logger.success("Loaded IdDataSet: " +dataRequested) 
     return data_output
 

@@ -1,12 +1,11 @@
 import unittest
 from datetime import datetime as real_datetime
-from contextlib import contextmanager
 from unittest import mock
 
 from src.core.apis import ddragon
 from src.core.config import Configs
 
-# Minimale Konfiguration, die die Tests brauchen, damit Pfade berechnet werden können.
+# Minimal configuration the tests need so paths can be computed.
 TEST_SETTINGS = {
     Configs.MAIN: {
         "metadata_directory": "meta_test",
@@ -14,112 +13,124 @@ TEST_SETTINGS = {
     }
 }
 
-# Ein Contextmanager ist eine Funktion, die man mit "with ..." benutzt.
-# Sie macht Setup (z.B. Mocks aktivieren) und sorgt danach automatisch für Cleanup.
-# Vorteil: Weniger Wiederholung in den Tests und sichere Rücksetzung der Mocks.
-@contextmanager
-def ddragon_env(
-    *,
-    read_json=None,
-    request_json=None,
-    scrape_link=None,
-    today=None,
-):
-    # Falls der Test nichts Spezifisches übergibt, nutzen wir einfache Standardwerte.
-    read_json = {} if read_json is None else read_json
-    request_json = {"v": "0.0.0"} if request_json is None else request_json
-    scrape_link = "http://example" if scrape_link is None else scrape_link
-    today = real_datetime(2025, 1, 2) if today is None else today
-
-    # Hier werden alle Abhängigkeiten gemockt, die sonst Dateien/Netzwerk nutzen würden.
-    # Die "with ...:"-Kette stellt sicher, dass am Ende alles wieder sauber ist.
-    with mock.patch.object(ddragon.config, "general_settings", new=TEST_SETTINGS), \
-        mock.patch.object(ddragon, "readJsonFile", return_value=read_json) as read_json_mock, \
-        mock.patch.object(ddragon, "requestJsonFile", return_value=request_json) as request_json_mock, \
-        mock.patch.object(ddragon.datetime, "datetime") as mock_dt:
-        # datetime.today() soll immer ein festes Datum liefern.
-        mock_dt.today.return_value = today
-        # Wir geben die Mock-Objekte zurück, damit Tests ihre Aufrufe prüfen können.
-        yield {
-            "read_json": read_json_mock,
-            "request_json": request_json_mock,
-            "mock_dt": mock_dt,
-        }
 
 class TestDDragon(unittest.TestCase):
+    # setUp runs before each test.
+    # We start all patches here so every test has the same "fake" dependencies.
+    def setUp(self):
+        self.read_json_value = {}
+        self.request_json_value = {"v": "0.0.0"}
+        self.scrape_link_value = "http://example"
+        self.today_value = real_datetime(2025, 1, 2)
+
+        # We store patchers to stop them cleanly in tearDown.
+        self.patchers = [
+            mock.patch.object(ddragon.config, "general_settings", new=TEST_SETTINGS),
+            mock.patch.object(ddragon, "readJsonFile", return_value=self.read_json_value),
+            mock.patch.object(ddragon, "requestJsonFile", return_value=self.request_json_value),
+            mock.patch.object(ddragon.datetime, "datetime"),
+        ]
+
+        # Activate patches and store mocks.
+        self.mocks = [p.start() for p in self.patchers]
+
+        # Name mocks clearly to keep tests readable.
+        self.mock_read_json = self.mocks[1]
+        self.mock_request_json = self.mocks[2]
+        self.mock_dt = self.mocks[3]
+
+        # datetime.today() should always return a fixed date.
+        self.mock_dt.today.return_value = self.today_value
+
+    # tearDown runs after each test.
+    # We stop all patches here so nothing "sticks" around.
+    def tearDown(self):
+        for p in self.patchers:
+            p.stop()
+
     def test_returnScrapeLink_with_patch_does_not_scrape(self):
-        # Wenn ein Patch explizit übergeben wird, soll scrapeRecentPatch NICHT aufgerufen werden.
-        with ddragon_env(), mock.patch.object(ddragon, "scrapeRecentPatch") as scrape_patch:
+        # If a patch is explicitly provided, scrapeRecentPatch should NOT be called.
+        with mock.patch.object(ddragon, "scrapeRecentPatch") as scrape_patch:
             link = ddragon.returnScrapeLink("item", "14.1.0")
 
-        # Erwarteter Link mit dem übergebenen Patch.
+        # Expected link with the provided patch.
         self.assertEqual(
             link,
             "https://ddragon.leagueoflegends.com/cdn/14.1.0/data/en_US/item.json",
         )
-        # Sicherstellen: scrapeRecentPatch wurde nicht verwendet.
+        # Ensure scrapeRecentPatch was not used.
         scrape_patch.assert_not_called()
 
     def test_returnScrapeLink_without_patch_uses_scrape(self):
-        # Wenn kein Patch übergeben wird, soll scrapeRecentPatch den Patch liefern.
-        with ddragon_env(), mock.patch.object(ddragon, "scrapeRecentPatch", return_value="14.2.0") as scrape_patch:
+        # If no patch is provided, scrapeRecentPatch should supply it.
+        with mock.patch.object(ddragon, "scrapeRecentPatch", return_value="14.2.0") as scrape_patch:
             link = ddragon.returnScrapeLink("champion")
 
-        # Der Link muss den gemockten Patch enthalten.
+        # The link must contain the mocked patch.
         self.assertEqual(
             link,
             "https://ddragon.leagueoflegends.com/cdn/14.2.0/data/en_US/champion.json",
         )
-        # Sicherstellen: scrapeRecentPatch wurde genau einmal genutzt.
+        # Ensure scrapeRecentPatch was used exactly once.
         scrape_patch.assert_called_once()
 
     def test_loadIdDataSet_uses_cache(self):
-        # readJsonFile liefert Daten -> es sollte kein HTTP-Request passieren.
-        with ddragon_env(read_json={"ok": True}) as m:
-            data = ddragon.loadIdDataSet("summoner", "14.1.0")
+        # readJsonFile returns data -> no HTTP request should happen.
+        self.mock_read_json.return_value = {"ok": True}
+        data = ddragon.loadIdDataSet("summoner", "14.1.0")
 
-        # Die Funktion soll die gecachten Daten zurückgeben.
+        # The function should return the cached data.
         self.assertEqual(data, {"ok": True})
-        # Prüfen, dass der erwartete Pfad zum Cache verwendet wurde.
-        m["read_json"].assert_called_once_with(
+        # Verify the expected cache path was used.
+        self.mock_read_json.assert_called_once_with(
             "meta_test/prof1/dictionaries/summoner_14.1.0.json"
         )
-        # requestJsonFile darf NICHT aufgerufen werden, da Cache vorhanden ist.
-        m["request_json"].assert_not_called()
+        # requestJsonFile must NOT be called since cache is present.
+        self.mock_request_json.assert_not_called()
 
     def test_loadIdDataSet_cache_miss_requests(self):
-        # readJsonFile liefert leeres Dict -> es muss von der API geholt werden.
-        with ddragon_env(read_json={}, request_json={"data": 1}) as m, \
-            mock.patch.object(ddragon, "returnScrapeLink", return_value="http://example") as scrape_link:
+        # readJsonFile returns an empty dict -> it must be fetched from the API.
+        self.mock_read_json.return_value = {}
+        self.mock_request_json.return_value = {"data": 1}
+        with mock.patch.object(ddragon, "returnScrapeLink", return_value="http://example") as scrape_link:
             data = ddragon.loadIdDataSet("perk", "14.1.0")
-
-        # Die Funktion soll die geladenen Daten zurückgeben.
+        # The function should return the fetched data.
         self.assertEqual(data, {"data": 1})
-        # Erneut: Cache-Pfad muss stimmen.
-        m["read_json"].assert_called_once_with(
+        # Again: cache path must be correct.
+        self.mock_read_json.assert_called_once_with(
             "meta_test/prof1/dictionaries/perk_14.1.0.json"
         )
-        # returnScrapeLink wurde verwendet, um die URL zu bauen.
+        # returnScrapeLink was used to build the URL.
         scrape_link.assert_called_once_with("perk", "14.1.0")
-        # requestJsonFile muss mit URL und Save-Path aufgerufen werden.
-        m["request_json"].assert_called_once_with(
+        # requestJsonFile must be called with URL and save path.
+        self.mock_request_json.assert_called_once_with(
             "http://example",
             saveLocation="meta_test/prof1/dictionaries/perk_14.1.0.json",
         )
 
     def test_scrapeRecentPatch_cache_miss_requests(self):
-        # Wenn es keine lokale Datei gibt, soll die Funktion einen Request ausführen.
-        with ddragon_env(read_json={}, request_json={"v": "14.2.1"}) as m:
-            patch = ddragon.scrapeRecentPatch()
+        # If there is no local file, the function should make a request.
+        self.mock_read_json.return_value = {}
+        self.mock_request_json.return_value = {"v": "14.2.1"}
+        patch = ddragon.scrapeRecentPatch()
 
-        # Die Version aus dem JSON muss zurückgegeben werden.
+        # The version from the JSON must be returned.
         self.assertEqual(patch, "14.2.1")
-        # Der Pfad soll das Datum aus dem Mock enthalten.
-        m["read_json"].assert_called_once_with(
+        # The path should include the date from the mock.
+        self.mock_read_json.assert_called_once_with(
             "meta_test/prof1/dictionaries/EUW_2025-01-02.json"
         )
-        # Request muss mit korrekter URL und Save-Path passieren.
-        m["request_json"].assert_called_once_with(
+        # The request must use the correct URL and save path.
+        self.mock_request_json.assert_called_once_with(
             "https://ddragon.leagueoflegends.com/realms/euw.json",
             saveLocation="meta_test/prof1/dictionaries/EUW_2025-01-02.json",
         )
+
+    def test_loadIdDataSet_wrong_argument(self):
+
+        self.mock_read_json.return_value = {}
+        
+        with self.assertRaises(ValueError):
+            data_dict = ddragon.loadIdDataSet("regenbogen", "14.2.1")
+
+        self.mock_request_json.assert_not_called()
