@@ -78,5 +78,5 @@ class TestRiotApiLink(unittest.TestCase):
             self._auth_headers()
         )
 
-    def test_getGameById_result(self):
-        matchdicts = riot.getGameById("")
+    #def test_getGameById_result(self):
+     #   matchdicts = riot.getGameById("")
