@@ -5,6 +5,13 @@ from loguru import logger
 from src.core.config import config, Configs
 from src.utils.io import readJsonFile, requestJsonFile
 
+ranks = ["IRON", "BRONZE", "SILVER", "GOLD", "EMERALD", "PLATINUM",
+            "DIAMOND", "MASTER", "GRANDMASTER", "CHALLENGER"]
+queues = ["RANKED_SOLO_5x5", "RANKED_FLEX_SR", 
+            "RANKED_FLEX_TT", "RANKED_TFT"]
+divisions = ["I", "II", "III", "IV"]
+
+
 def getPUIDbySummAndTagline(summonername: str, tagline: str) -> str:
     """loads the metadata of a league account by summ and tagline
     
@@ -23,13 +30,13 @@ def getPUIDbySummAndTagline(summonername: str, tagline: str) -> str:
         the puuid according to the account
         
     """
-
     # reading api key
     api_key = config.general_settings[Configs.MAIN]["API_key"]
     # scraping summonerdata
     resource_link = f"https://europe.api.riotgames.com/riot/account/v1/accounts/by-riot-id/{summonername}/{tagline}?api_key={api_key}"
+    
     data_of_user = requestJsonFile(resource_link)
-
+        
     return data_of_user["puuid"]
 
 def getSummonerSample(rank: str, queue: str, division: str, page: int = 1) -> list[dict]:
@@ -50,6 +57,15 @@ def getSummonerSample(rank: str, queue: str, division: str, page: int = 1) -> li
         if true, releases the wait time of 1 second
 
     """
+    if not rank in ranks:
+        raise ValueError("the arguments contain an inproper rank: "+rank)
+    if not queue in queues:
+        raise ValueError("the arguments contain an inproper queue type: "+ queue)
+    if not division in divisions:
+        raise ValueError("the arguments contain an inproper division: "+division)
+    if not isinstance(page, int) or page < 1:
+        raise TypeError("the pagenumber must be a positive integer!")
+
     api_key = config.general_settings[Configs.MAIN]["API_key"]
     headers = {
         "X-Riot-Token": api_key,
@@ -143,6 +159,7 @@ def getMaxPageNumber(rank: str, queue: str, division: str) -> int:
         the maximum filled page
 
     """
+
     maxPage = 1
 
     while len(getSummonerSample(rank, queue, division, maxPage)) > 0:
