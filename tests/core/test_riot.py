@@ -105,6 +105,10 @@ class TestRiotApiLink(unittest.TestCase):
         
         self.assertEqual(result, 29)
 
-    # the last method is subject to change, therefore here is no test driven for now
+    @unittest.skip
+    def test_getEqualDistGameSamples(self):
+        pass
+        # empty, due to unknown design decisions
+        
 
     
