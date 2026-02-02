@@ -40,7 +40,7 @@ class TestRiotApiLink(unittest.TestCase):
         self.assertEqual(puuid, self.request_value["puuid"])
 
     def test_getPUIDbySummAAndTag_link_validity(self):
-        puuid = riot.getPUIDbySummAndTagline("Faker", "EUW")
+        riot.getPUIDbySummAndTagline("Faker", "EUW")
         self.request_mock.assert_called_once_with(
             f"https://europe.api.riotgames.com/riot/account/v1/accounts/" + \
                 f"by-riot-id/Faker/EUW?api_key={MINIMAL_TEST_CONFIG[Configs.MAIN]['API_key']}"
@@ -48,12 +48,12 @@ class TestRiotApiLink(unittest.TestCase):
 
     def test_getSummonerSample_with_wrong_args(self):
         with self.assertRaises(ValueError):
-            userlist = riot.getSummonerSample("WOOD", "RANKED_SOLO_5x5", "I", 1)
+            riot.getSummonerSample("WOOD", "RANKED_SOLO_5x5", "I", 1)
         with self.assertRaises(TypeError):
-            userlist = riot.getSummonerSample("GOLD", "RANKED_SOLO_5x5", "I", -3)
+            riot.getSummonerSample("GOLD", "RANKED_SOLO_5x5", "I", -3)
 
     def test_getSummonerSample_link_validity(self):
-        userlist = riot.getSummonerSample("GOLD", "RANKED_SOLO_5x5", "I", 2)
+        riot.getSummonerSample("GOLD", "RANKED_SOLO_5x5", "I", 2)
         self.request_mock.assert_called_once_with(
             f"https://euw1.api.riotgames.com/lol/league-exp/v4/entries/" + \
                 f"RANKED_SOLO_5x5/GOLD/I?page=2",
@@ -71,12 +71,40 @@ class TestRiotApiLink(unittest.TestCase):
         self.assertListEqual(userdata, ["die lösung"])
 
     def test_getGameIdsByPuuid_link_validity(self):
-        userlist = riot.getGameIdsByPuuid("42")
+        riot.getGameIdsByPuuid("42")
         self.request_mock.assert_called_once_with(
             f"https://europe.api.riotgames.com/lol/match/v5/matches/by-puuid/" + \
                 f"42/ids?type=ranked&start=0&count=100",
             self._auth_headers()
         )
 
-    #def test_getGameById_result(self):
-     #   matchdicts = riot.getGameById("")
+    def test_getGameById_result(self):
+        self.request_mock.return_value = ["die lösung"]
+        matchdicts = riot.getGameById("393994859", "/matcharchive")
+        self.assertTupleEqual(matchdicts, (["die lösung"], ["die lösung"]))
+
+    def test_getGamebyId_link_validity(self):
+        riot.getGameById("393994859", "matcharchive", "/neo")
+        self.request_mock.assert_called_with(
+            f"https://europe.api.riotgames.com/lol/match/v5/matches/393994859/timeline",
+            self._auth_headers(),
+            f"matcharchive/neo/timelines/393994859_time.json"
+        )
+
+    def test_getMaxPageNumber_with_wrong_args(self):
+        with self.assertRaises(ValueError):
+            riot.getMaxPageNumber("GOLD", "RANKED_SOLO_5x5", "V") # V is too large
+        
+    def test_getMaxPageNumber(self):
+        with mock.patch.object(
+            riot, 
+            "getSummonerSample", 
+            side_effect=(lambda a,b,c,d: ["test"] if d < 30 else [])
+        ):
+            result = riot.getMaxPageNumber("GOLD", "RANKED_SOLO_5x5", "I")
+        
+        self.assertEqual(result, 29)
+
+    # the last method is subject to change, therefore here is no test driven for now
+
+    
