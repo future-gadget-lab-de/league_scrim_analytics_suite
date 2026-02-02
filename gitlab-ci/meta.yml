@@ -1,5 +1,6 @@
 stages:
   - base-test
+  - unit-test
   - build_binary
   - build_doc
   - deploy_doc
