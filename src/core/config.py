@@ -111,7 +111,7 @@ class ConfigHandler:
         keys_miss = temp_keys.difference(keys)
 
         for key in keys_miss:
-            self.general_settings[conf][key] = templates[Configs.MAIN][key]
+            self.general_settings[Configs.MAIN][key] = templates[Configs.MAIN][key]
         self.writeSettings()
 
         logger.debug("reconfigured the current configs configuration.")
